@@ -1,0 +1,8 @@
+Armorsmithing
+Tailoring
+Fletching
+Weaponsmithing
+Alchemy
+Lapidary
+Calligraphy
+Enchanting

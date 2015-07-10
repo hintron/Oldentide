@@ -1,0 +1,51 @@
+Axe
+Dagger
+Unarmed
+Hammer
+Polearm
+Spear
+Staff
+Sword
+Archery
+Crossbow
+Sling
+Thrown
+Armor
+Dual Weapon
+Shield
+Bardic
+Conjuring
+Druidic
+Illusion
+Necromancy
+Sorcery
+Shamanic
+Spellcraft
+Summoning
+Focus
+Armorsmithing
+Tailoring
+Fletching
+Weaponsmithing
+Alchemy
+Lapidary
+Calligraphy
+Enchanting
+Herbalism
+Hunting
+Mining
+Bargaining
+Camping
+First Aid
+Lore
+Pick Locks
+Scouting
+Search
+Stealth
+Traps
+Aeolandis
+Heiroform
+High Gundis
+Old Praxic
+Praxic
+Runic
