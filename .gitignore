@@ -1,0 +1,12 @@
+# Ignore Everything:
+*
+# Except for my project files:
+!*.cpp
+!*.h
+!*.py
+!*.cs
+!*.txt
+!*.jpg
+!*.md
+!LICENSE
+!.gitignore
