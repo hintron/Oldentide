@@ -1,7 +1,0 @@
-Human
-Dwarf
-Elf
-Orc
-Gnome
-Ogre
-Thresh

@@ -1,3 +1,0 @@
-mysql-hostname: localhost
-mysql-username: root
-mysql-database: oldentide
