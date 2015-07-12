@@ -11,3 +11,6 @@
 !*.md
 !LICENSE
 !.gitignore
+# Ignore Build directory:
+Intermediate/
+Intermediate/*
