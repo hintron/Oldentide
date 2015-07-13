@@ -16,5 +16,4 @@ Languages: C++, XML, (Python)<br>
 
 ####Directories:
 
-src: A place where the actual source code goes.<br>
-dev: A place where all of the previous iterations of code goes.<br>
+Artifacts: A place where all of the previous iterations of code goes.<br>
