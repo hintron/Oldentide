@@ -19,4 +19,4 @@ Tasks: [Gihub Wiki Task List](https://github.com/Oldentide/Oldentide/wiki/Tasks)
 
 ####Directories:
 
-Artifacts: A place where all of the previous iterations of code goes.<br>
+Artifacts: A place where any previous iteration of code goes.<br>
