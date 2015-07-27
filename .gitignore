@@ -8,6 +8,7 @@
 !*.cs
 !*.txt
 !*.jpg
+!*.png
 !*.md
 !LICENSE
 !.gitignore
