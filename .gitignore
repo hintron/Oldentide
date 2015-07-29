@@ -10,6 +10,9 @@
 !*.jpg
 !*.png
 !*.md
+!*.obj
+!*.3ds
+!*.wings
 !LICENSE
 !.gitignore
 # Ignore Build directory:
