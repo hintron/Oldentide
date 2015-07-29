@@ -15,3 +15,5 @@
 # Ignore Build directory:
 Intermediate/
 Intermediate/*
+Saved/
+Saved/*
