@@ -12,6 +12,10 @@
 !*.md
 !*.obj
 !*.3ds
+!*.dae
+!*.skb
+!*.skp
+!*.wings
 !*.wings
 !LICENSE
 !.gitignore
