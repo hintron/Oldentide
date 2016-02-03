@@ -7,12 +7,8 @@
 #ifndef OLDENTIDE_NPC_H_
 #define OLDENTIDE_NPC_H_
 
-#pragma once
-
 #include "Character.h"
 #include <string>
-
-using namespace std;
 
 class Npc : public Character {
     
@@ -23,7 +19,7 @@ class Npc : public Character {
     public:
 
     // Constructors.
-    Npc(int id, string name, string race, string gender, string profession, int weight, int x, int y, int z);
+    Npc(int id, std::string name, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z);
     //~Npc();
 
     // Getter Functions.
@@ -38,4 +34,5 @@ class Npc : public Character {
     
 };
 
-#endif
+#endif //OLDENTIDE_NPC_H_
+

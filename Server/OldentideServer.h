@@ -3,26 +3,25 @@
 // Date:        Jan_31_2016
 // Purpose:     Header for dedicated server class.
 
-#ifndef OLDENTIDE_OLDENTIDESERVER_E
-#define OLDENTIDE_OLDENTIDESERVER_E
+#ifndef OLDENTIDE_OLDENTIDESERVER_H
+#define OLDENTIDE_OLDENTIDESERVER_H
 
 #include "Player.h"
 #include "Npc.h"
 #include <vector>
 
-#pragma once
-
 class OldentideServer{
     public:
-        OldentideServer();
+        OldentideServer(int port);
         ~OldentideServer();
         void run();
-        vector<Player>* getPlayers();
-        vector<Npc>* getNpcs();
+        std::vector<Player>* getPlayers();
+        std::vector<Npc>* getNpcs();
     private:
-        vector<Player>* players;
-        vector<Npc>* npcs;
+        int sockfd;
+        std::vector<Player>* players;
+        std::vector<Npc>* npcs;
         void populateNpcs();
-}
+};
 
-#endif
+#endif //OLDENTIDE_OLDENTIDESERVER_H

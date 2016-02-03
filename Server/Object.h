@@ -7,10 +7,6 @@
 #ifndef OLDENTIDE_OBJECT_H_
 #define OLDENTIDE_OBJECT_H_
 
-#pragma once
-
-using namespace std;
-
 class Object {
     
     protected:
@@ -41,4 +37,5 @@ class Object {
 
 };
 
-#endif
+#endif //OLDENTIDE_OBJECT_H_
+

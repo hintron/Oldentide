@@ -10,6 +10,4 @@
 #include <cctype>
 #include "pfunctions.h"
 
-using namespace std;
-
-#endif
+#endif //OLDENTIDE_ACCOUNT_H_

@@ -10,34 +10,30 @@
 #include "Character.h"
 #include <string>
 
-#pragma once
-
-using namespace std;
-
 class Player : public Character {
     
     protected:
 
-    string account;
+    std::string account;
     int id;
     int session; 
 
     public:
 
     // Constructors.
-    Player(string account, int id, int session, string name, string race, 
-           string gender, string profession, int weight, int x, int y, int z);
+    Player(std::string account, int id, int session, std::string name, std::string race, 
+           std::string gender, std::string profession, int weight, int x, int y, int z);
     //~Player();
 
     // Getter Functions.
     
-    string getAccount();
+    std::string getAccount();
     int getId();
     int getSession();
 
     // Setter Functions.
     
-    void setAccount(string account);
+    void setAccount(std::string account);
     void setId(int id);
     void setSession(int session);
 
@@ -45,4 +41,4 @@ class Player : public Character {
     
 };
 
-#endif
+#endif //OLDENTIDE_PLAYER_H_

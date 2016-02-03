@@ -10,18 +10,14 @@
 #include "Object.h"
 #include <string>
 
-#pragma once
-
-using namespace std;
-
 class Character : public Object {
 
     protected:
 
-    string name;
-    string race;
-    string gender;
-    string profession;
+    std::string name;
+    std::string race;
+    std::string gender;
+    std::string profession;
     int level;
     int hp;
     int bp;
@@ -85,15 +81,15 @@ class Character : public Object {
 
     public:
 
-    Character(string name, string race, string gender, string profession, int weight, int x, int y, int z);
-    Character(string name, string race, string gender, string profession);
+    Character(std::string name, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z);
+    Character(std::string name, std::string race, std::string gender, std::string profession);
     //~Character();
 
     // Getter Functions
-    string getName();
-    string getRace();
-    string getGender();
-    string getProfession();
+    std::string getName();
+    std::string getRace();
+    std::string getGender();
+    std::string getProfession();
     int getLevel();
     int getHP();
     int getBP();
@@ -156,10 +152,10 @@ class Character : public Object {
     int getRunic();
 
     // Setter Functions
-    void setName(string profession);
-    void setRace(string profession);
-    void setGender(string profession);
-    void setProfession(string profession);
+    void setName(std::string profession);
+    void setRace(std::string profession);
+    void setGender(std::string profession);
+    void setProfession(std::string profession);
     void setLevel(int level);
     void setHP(int hp);
     void setBP(int bp);
@@ -225,4 +221,5 @@ class Character : public Object {
 
 };
 
-#endif
+#endif //OLDENTIDE_CHARACTER_H_
+
