@@ -18,21 +18,24 @@ OldentideServer::OldentideServer(int port){
     
     // Create server address struct.
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("192.168.1.101");
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(port);
 
     // Create socket for IP, UDP normal protocol.
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0){
         cout << "Cannot create socket...";
         exit(EXIT_FAILURE);
     }
 
     // Bind socket to a port.
-    bind(sockfd, (struct sockaddr *)&server, sizeof(server));
+    if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0){
+        cout << "Cannot bind socket...";
+       exit(EXIT_FAILURE); 
+    };
     
     players = new vector<Player>;
     populateNpcs();
-    }
+}
 
 OldentideServer::~OldentideServer(){
     players->clear();
@@ -45,15 +48,16 @@ void OldentideServer::run(){
     int n;
     char mesg[1000];
     sockaddr_in client;
-    socklen_t len;
-    
+    socklen_t len = sizeof(client);
+    bool listen = true;
+
     // Main listening loop.
     cout << "Server Running!\n";
-    while(true){
-        len = sizeof(client);
+    while(listen){
         n = recvfrom(sockfd, mesg, 1000, 0, (struct sockaddr *)&client, &len);
-        //sendto(sockfd, mesg, n, 0, (struct sockaddr *)&client,sizeof(client));
-        cout << mesg;
+        //sendto(sockfd, mesg, n, 0, (struct sockaddr *)&client, sizeof(client));
+        cout << mesg << endl;
+        //listen = false;
     } 
 }
 

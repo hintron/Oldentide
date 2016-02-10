@@ -25,11 +25,11 @@ int main(int argc, char * argv[]){
     cout << server_address << endl;
     cout << port << endl;
 
-    sockfd=socket(AF_INET,SOCK_DGRAM,0);
+    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr=inet_addr(server_address);
-    servaddr.sin_port=htons(port);
+    servaddr.sin_addr.s_addr = inet_addr(server_address);
+    servaddr.sin_port = htons(port);
 
     while (1){
       cin >> sendline;
