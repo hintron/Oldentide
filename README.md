@@ -22,3 +22,4 @@ Tasks: [Gihub Wiki Task List](https://github.com/Oldentide/Oldentide/wiki/Tasks)
 Artifacts: A place where any previous iteration of code goes.<br>
 Concepts:  A place where any concept art, drawings, sketches or purely conceptual code goes.<br>
 Partial:   A place where any intermediate asset work goes.<br>
+Server:    A place where dedicated server code goes.<br>
