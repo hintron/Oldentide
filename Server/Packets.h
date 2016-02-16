@@ -3,6 +3,9 @@
 // Date:        Feb_14_2016
 // Purpose:     UDP Packet Struct Definitions.
 
+#ifndef PACKETS_H
+#define PACKETS_H
+
 // Enumerate list of packet types (One-hot encoded)
 enum PTYPE{
     GENERIC,
@@ -26,6 +29,7 @@ struct PACKET_GENERIC {
     PTYPE packetType = GENERIC;
     int packetId;
     int sessionId;
+    char dummy[2000];
 };
 
 struct PACKET_ACK {
@@ -201,3 +205,5 @@ struct PACKET_SENDSERVERACTION {
     int packetId;
     int sessionId;
 };
+
+#endif //PACKETS_H

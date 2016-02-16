@@ -8,6 +8,7 @@
 
 #include "Player.h"
 #include "Npc.h"
+#include "Packets.h"
 #include <vector>
 
 class OldentideServer{
@@ -22,6 +23,21 @@ class OldentideServer{
         std::vector<Player>* players;
         std::vector<Npc>* npcs;
         void populateNpcs();
+        void genericHandler(PACKET_GENERIC * packet);
+        void ackHandler(PACKET_ACK * packet);
+        void connectHandler(PACKET_CONNECT * packet);
+        void disconnectHandler(PACKET_DISCONNECT * packet);
+        void loginHandler(PACKET_LOGIN * packet);
+        void listCharactersHandler(PACKET_LISTCHARACTERS * packet);
+        void selectCharacterHandler(PACKET_SELECTCHARACTER * packet);
+        void deleteCharacterHandler(PACKET_DELETECHARACTER * packet);
+        void createCharacterHandler(PACKET_CREATECHARACTER * packet);
+        void initializeGameHandler(PACKET_INITIALIZEGAME * packet);
+        void updatePcHandler(PACKET_UPDATEPC * packet);
+        void updateNpcHandler(PACKET_UPDATENPC * packet);
+        void sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
+        void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
+        void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
 };
 
 #endif //OLDENTIDE_OLDENTIDESERVER_H
