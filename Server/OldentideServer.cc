@@ -46,7 +46,6 @@ OldentideServer::~OldentideServer(){
 }
 
 void OldentideServer::run(){
-    int n;
     //char mesg[1000];
     sockaddr_in client;
     socklen_t len = sizeof(client);
@@ -56,67 +55,52 @@ void OldentideServer::run(){
     cout << "Server Running!\n";
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
-        n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
+        int n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
         //sendto(sockfd, mesg, n, 0, (struct sockaddr *)&client, sizeof(client));
         switch (packet->packetType){
             case GENERIC:
-                cout << "GENERIC\n\r";
                 genericHandler((PACKET_GENERIC*)packet);
                 break;
             case ACK: 
-                cout << "ACK\n\r";
                 ackHandler((PACKET_ACK*)packet);
                 break;
             case CONNECT: 
-                cout << "CONNECT\n\r";
                 connectHandler((PACKET_CONNECT*)packet);
                 break;
             case DISCONNECT: 
-                cout << "DISCONNECT\n\r";
                 disconnectHandler((PACKET_DISCONNECT*)packet);
                 break;
             case LOGIN: 
-                cout << "LOGIN\n\r";
                 loginHandler((PACKET_LOGIN*)packet);
                 break;
             case LISTCHARACTERS: 
-                cout << "LISTCHARACTERS\n\r";
                 listCharactersHandler((PACKET_LISTCHARACTERS*)packet);
                 break;
             case SELECTCHARACTER: 
-                cout << "SELECTCHARACTER\n\r";
                 selectCharacterHandler((PACKET_SELECTCHARACTER*)packet);
                 break;
             case DELETECHARACTER: 
-                cout << "DELETECHARACTER\n\r";
                 deleteCharacterHandler((PACKET_DELETECHARACTER*)packet);
                 break;
             case CREATECHARACTER: 
-                cout << "CREATECHARACTER\n\r";
                 createCharacterHandler((PACKET_CREATECHARACTER*)packet);
                 break;
             case INITIALIZEGAME: 
-                cout << "INITIALIZEGAME\n\r";
                 initializeGameHandler((PACKET_INITIALIZEGAME*)packet);
                 break;
             case UPDATEPC: 
-                cout << "UPDATEPC\n\r";
                 updatePcHandler((PACKET_UPDATEPC*)packet);
                 break;
             case UPDATENPC: 
-                cout << "UPDATENPC\n\r";
                 updateNpcHandler((PACKET_UPDATENPC*)packet);
                 break;
             case SENDPLAYERCOMMAND: 
-                cout << "SENDPLAYERCOMMAND\n\r";
                 sendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet);
                 break;
             case SENDPLAYERACTION: 
-                cout << "SENDPLAYERACTION\n\r";
                 sendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet);
                 break;
             case SENDSERVERACTION: 
-                cout << "SENDSERVERACTION\n\r";
                 sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
                 break;
         }
@@ -129,61 +113,76 @@ void OldentideServer::populateNpcs(){
 }
 
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
+    cout << "GENERIC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::ackHandler(PACKET_ACK * packet){
+    cout << "ACK Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::connectHandler(PACKET_CONNECT * packet){
+    cout << "CONNECT Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
+    cout << "DISCONNECT Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet){
+    cout << "LOGIN Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::listCharactersHandler(PACKET_LISTCHARACTERS * packet){
+    cout << "LISTCHARACTERS Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::selectCharacterHandler(PACKET_SELECTCHARACTER * packet){
+    cout << "SELECTCHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::deleteCharacterHandler(PACKET_DELETECHARACTER * packet){
+    cout << "DELETECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::createCharacterHandler(PACKET_CREATECHARACTER * packet){
+    cout << "CREATECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::initializeGameHandler(PACKET_INITIALIZEGAME * packet){
+    cout << "INITIALIZEGAME Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updatePcHandler(PACKET_UPDATEPC * packet){
+    cout << "UPDATEPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updateNpcHandler(PACKET_UPDATENPC * packet){
+    cout << "UPDATENPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
+    cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
+    cout << "SENDPLAYERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
+    cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }
