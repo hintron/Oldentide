@@ -1,5 +1,7 @@
-
-/* Sample UDP client */
+// Filename:    TestClient.cc
+// Author:      Joseph DeVictoria
+// Date:        2_10_2013
+// Purpose:     Act as an intermediate test platform for proving server functionality.
 
 #include "Packets.h"
 #include <stdlib.h>
@@ -16,8 +18,6 @@ int main(int argc, char * argv[]){
 
     int sockfd,n;
     struct sockaddr_in servaddr,cliaddr;
-    //char sendline[1000];
-    //char recvline[1000];
     char * server_address;
     char * names[10];
 
@@ -129,10 +129,5 @@ int main(int argc, char * argv[]){
                 break;
             }
         }
-        
-        //sendto(sockfd,sendline,1000,0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-        //sendto(sockfd,sendline,1000,0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-        //n = recvfrom(sockfd,recvline,10000,0,NULL,NULL);
-        //cout << recvline;
     }
 }
