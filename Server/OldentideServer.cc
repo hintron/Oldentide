@@ -46,7 +46,6 @@ OldentideServer::~OldentideServer(){
 }
 
 void OldentideServer::run(){
-    //char mesg[1000];
     sockaddr_in client;
     socklen_t len = sizeof(client);
     bool listen = true;
@@ -56,7 +55,6 @@ void OldentideServer::run(){
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
-        //sendto(sockfd, mesg, n, 0, (struct sockaddr *)&client, sizeof(client));
         switch (packet->packetType){
             case GENERIC:
                 genericHandler((PACKET_GENERIC*)packet);
@@ -102,9 +100,9 @@ void OldentideServer::run(){
                 break;
             case SENDSERVERACTION: 
                 sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
+                listen = false;
                 break;
         }
-        //listen = false;
     } 
 }
 
