@@ -15,6 +15,7 @@ class Character : public Object {
     protected:
 
     std::string name;
+    std::string lastname;
     std::string race;
     std::string gender;
     std::string profession;
@@ -81,12 +82,13 @@ class Character : public Object {
 
     public:
 
-    Character(std::string name, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z);
-    Character(std::string name, std::string race, std::string gender, std::string profession);
+    Character(std::string name, std::string lastname, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z, float direction);
+    Character(std::string name, std::string lastname, std::string race, std::string gender, std::string profession);
     //~Character();
 
     // Getter Functions
     std::string getName();
+    std::string getLastname();
     std::string getRace();
     std::string getGender();
     std::string getProfession();
@@ -153,6 +155,7 @@ class Character : public Object {
 
     // Setter Functions
     void setName(std::string profession);
+    void setLastname(std::string lastname);
     void setRace(std::string profession);
     void setGender(std::string profession);
     void setProfession(std::string profession);

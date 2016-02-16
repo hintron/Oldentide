@@ -11,11 +11,12 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Object :: Object(int weight, int x, int y, int z) {
+Object :: Object(int weight, int x, int y, int z, float direction) {
     setWeight(weight);
     setX(x);
     setY(y);
     setZ(z);
+    setDirection(direction);
 }
 
 //------------------------------------------------------------------------------//
@@ -37,6 +38,11 @@ int Object :: getY() {
 int Object :: getZ() {
     return z;
 }
+
+float Object :: getDirection() {
+    return direction;
+}
+
 //------------------------------------------------------------------------------//
 //----------                      Setter Functions                    ----------//
 //------------------------------------------------------------------------------//
@@ -55,6 +61,10 @@ void Object :: setY(int y) {
 
 void Object :: setZ(int z) {
     this->z = z;
+}
+
+void Object :: setDirection(float direction) {
+    this->direction = direction;
 }
 
 //------------------------------------------------------------------------------//

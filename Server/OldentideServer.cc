@@ -4,6 +4,7 @@
 // Purpose:     Dedicated server class.
 
 #include "OldentideServer.h"
+#include "Packets.h"
 #include <iostream>
 #include <stdlib.h>
 #include <sys/types.h>

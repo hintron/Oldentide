@@ -12,9 +12,10 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Npc :: Npc(int id, string name, string race, string gender, string profession, 
-           int weight, int x, int y, int z) 
-     : Character(name, race, gender, profession, weight, x, y, z) { 
+Npc :: Npc(int id, string name, string lastname, string race, string gender, 
+           string profession, int weight, int x, int y, int z, float direction) 
+     : Character(name, lastname, race, gender, profession, weight, x, y, z, 
+                 direction) { 
     setId(id);
 }
 

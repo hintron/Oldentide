@@ -12,9 +12,11 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Player :: Player(string account, int id, int session, string name, string race, 
-               string gender, string profession, int weight, int x, int y, int z) 
-        : Character(name, race, gender, profession, weight, x, y, z) { 
+Player :: Player(string account, int id, int session, string name, string lastname,
+                 string race, string gender, string profession, int weight, int x,
+                 int y, int z, float direction) 
+        : Character(name, lastname, race, gender, profession, weight, x, y, z,
+                    direction) { 
     setAccount(account);
     setId(id);
     setSession(session);

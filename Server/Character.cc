@@ -12,18 +12,22 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Character :: Character(string name, string race, string gender, string profession,
-                     int weight, int x, int y, int z)
-           : Object(weight, x, y, z) {
+Character :: Character(string name, string lastname, string race, string gender,
+                       string profession, int weight, int x, int y, int z,
+                       float direction)
+           : Object(weight, x, y, z, direction) {
     setName(name);
+    setLastname(lastname);
     setRace(race);
     setGender(gender);
     setProfession(profession);
 }
 
-Character :: Character(string name, string race, string gender, string profession) 
-           : Object(0, 0, 0, 0) {
+Character :: Character(string name, string lastname, string race, string gender,
+                       string profession) 
+           : Object(0, 0, 0, 0, 0.0) {
     setName(name);
+    setLastname(lastname);
     setRace(race);
     setGender(gender);
     setProfession(profession);
@@ -35,6 +39,10 @@ Character :: Character(string name, string race, string gender, string professio
 
 string Character :: getName() {
     return name;
+}
+
+string Character :: getLastname() {
+    return lastname;
 }
 
 string Character :: getRace() {
@@ -297,6 +305,9 @@ void Character :: setName(string name) {
     this->name = name;
 }
 
+void Character :: setLastname(string lastname) {
+    this->lastname = lastname;
+}
 void Character :: setRace(string race) {
     this->race = race;
 }

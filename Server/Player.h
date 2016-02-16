@@ -21,8 +21,10 @@ class Player : public Character {
     public:
 
     // Constructors.
-    Player(std::string account, int id, int session, std::string name, std::string race, 
-           std::string gender, std::string profession, int weight, int x, int y, int z);
+    Player(std::string account, int id, int session, std::string name, 
+           std::string lastname, std::string race, std::string gender, 
+           std::string profession, int weight, int x, int y, int z,
+           float direction);
     //~Player();
 
     // Getter Functions.

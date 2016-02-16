@@ -15,10 +15,11 @@ class Object {
     int x;
     int y;
     int z;
+    float direction;
 
     public:
 
-    Object(int weight, int x, int y, int z);
+    Object(int weight, int x, int y, int z, float direction);
     // ~Object();
 
     // Getter Functions
@@ -26,12 +27,14 @@ class Object {
     int getX();
     int getY();
     int getZ();
+    float getDirection();
 
     // Setter Functions
     void setWeight(int weight);
     void setX(int x);
     void setY(int y);
     void setZ(int z);
+    void setDirection(float direction);
 
     // Class Functions
 
