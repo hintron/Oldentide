@@ -15,9 +15,8 @@
 using namespace std;
 
 OldentideServer::OldentideServer(int port){
-    sockaddr_in server;
-    
     // Create server address struct.
+    sockaddr_in server;
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(port);
@@ -33,8 +32,8 @@ OldentideServer::OldentideServer(int port){
         cout << "Cannot bind socket...";
        exit(EXIT_FAILURE); 
     };
-    
-    players = new vector<Player>;
+
+    populatePcs();
     populateNpcs();
 }
 
@@ -104,6 +103,10 @@ void OldentideServer::run(){
                 break;
         }
     } 
+}
+
+void OldentideServer::populatePcs(){
+    players = new vector<Player>;
 }
 
 void OldentideServer::populateNpcs(){

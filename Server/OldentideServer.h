@@ -22,6 +22,7 @@ class OldentideServer{
         int sockfd;
         std::vector<Player>* players;
         std::vector<Npc>* npcs;
+        void populatePcs();
         void populateNpcs();
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
