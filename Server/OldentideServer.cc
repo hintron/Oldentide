@@ -4,13 +4,16 @@
 // Purpose:     Dedicated server class.
 
 #include "OldentideServer.h"
+#include <arpa/inet.h>
 #include <iostream>
-#include <cstring>
-#include <stdlib.h>
+#include <istream>
+#include <iterator>
+#include <ostream>
+#include <netinet/in.h>
+#include <sstream>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <thread>
 
 using namespace std;
 
@@ -47,62 +50,67 @@ OldentideServer::~OldentideServer(){
 void OldentideServer::run(){
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    bool listen = true;
+    listen = true;
 
     // Main listening loop.
+    thread shell (startAdminShell);
     cout << "Server Running!\n";
-    while(listen){
+    while(OldentideServer::listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
-        switch (packet->packetType){
-            case GENERIC:
-                genericHandler((PACKET_GENERIC*)packet);
-                break;
-            case ACK: 
-                ackHandler((PACKET_ACK*)packet);
-                break;
-            case CONNECT: 
-                connectHandler((PACKET_CONNECT*)packet);
-                break;
-            case DISCONNECT: 
-                disconnectHandler((PACKET_DISCONNECT*)packet);
-                break;
-            case LOGIN: 
-                loginHandler((PACKET_LOGIN*)packet);
-                break;
-            case LISTCHARACTERS: 
-                listCharactersHandler((PACKET_LISTCHARACTERS*)packet);
-                break;
-            case SELECTCHARACTER: 
-                selectCharacterHandler((PACKET_SELECTCHARACTER*)packet);
-                break;
-            case DELETECHARACTER: 
-                deleteCharacterHandler((PACKET_DELETECHARACTER*)packet);
-                break;
-            case CREATECHARACTER: 
-                createCharacterHandler((PACKET_CREATECHARACTER*)packet);
-                break;
-            case INITIALIZEGAME: 
-                initializeGameHandler((PACKET_INITIALIZEGAME*)packet);
-                break;
-            case UPDATEPC: 
-                updatePcHandler((PACKET_UPDATEPC*)packet);
-                break;
-            case UPDATENPC: 
-                updateNpcHandler((PACKET_UPDATENPC*)packet);
-                break;
-            case SENDPLAYERCOMMAND: 
-                sendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet);
-                break;
-            case SENDPLAYERACTION: 
-                sendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet);
-                break;
-            case SENDSERVERACTION: 
-                sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
-                listen = false;
-                break;
+        if (verifySession(packet->sessionId)){ 
+            switch (packet->packetType){
+                case GENERIC:
+                    genericHandler((PACKET_GENERIC*)packet);
+                    break;
+                case ACK: 
+                    ackHandler((PACKET_ACK*)packet);
+                    break;
+                case CONNECT: 
+                    connectHandler((PACKET_CONNECT*)packet);
+                    break;
+                case DISCONNECT: 
+                    disconnectHandler((PACKET_DISCONNECT*)packet);
+                    break;
+                case LOGIN: 
+                    loginHandler((PACKET_LOGIN*)packet);
+                    break;
+                case LISTCHARACTERS: 
+                    listCharactersHandler((PACKET_LISTCHARACTERS*)packet);
+                    break;
+                case SELECTCHARACTER: 
+                    selectCharacterHandler((PACKET_SELECTCHARACTER*)packet);
+                    break;
+                case DELETECHARACTER: 
+                    deleteCharacterHandler((PACKET_DELETECHARACTER*)packet);
+                    break;
+                case CREATECHARACTER: 
+                    createCharacterHandler((PACKET_CREATECHARACTER*)packet);
+                    break;
+                case INITIALIZEGAME: 
+                    initializeGameHandler((PACKET_INITIALIZEGAME*)packet);
+                    break;
+                case UPDATEPC: 
+                    updatePcHandler((PACKET_UPDATEPC*)packet);
+                    break;
+                case UPDATENPC: 
+                    updateNpcHandler((PACKET_UPDATENPC*)packet);
+                    break;
+                case SENDPLAYERCOMMAND: 
+                    sendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet);
+                    break;
+                case SENDPLAYERACTION: 
+                    sendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet);
+                    break;
+                case SENDSERVERACTION: 
+                    sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
+                    listen = false;
+                    break;
+            }
         }
-    } 
+    }
+    shell.join();
+    return;
 }
 
 void OldentideServer::populatePcs(){
@@ -111,6 +119,11 @@ void OldentideServer::populatePcs(){
 
 void OldentideServer::populateNpcs(){
     npcs = new vector<Npc>;
+}
+
+bool OldentideServer::verifySession(int session){
+    cout << endl << session << endl;
+    return true;
 }
 
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
@@ -175,6 +188,7 @@ void OldentideServer::updateNpcHandler(PACKET_UPDATENPC * packet){
 
 void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
     cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
+
     free(packet);
 }
 
@@ -186,4 +200,52 @@ void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
     cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
+}
+
+vector<string> OldentideServer::split(string s, char delim) {
+    string token;
+    vector<string> tokens;
+    istringstream ss(s);
+    while(getline(ss, token, delim)){
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+void OldentideServer::startAdminShell(){
+    string adminCommand;
+    cout << "Starting Server Administrator Shell.\n";
+    while(true){
+        cout << "  Admin$: ";
+        getline(cin,adminCommand);
+        vector<string> adminTokens = split(adminCommand, ' ');
+        if (adminTokens[0] == "/shutdown"){
+            listen = false;
+            cout << "  Oldentide Dedicated Server is shutting down..." << endl;
+            exit(EXIT_SUCCESS);
+            return;
+        }
+        else if(adminTokens[0] == "/list"){
+            if (adminTokens.size() == 2){
+                if (adminTokens[1] == "PC"){
+                    cout << "PCSSSSSS" << endl;          
+                }
+                if (adminTokens[1] == "NPC"){
+                    cout << "NPCSSSSS" << endl;    
+                }
+            }
+            else{
+                printUsage();
+            }
+        }
+        else{
+            printUsage();
+        }
+    }
+}
+
+void OldentideServer::printUsage(){
+    cout << "    Dedicated Server Admin Usage:" << endl;
+    cout << "    /shutdown    = Shuts down the server." << endl;
+    cout << "    /list <var>  = Lists all entities of given <var> on server, where var is [PC, NPC]." << endl;
 }
