@@ -14,6 +14,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <thread>
+#include <unistd.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -214,9 +216,12 @@ vector<string> OldentideServer::split(string s, char delim) {
 
 void OldentideServer::startAdminShell(){
     string adminCommand;
+    char serverHostname[HOST_NAME_MAX];
+    gethostname(serverHostname, HOST_NAME_MAX);
     cout << "Starting Server Administrator Shell.\n";
+    printLogo();
     while(true){
-        cout << "  Admin$: ";
+        cout << "  OldentideAdmin@" << serverHostname << ": ";
         getline(cin,adminCommand);
         vector<string> adminTokens = split(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
@@ -248,4 +253,23 @@ void OldentideServer::printUsage(){
     cout << "    Dedicated Server Admin Usage:" << endl;
     cout << "    /shutdown    = Shuts down the server." << endl;
     cout << "    /list <var>  = Lists all entities of given <var> on server, where var is [PC, NPC]." << endl;
+}
+
+void OldentideServer::printLogo(){
+    cout << "    ____           ___   _____         _____  _____  ___   _____" << endl;
+    cout << "   /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << endl;
+    cout << "  /      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << endl;
+    cout << "  |      | |      |    | |___   | \\ |    |      |    |   | |___" << endl;
+    cout << "  \\      / |      |   /  |      |  \\|    |      |    |   / |" << endl;
+    cout << "   \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << endl;
+    cout << "   " << endl; 
+    cout << "                                ^" << endl;
+    cout << "                               / \\" << endl;
+    cout << "                              /\\_/\\" << endl;
+    cout << "                             / | | \\" << endl;
+    cout << "                             \\ |_| /" << endl;
+    cout << "                              \\/ \\/" << endl;
+    cout << "                               \\ /" << endl;
+    cout << "                                |" << endl;
+    cout << "   " << endl;
 }

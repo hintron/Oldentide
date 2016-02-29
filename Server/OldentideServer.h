@@ -46,6 +46,7 @@ class OldentideServer{
         static std::vector<std::string> split(std::string s, char delim);
         static void startAdminShell();
         static void printUsage();
+        static void printLogo();
 };
 
 #endif //OLDENTIDE_OLDENTIDESERVER_H
