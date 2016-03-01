@@ -60,6 +60,9 @@ Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
+# Database
+*.db
+
 # Mac Artifacts
 .DS_Store
 
