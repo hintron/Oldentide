@@ -9,7 +9,7 @@
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
 **Principal Author**: Joseph DeVictoria<br>
-**Contributing Authors**: ...
+**Contributing Authors**: ...<br>
 **Platform**: Unreal Engine 4<br>
 **Languages**: C++, C, SQLite3, (Python)<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
