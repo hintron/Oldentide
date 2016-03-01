@@ -45,7 +45,7 @@ class OldentideServer{
         void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
         static std::vector<std::string> split(std::string s, char delim);
-        static void startAdminShell();
+        static void startAdminShell(SQLConnector * c);
         static void printUsage();
         static void printLogo();
 };

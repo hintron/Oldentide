@@ -22,7 +22,7 @@ using namespace std;
 OldentideServer::OldentideServer(int port){
     populateNpcs();
     players = new vector<Player>;
-    sql = new SQLConnector();
+    new SQLConnector();
 
     // Create server address struct.
     sockaddr_in server;
@@ -56,7 +56,7 @@ void OldentideServer::run(){
     listen = true;
 
     // Main listening loop.
-    thread shell (startAdminShell);
+    thread shell (startAdminShell, sql);
     cout << "Server Running!\n";
     while(OldentideServer::listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
@@ -211,8 +211,9 @@ vector<string> OldentideServer::split(string s, char delim) {
     return tokens;
 }
 
-void OldentideServer::startAdminShell(){
+void OldentideServer::startAdminShell(SQLConnector * c){
     string adminCommand;
+    SQLConnector * sql = c;
     char serverHostname[HOST_NAME_MAX];
     gethostname(serverHostname, HOST_NAME_MAX);
     cout << "Starting Server Administrator Shell.\n";
@@ -227,7 +228,7 @@ void OldentideServer::startAdminShell(){
             exit(EXIT_SUCCESS);
             return;
         }
-        else if(adminTokens[0] == "/list"){
+        else if (adminTokens[0] == "/list"){
             if (adminTokens.size() == 2){
                 if (adminTokens[1] == "PC"){
                     cout << "PCSSSSSS" << endl;          
@@ -240,6 +241,10 @@ void OldentideServer::startAdminShell(){
                 printUsage();
             }
         }
+        else if (adminTokens[0] == "/db"){
+            string cmd = adminCommand.erase(0,4);
+            //sql->execute(cmd);
+        }
         else{
             printUsage();
         }
@@ -250,6 +255,7 @@ void OldentideServer::printUsage(){
     cout << "    Dedicated Server Admin Usage:" << endl;
     cout << "    /shutdown    = Shuts down the server." << endl;
     cout << "    /list <var>  = Lists all entities of given <var> on server, where var is [PC, NPC]." << endl;
+    cout << "    /db <query>  = Runs a given sql query on the sqlite3 database." << endl;
 }
 
 void OldentideServer::printLogo(){
