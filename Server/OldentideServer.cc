@@ -243,7 +243,19 @@ void OldentideServer::startAdminShell(SQLConnector * c){
         }
         else if (adminTokens[0] == "/db"){
             string cmd = adminCommand.erase(0,4);
-            //sql->execute(cmd);
+            sql->execute(cmd);
+        }
+        else if (adminTokens[0] == "/initdb"){
+            string answer;
+            cout << "  Are you sure you want to recreate the database? y/n: ";
+            cin >> answer;
+            if (answer == "y"){
+                cout << "  Recreating database..." << endl;
+                sql->initDb();
+            }
+            else {
+                cout << "  Database not recreated." << endl;
+            }
         }
         else{
             printUsage();
@@ -266,7 +278,7 @@ void OldentideServer::printLogo(){
     cout << "  \\      / |      |   /  |      |  \\|    |      |    |   / |" << endl;
     cout << "   \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << endl;
     cout << "   " << endl; 
-    cout << "                                ^" << endl;
+    cout << "                                |" << endl;
     cout << "                               / \\" << endl;
     cout << "                              /\\_/\\" << endl;
     cout << "                             / | | \\" << endl;

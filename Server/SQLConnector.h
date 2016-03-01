@@ -13,12 +13,10 @@ class SQLConnector{
     public:
         SQLConnector();
         ~SQLConnector();
-        void execute(std::string input);
-        void execute();
+        void execute(std::string cmd);
+        void initDb();
     private:
         sqlite3 * database;
-        char * error;
-        char * cmd;
         int sqls;
 };
 
