@@ -20,6 +20,10 @@
 using namespace std;
 
 OldentideServer::OldentideServer(int port){
+    populateNpcs();
+    players = new vector<Player>;
+    sql = new SQLConnector();
+
     // Create server address struct.
     sockaddr_in server;
     server.sin_family = AF_INET;
@@ -37,9 +41,6 @@ OldentideServer::OldentideServer(int port){
         cout << "Cannot bind socket...";
        exit(EXIT_FAILURE); 
     };
-
-    populatePcs();
-    populateNpcs();
 }
 
 OldentideServer::~OldentideServer(){
@@ -113,10 +114,6 @@ void OldentideServer::run(){
     }
     shell.join();
     return;
-}
-
-void OldentideServer::populatePcs(){
-    players = new vector<Player>;
 }
 
 void OldentideServer::populateNpcs(){

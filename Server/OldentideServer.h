@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Npc.h"
 #include "Packets.h"
+#include "SQLConnector.h"
 #include <string>
 #include <set>
 #include <vector>
@@ -23,9 +24,9 @@ class OldentideServer{
         std::vector<Npc>* getNpcs();
     private:
         int sockfd;
+        SQLConnector * sql;
         std::vector<Player>* players;
         std::vector<Npc>* npcs;
-        void populatePcs();
         void populateNpcs();
         bool verifySession(int session);
         void genericHandler(PACKET_GENERIC * packet);
