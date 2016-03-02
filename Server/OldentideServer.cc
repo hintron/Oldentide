@@ -219,8 +219,11 @@ void OldentideServer::startAdminShell(SQLConnector * c){
     cout << "Starting Server Administrator Shell.\n";
     printLogo();
     while(true){
-        cout << "  OldentideAdmin@" << serverHostname << ": ";
-        getline(cin,adminCommand);
+	do
+	{
+        	cout << "  OldentideAdmin@" << serverHostname << ": ";
+        	getline(cin,adminCommand);
+	}while(adminCommand.empty());
         vector<string> adminTokens = split(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
             listen = false;
@@ -248,7 +251,7 @@ void OldentideServer::startAdminShell(SQLConnector * c){
         else if (adminTokens[0] == "/initdb"){
             string answer;
             cout << "  Are you sure you want to recreate the database? y/n: ";
-            cin >> answer;
+            getline(cin, answer);
             if (answer == "y"){
                 cout << "  Recreating database..." << endl;
                 sql->initDb();
