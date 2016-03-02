@@ -22,7 +22,7 @@ using namespace std;
 OldentideServer::OldentideServer(int port){
     populateNpcs();
     players = new vector<Player>;
-    new SQLConnector();
+    sql = new SQLConnector();
 
     // Create server address struct.
     sockaddr_in server;
