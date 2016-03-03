@@ -7,7 +7,7 @@
 #define OLDENTIDE_SQLCONNECTOR_H
 
 #include <string>
-#include <sqlite3.h>
+#include "lib/sqlite3/sqlite3.h"
 
 class SQLConnector{
     public:

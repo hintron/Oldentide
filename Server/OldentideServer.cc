@@ -221,8 +221,8 @@ void OldentideServer::startAdminShell(SQLConnector * c){
     while(true){
 	do
 	{
-        	cout << "  OldentideAdmin@" << serverHostname << ": ";
-        	getline(cin,adminCommand);
+        cout << "  OldentideAdmin@" << serverHostname << ": ";
+        getline(cin,adminCommand);
 	}while(adminCommand.empty());
         vector<string> adminTokens = split(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){

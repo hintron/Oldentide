@@ -24,7 +24,6 @@ SQLConnector::~SQLConnector(){
 }
 
 void SQLConnector::execute(string cmd){
-    cout << cmd << endl;
     sqls = sqlite3_exec(database, cmd.c_str(), 0, 0, NULL);
     if (sqls != SQLITE_OK){
         cout << "Could not execute SQL query!" << endl;
