@@ -49,12 +49,11 @@ OldentideServer::~OldentideServer(){
 void OldentideServer::run(){
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    listen = true;
-
+    bool listen = true;
     // Main listening loop.
     thread shell (startAdminShell, sql);
     cout << "Server Running!\n";
-    while(OldentideServer::listen){
+    while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
         if (gamestate->verifySession(packet->sessionId)){ 
@@ -212,7 +211,6 @@ void OldentideServer::startAdminShell(SQLConnector * input){
 	    }while(adminCommand.empty());
         vector<string> adminTokens = split(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
-            listen = false;
             cout << "  Oldentide Dedicated Server is shutting down..." << endl;
             exit(EXIT_SUCCESS);
             return;

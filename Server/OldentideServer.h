@@ -23,7 +23,6 @@ class OldentideServer{
         OldentideServer(int port);
         ~OldentideServer();
         void run();
-        static bool listen;
     private:
         int sockfd;
         GameState * gamestate;
