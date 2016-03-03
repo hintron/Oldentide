@@ -12,7 +12,7 @@ bool OldentideServer::listen = false;
 
 int main(int argc, char* argv[]){
     int port = atoi(argv[1]);
-    OldentideServer* server = new OldentideServer(port);
+    OldentideServer * server = new OldentideServer(port);
     server->run();
     delete server;
     return 0;

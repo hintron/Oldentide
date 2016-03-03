@@ -20,9 +20,8 @@
 using namespace std;
 
 OldentideServer::OldentideServer(int port){
-    populateNpcs();
-    players = new vector<Player>;
     sql = new SQLConnector();
+    gamestate = new GameState(sql);
 
     // Create server address struct.
     sockaddr_in server;
@@ -44,10 +43,7 @@ OldentideServer::OldentideServer(int port){
 }
 
 OldentideServer::~OldentideServer(){
-    players->clear();
-    delete players;
-    npcs->clear();
-    delete npcs;
+    delete gamestate;
 }
 
 void OldentideServer::run(){
@@ -61,7 +57,7 @@ void OldentideServer::run(){
     while(OldentideServer::listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(packet), 0, (struct sockaddr *)&client, &len);
-        if (verifySession(packet->sessionId)){ 
+        if (gamestate->verifySession(packet->sessionId)){ 
             switch (packet->packetType){
                 case GENERIC:
                     genericHandler((PACKET_GENERIC*)packet);
@@ -107,22 +103,12 @@ void OldentideServer::run(){
                     break;
                 case SENDSERVERACTION: 
                     sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
-                    listen = false;
                     break;
             }
         }
     }
     shell.join();
     return;
-}
-
-void OldentideServer::populateNpcs(){
-    npcs = new vector<Npc>;
-}
-
-bool OldentideServer::verifySession(int session){
-    cout << endl << session << endl;
-    return true;
 }
 
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
@@ -211,19 +197,19 @@ vector<string> OldentideServer::split(string s, char delim) {
     return tokens;
 }
 
-void OldentideServer::startAdminShell(SQLConnector * c){
+void OldentideServer::startAdminShell(SQLConnector * input){
     string adminCommand;
-    SQLConnector * sql = c;
+    SQLConnector * sql = input;
     char serverHostname[HOST_NAME_MAX];
     gethostname(serverHostname, HOST_NAME_MAX);
     cout << "Starting Server Administrator Shell.\n";
     printLogo();
     while(true){
-	do
-	{
-        cout << "  OldentideAdmin@" << serverHostname << ": ";
-        getline(cin,adminCommand);
-	}while(adminCommand.empty());
+	    do
+	    {
+            cout << "  OldentideAdmin@" << serverHostname << ": ";
+            getline(cin,adminCommand);
+	    }while(adminCommand.empty());
         vector<string> adminTokens = split(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
             listen = false;
@@ -233,10 +219,10 @@ void OldentideServer::startAdminShell(SQLConnector * c){
         }
         else if (adminTokens[0] == "/list"){
             if (adminTokens.size() == 2){
-                if (adminTokens[1] == "PC"){
+                if (adminTokens[1] == "players"){
                     cout << "PCSSSSSS" << endl;          
                 }
-                if (adminTokens[1] == "NPC"){
+                if (adminTokens[1] == "npcs"){
                     cout << "NPCSSSSS" << endl;    
                 }
             }
@@ -248,18 +234,6 @@ void OldentideServer::startAdminShell(SQLConnector * c){
             string cmd = adminCommand.erase(0,4);
             sql->execute(cmd);
         }
-        else if (adminTokens[0] == "/initdb"){
-            string answer;
-            cout << "  Are you sure you want to recreate the database? y/n: ";
-            getline(cin, answer);
-            if (answer == "y"){
-                cout << "  Recreating database..." << endl;
-                sql->initDb();
-            }
-            else {
-                cout << "  Database not recreated." << endl;
-            }
-        }
         else{
             printUsage();
         }
@@ -269,7 +243,7 @@ void OldentideServer::startAdminShell(SQLConnector * c){
 void OldentideServer::printUsage(){
     cout << "    Dedicated Server Admin Usage:" << endl;
     cout << "    /shutdown    = Shuts down the server." << endl;
-    cout << "    /list <var>  = Lists all entities of given <var> on server, where var is [PC, NPC]." << endl;
+    cout << "    /list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << endl;
     cout << "    /db <query>  = Runs a given sql query on the sqlite3 database." << endl;
 }
 

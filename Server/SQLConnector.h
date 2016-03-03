@@ -14,7 +14,6 @@ class SQLConnector{
         SQLConnector();
         ~SQLConnector();
         void execute(std::string cmd);
-        void initDb();
     private:
         sqlite3 * database;
         int sqls;

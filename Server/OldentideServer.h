@@ -2,13 +2,17 @@
 // Author:      Joseph DeVictoria
 // Date:        Jan_31_2016
 // Purpose:     Header for dedicated server class.
+//              This server is a traditional Universal Datagram Protocol
+//              (UDP) Server which will recieve and handle all game
+//              packets sent from client.
 
 #ifndef OLDENTIDE_OLDENTIDESERVER_H
 #define OLDENTIDE_OLDENTIDESERVER_H
 
-#include "Player.h"
+#include "GameState.h"
 #include "Npc.h"
 #include "Packets.h"
+#include "Player.h"
 #include "SQLConnector.h"
 #include <string>
 #include <set>
@@ -20,15 +24,10 @@ class OldentideServer{
         ~OldentideServer();
         void run();
         static bool listen;
-        std::vector<Player>* getPlayers();
-        std::vector<Npc>* getNpcs();
     private:
         int sockfd;
+        GameState * gamestate;
         SQLConnector * sql;
-        std::vector<Player>* players;
-        std::vector<Npc>* npcs;
-        void populateNpcs();
-        bool verifySession(int session);
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
         void connectHandler(PACKET_CONNECT * packet);
@@ -45,7 +44,7 @@ class OldentideServer{
         void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
         static std::vector<std::string> split(std::string s, char delim);
-        static void startAdminShell(SQLConnector * c);
+        static void startAdminShell(SQLConnector * input);
         static void printUsage();
         static void printLogo();
 };
