@@ -1,4 +1,4 @@
-// File:     Character.cc
+// File:     Character.cpp
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Child class representing any living object in Oldentide.

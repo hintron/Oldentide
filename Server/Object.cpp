@@ -1,4 +1,4 @@
-// File:     Object.cc
+// File:     Object.cpp
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Base class representing any game object in Oldentide.

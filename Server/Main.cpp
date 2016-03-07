@@ -1,4 +1,4 @@
-// Filename:    Main.cc
+// Filename:    Main.cpp
 // Author:      Joseph DeVictoria
 // Date:        Jan_31_2016
 // Purpose:     Contains the main method for the Oldentide dedicated server.

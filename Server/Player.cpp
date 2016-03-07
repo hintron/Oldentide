@@ -1,4 +1,4 @@
-// File:     Player.cc
+// File:     Player.cpp
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Child class representing any player in Oldentide.

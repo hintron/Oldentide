@@ -1,4 +1,4 @@
-// Filename:    OldentideServer.cc
+// Filename:    OldentideServer.cpp
 // Author:      Joseph DeVictoria
 // Date:        Jan_31_2016
 // Purpose:     Dedicated server class.
@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -30,14 +31,14 @@ OldentideServer::OldentideServer(int port){
 
     // Create socket for IP, UDP normal protocol.
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0){
-        cout << "Cannot create socket...";
+        cout << "Cannot create socket..." << endl;
         exit(EXIT_FAILURE);
     }
 
     // Bind socket to a port.
     if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0){
-        cout << "Cannot bind socket...";
-       exit(EXIT_FAILURE); 
+        cout << "Cannot bind socket..." << endl;
+        exit(EXIT_FAILURE); 
     };
 }
 

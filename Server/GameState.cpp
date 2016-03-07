@@ -1,4 +1,4 @@
-// Filename:    GameState.h
+// Filename:    GameState.cpp
 // Author:      Joseph DeVictoria
 // Date:        Mar_2_2016
 // Purpose:     Game State Class implementation.

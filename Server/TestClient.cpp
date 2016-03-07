@@ -1,4 +1,4 @@
-// Filename:    TestClient.cc
+// Filename:    TestClient.cpp
 // Author:      Joseph DeVictoria
 // Date:        2_10_2013
 // Purpose:     Act as an intermediate test platform for proving server functionality.

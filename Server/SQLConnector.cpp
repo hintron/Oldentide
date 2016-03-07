@@ -1,4 +1,4 @@
-// Filename:    SQLConnector.h
+// Filename:    SQLConnector.cpp
 // Author:      Joseph DeVictoria
 // Date:        Feb_29_2016
 // Purpose:     SQL Connector class to handle SQLite3 queries.
