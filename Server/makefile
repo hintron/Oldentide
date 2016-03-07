@@ -1,15 +1,15 @@
-BIN = mkdir database sqlite3 server client
+BIN = mkdir sqlite3 database server client
 
 all : $(BIN)
 
 mkdir : 
 	mkdir -p bin db
 
-database : mkdir
-	sqlite3 db/Oldentide.db < InitializeDb.sql
-
 sqlite3 : mkdir
 	gcc -c lib/sqlite3/sqlite3.c -o lib/sqlite3/sqlite3.o 
+
+database : mkdir
+	sqlite3 db/Oldentide.db < InitializeDb.sql
 
 server : mkdir
 	g++ -g Account.cpp Character.cpp Main.cpp Npc.cpp Object.cpp OldentideServer.cpp Player.cpp SQLConnector.cpp GameState.cpp AdminShell.cpp lib/sqlite3/sqlite3.o -std=c++11 -ldl -lpthread -pthread -o bin/Server 
