@@ -9,6 +9,7 @@
 #ifndef OLDENTIDE_OLDENTIDESERVER_H
 #define OLDENTIDE_OLDENTIDESERVER_H
 
+#include "AdminShell.h"
 #include "GameState.h"
 #include "Npc.h"
 #include "Packets.h"
@@ -16,7 +17,6 @@
 #include "SQLConnector.h"
 #include <string>
 #include <set>
-#include <vector>
 
 class OldentideServer{
     public:
@@ -25,8 +25,9 @@ class OldentideServer{
         void run();
     private:
         int sockfd;
-        GameState * gamestate;
         SQLConnector * sql;
+        GameState * gamestate;
+        AdminShell * adminshell;
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
         void connectHandler(PACKET_CONNECT * packet);
@@ -42,10 +43,6 @@ class OldentideServer{
         void sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
         void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
-        static std::vector<std::string> split(std::string s, char delim);
-        static void startAdminShell(SQLConnector * input);
-        static void printUsage();
-        static void printLogo();
 };
 
 #endif //OLDENTIDE_OLDENTIDESERVER_H

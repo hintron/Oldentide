@@ -10,18 +10,17 @@
 #include <iterator>
 #include <ostream>
 #include <netinet/in.h>
-#include <sstream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
-#include <limits.h>
 
 using namespace std;
 
 OldentideServer::OldentideServer(int port){
     sql = new SQLConnector();
     gamestate = new GameState(sql);
+    adminshell = new AdminShell(sql);
 
     // Create server address struct.
     sockaddr_in server;
@@ -43,7 +42,9 @@ OldentideServer::OldentideServer(int port){
 }
 
 OldentideServer::~OldentideServer(){
+    delete sql;
     delete gamestate;
+    delete adminshell;
 }
 
 void OldentideServer::run(){
@@ -51,7 +52,7 @@ void OldentideServer::run(){
     socklen_t len = sizeof(client);
     bool listen = true;
     // Main listening loop.
-    thread shell (startAdminShell, sql);
+    //TBD// thread shell (startAdminShell, sql);
     cout << "Server Running!\n";
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
@@ -106,7 +107,7 @@ void OldentideServer::run(){
             }
         }
     }
-    shell.join();
+    //TBD// shell.join();
     return;
 }
 
@@ -184,82 +185,4 @@ void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
     cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
-}
-
-vector<string> OldentideServer::split(string s, char delim) {
-    string token;
-    vector<string> tokens;
-    istringstream ss(s);
-    while(getline(ss, token, delim)){
-        tokens.push_back(token);
-    }
-    return tokens;
-}
-
-void OldentideServer::startAdminShell(SQLConnector * input){
-    string adminCommand;
-    SQLConnector * sql = input;
-    char serverHostname[HOST_NAME_MAX];
-    gethostname(serverHostname, HOST_NAME_MAX);
-    cout << "Starting Server Administrator Shell.\n";
-    printLogo();
-    while(true){
-	    do
-	    {
-            cout << "  OldentideAdmin@" << serverHostname << ": ";
-            getline(cin,adminCommand);
-	    }while(adminCommand.empty());
-        vector<string> adminTokens = split(adminCommand, ' ');
-        if (adminTokens[0] == "/shutdown"){
-            cout << "  Oldentide Dedicated Server is shutting down..." << endl;
-            exit(EXIT_SUCCESS);
-            return;
-        }
-        else if (adminTokens[0] == "/list"){
-            if (adminTokens.size() == 2){
-                if (adminTokens[1] == "players"){
-                    cout << "PCSSSSSS" << endl;          
-                }
-                if (adminTokens[1] == "npcs"){
-                    cout << "NPCSSSSS" << endl;    
-                }
-            }
-            else{
-                printUsage();
-            }
-        }
-        else if (adminTokens[0] == "/db"){
-            string cmd = adminCommand.erase(0,4);
-            sql->execute(cmd);
-        }
-        else{
-            printUsage();
-        }
-    }
-}
-
-void OldentideServer::printUsage(){
-    cout << "    Dedicated Server Admin Usage:" << endl;
-    cout << "    /shutdown    = Shuts down the server." << endl;
-    cout << "    /list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << endl;
-    cout << "    /db <query>  = Runs a given sql query on the sqlite3 database." << endl;
-}
-
-void OldentideServer::printLogo(){
-    cout << "    ____           ___   _____         _____  _____  ___   _____" << endl;
-    cout << "   /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << endl;
-    cout << "  /      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << endl;
-    cout << "  |      | |      |    | |___   | \\ |    |      |    |   | |___" << endl;
-    cout << "  \\      / |      |   /  |      |  \\|    |      |    |   / |" << endl;
-    cout << "   \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << endl;
-    cout << "   " << endl; 
-    cout << "                                |" << endl;
-    cout << "                               / \\" << endl;
-    cout << "                              /\\_/\\" << endl;
-    cout << "                             / | | \\" << endl;
-    cout << "                             \\ |_| /" << endl;
-    cout << "                              \\/ \\/" << endl;
-    cout << "                               \\ /" << endl;
-    cout << "                                |" << endl;
-    cout << "   " << endl;
 }
