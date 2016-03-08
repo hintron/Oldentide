@@ -58,7 +58,7 @@ void OldentideServer::run(){
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        if (gamestate->verifySession(packet->sessionId)){ // || packet->packetType == PACKET_GENERIC || packet->packetType == PACKET_CONNECT){ 
+        if ((gamestate->verifySession(packet->sessionId)) || (packet->packetType == PACKET_GENERIC) || (packet->packetType == PACKET_CONNECT)){ 
             switch (packet->packetType){
                 case GENERIC:
                     genericHandler((PACKET_GENERIC*)packet);
