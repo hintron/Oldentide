@@ -14,6 +14,7 @@ class SQLConnector{
         SQLConnector();
         ~SQLConnector();
         void execute(std::string cmd);
+        bool loginUser(char * username, char * password);
     private:
         sqlite3 * database;
         int sqls;

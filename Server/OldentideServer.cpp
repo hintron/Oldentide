@@ -134,6 +134,9 @@ void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet){
     cout << "LOGIN Enum ID: " << packet->packetType << endl;
+    cout << "Username: " << packet->account << endl;
+    cout << "Password: " << packet->password << endl;
+    bool temp = sql->loginUser(packet->account, packet->password);
     free(packet);
 }
 

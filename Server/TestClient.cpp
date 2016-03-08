@@ -75,6 +75,10 @@ int main(int argc, char * argv[]){
             }
             case 4: {
                 PACKET_LOGIN packet;
+                cout << "Account: ";
+                cin >> packet.account;
+                cout << "Password: ";
+                cin >> packet.password;
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 break;
             }
