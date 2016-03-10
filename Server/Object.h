@@ -7,6 +7,8 @@
 #ifndef OLDENTIDE_OBJECT_H_
 #define OLDENTIDE_OBJECT_H_
 
+#include <string>
+
 class Object {
     
     protected:
@@ -16,10 +18,11 @@ class Object {
     int y;
     int z;
     float direction;
+    std::string zone;
 
     public:
 
-    Object(int weight, int x, int y, int z, float direction);
+    Object(int weight, int x, int y, int z, float direction, std::string zone);
     // ~Object();
 
     // Getter Functions
@@ -28,6 +31,7 @@ class Object {
     int getY();
     int getZ();
     float getDirection();
+    std::string getZone();
 
     // Setter Functions
     void setWeight(int weight);
@@ -35,6 +39,7 @@ class Object {
     void setY(int y);
     void setZ(int z);
     void setDirection(float direction);
+    void setZone(std::string zone);
 
     // Class Functions
 

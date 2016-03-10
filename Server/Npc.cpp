@@ -12,10 +12,11 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Npc :: Npc(int id, string name, string lastname, string race, string gender, 
-           string profession, int weight, int x, int y, int z, float direction) 
-     : Character(name, lastname, race, gender, profession, weight, x, y, z, 
-                 direction) { 
+Npc::Npc(int id, string name, string lastname, string race, string gender, 
+         string profession, int weight, int x, int y, int z, float direction,
+         string zone) 
+    :Character(name, lastname, race, gender, profession, weight, x, y, z, 
+               direction, zone){ 
     setId(id);
 }
 
@@ -23,7 +24,7 @@ Npc :: Npc(int id, string name, string lastname, string race, string gender,
 //----------                      Getter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-int Npc :: getId() {
+int Npc::getId(){
     return id;
 }
 
@@ -31,7 +32,7 @@ int Npc :: getId() {
 //----------                      Setter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-void Npc :: setId(int id) {
+void Npc::setId(int id){
     this->id = id;
 }
 

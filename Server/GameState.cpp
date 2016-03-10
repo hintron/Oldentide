@@ -7,25 +7,52 @@
 //              perform the bulk of database interactions.
 
 #include "GameState.h"
+#include <iterator>
 
 using namespace std;
 
 GameState::GameState(SQLConnector * input){
     sql = input;
+    curSession = 0;
 }
 
 GameState::~GameState(){
     return;
 }
 
-bool GameState::verifySession(int session){
-    return true;
+bool GameState::verifySession(PACKET_GENERIC * packet){
+    if (sessions.find(packet->sessionId) != sessions.end()){
+        return true;
+    }
+    else if (packet->packetType == GENERIC || packet->packetType == CONNECT){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 Player GameState::loadPlayer(string name){
-    return Player("example", 0, 0, "Poop", "Stain", "Human", "Male", "Shaman", 0, 0, 0, 0, 0.0);   
+    return Player("example", 0, 0, "Poop", "Stain", "Human", "Male", "Shaman", 0, 0, 0, 0, 0.0, "Newcomers_Guild");   
 }
 
 void GameState::storePlayer(string name){
     return;   
+}
+
+int GameState::generateSession(){
+    sessions.insert(curSession);
+    curSession++;
+    return (curSession - 1);
+}
+
+bool GameState::playerSessionLookup(int session){
+    set<Player>::iterator it;
+    for (it = players.begin(); it != players.end(); ++it){
+        Player temp(*it);
+        if (temp.getSession() == session){
+            return true;
+        }
+    }
+    return false;
 }

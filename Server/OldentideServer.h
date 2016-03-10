@@ -15,8 +15,9 @@
 #include "Packets.h"
 #include "Player.h"
 #include "SQLConnector.h"
-#include <string>
+#include <arpa/inet.h>
 #include <set>
+#include <string>
 
 class OldentideServer{
     public:
@@ -30,7 +31,7 @@ class OldentideServer{
         AdminShell * adminshell;
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
-        void connectHandler(PACKET_CONNECT * packet);
+        void connectHandler(PACKET_CONNECT * packet, sockaddr_in client);
         void disconnectHandler(PACKET_DISCONNECT * packet);
         void loginHandler(PACKET_LOGIN * packet);
         void listCharactersHandler(PACKET_LISTCHARACTERS * packet);

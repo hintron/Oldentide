@@ -4,14 +4,13 @@
 // Purpose:     Dedicated server class.
 
 #include "OldentideServer.h"
-#include <arpa/inet.h>
 #include <iostream>
 #include <istream>
 #include <iterator>
 #include <ostream>
 #include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <thread>
 #include <unistd.h>
 #include <limits.h>
@@ -49,15 +48,15 @@ OldentideServer::~OldentideServer(){
 }
 
 void OldentideServer::run(){
+    thread shell(*adminshell);
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    bool listen = true;
-    thread shell(*adminshell);
     cout << "Server Running!\n";
+    bool listen = true;
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        if ((gamestate->verifySession(packet->sessionId)) || (packet->packetType == PACKET_GENERIC) || (packet->packetType == PACKET_CONNECT)){
+        if (gamestate->verifySession(packet)){
             switch (packet->packetType){
                 case GENERIC:
                     genericHandler((PACKET_GENERIC*)packet);
@@ -66,7 +65,7 @@ void OldentideServer::run(){
                     ackHandler((PACKET_ACK*)packet);
                     break;
                 case CONNECT: 
-                    connectHandler((PACKET_CONNECT*)packet);
+                    connectHandler((PACKET_CONNECT*)packet, client);
                     break;
                 case DISCONNECT: 
                     disconnectHandler((PACKET_DISCONNECT*)packet);
@@ -106,6 +105,9 @@ void OldentideServer::run(){
                     break;
             }
         }
+        else {
+            free(packet);
+        }
     }
     shell.join();
     return;
@@ -121,8 +123,11 @@ void OldentideServer::ackHandler(PACKET_ACK * packet){
     free(packet);
 }
 
-void OldentideServer::connectHandler(PACKET_CONNECT * packet){
+void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client){
     cout << "CONNECT Enum ID: " << packet->packetType << endl;
+    PACKET_CONNECT returnPacket;
+    returnPacket.sessionId = gamestate->generateSession();
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 

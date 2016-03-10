@@ -11,60 +11,69 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Object :: Object(int weight, int x, int y, int z, float direction) {
+Object::Object(int weight, int x, int y, int z, float direction, string zone){
     setWeight(weight);
     setX(x);
     setY(y);
     setZ(z);
     setDirection(direction);
+    setZone(zone);
 }
 
 //------------------------------------------------------------------------------//
 //----------                      Getter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-int Object :: getWeight() {
+int Object::getWeight(){
     return weight;
 }
 
-int Object :: getX() {
+int Object::getX(){
     return x;
 }
 
-int Object :: getY() {
+int Object::getY(){
     return y;
 }
 
-int Object :: getZ() {
+int Object::getZ(){
     return z;
 }
 
-float Object :: getDirection() {
+float Object::getDirection(){
     return direction;
+}
+
+string Object::getZone(){
+    return zone;
 }
 
 //------------------------------------------------------------------------------//
 //----------                      Setter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-void Object :: setWeight(int weight) {
+void Object::setWeight(int weight){
     this->weight = weight;
 }
 
-void Object :: setX(int x) {
+void Object::setX(int x){
     this->x = x;
 }
 
-void Object :: setY(int y) {
+void Object::setY(int y){
     this->y = y;
 }
 
-void Object :: setZ(int z) {
+void Object::setZ(int z){
     this->z = z;
 }
 
-void Object :: setDirection(float direction) {
+void Object::setDirection(float direction){
     this->direction = direction;
+}
+
+void Object::setZone(string zone){
+    this->zone = zone;
 }
 
 //------------------------------------------------------------------------------//

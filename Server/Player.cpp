@@ -12,11 +12,11 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Player :: Player(string account, int id, int session, string name, string lastname,
-                 string race, string gender, string profession, int weight, int x,
-                 int y, int z, float direction) 
-        : Character(name, lastname, race, gender, profession, weight, x, y, z,
-                    direction) { 
+Player::Player(string account, int id, int session, string name, string lastname,
+               string race, string gender, string profession, int weight, int x,
+               int y, int z, float direction, string zone) 
+       :Character(name, lastname, race, gender, profession, weight, x, y, z,
+                  direction, zone){ 
     setAccount(account);
     setId(id);
     setSession(session);
@@ -26,15 +26,15 @@ Player :: Player(string account, int id, int session, string name, string lastna
 //----------                      Getter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-string Player :: getAccount() {
+string Player::getAccount(){
     return account;
 }
 
-int Player :: getId() {
+int Player::getId(){
     return id;
 }
 
-int Player :: getSession() {
+int Player::getSession(){
     return session;
 }
 
@@ -42,15 +42,15 @@ int Player :: getSession() {
 //----------                      Setter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-void Player :: setAccount(string account) {
+void Player::setAccount(string account){
     this->account = account;
 }
 
-void Player :: setId(int id) {
+void Player::setId(int id){
     this->id = id;
 }
 
-void Player :: setSession(int session) {
+void Player::setSession(int session){
     this->session = session;
 }
 

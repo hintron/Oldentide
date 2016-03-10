@@ -20,7 +20,7 @@ class Npc : public Character {
 
     // Constructors.
     Npc(int id, std::string name, std::string lastname, std::string race, std::string gender, 
-        std::string profession, int weight, int x, int y, int z, float direction);
+        std::string profession, int weight, int x, int y, int z, float direction, std::string zone);
     //~Npc();
 
     // Getter Functions.

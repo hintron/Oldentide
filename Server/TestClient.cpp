@@ -66,6 +66,12 @@ int main(int argc, char * argv[]){
             case 2: {
                 PACKET_CONNECT packet;
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                PACKET_CONNECT * returnPacket = (PACKET_CONNECT*) malloc(sizeof(PACKET_CONNECT));
+                sockaddr_in servret;
+                socklen_t len = sizeof(servret);
+                int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&servret, &len);
+                cout << returnPacket->sessionId << endl;
+                free(returnPacket);
                 break;
             }
             case 3: {

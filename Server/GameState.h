@@ -11,6 +11,7 @@
 
 #include "Npc.h"
 #include "Object.h"
+#include "Packets.h"
 #include "Player.h"
 #include "SQLConnector.h"
 #include <set>
@@ -20,14 +21,18 @@ class GameState{
     public:
         GameState(SQLConnector * sql);
         ~GameState();
-        bool verifySession(int session);
+        bool verifySession(PACKET_GENERIC * packet);
         Player loadPlayer(std::string name);
         void storePlayer(std::string name);
+        int generateSession();
     private:
         SQLConnector * sql;
         std::set<Player> players;
         std::set<Npc> npcs;
         std::set<Object> objects;
+        std::set<int> sessions;
+        int curSession;
+        bool playerSessionLookup(int session);
 };
 
 #endif // OLDENTIDE_GAMESTATE_H

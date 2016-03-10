@@ -82,7 +82,7 @@ class Character : public Object {
 
     public:
 
-    Character(std::string name, std::string lastname, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z, float direction);
+    Character(std::string name, std::string lastname, std::string race, std::string gender, std::string profession, int weight, int x, int y, int z, float direction, std::string zone);
     Character(std::string name, std::string lastname, std::string race, std::string gender, std::string profession);
     //~Character();
 
