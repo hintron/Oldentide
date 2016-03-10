@@ -16,6 +16,7 @@ class AdminShell {
     public:
         AdminShell(SQLConnector * input);
         ~AdminShell();
+        void operator()();
         void run();
         void printUsage();
         void printLogo();

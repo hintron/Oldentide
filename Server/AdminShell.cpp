@@ -20,6 +20,10 @@ AdminShell::~AdminShell(){
     return;
 }
 
+void AdminShell::operator()(){
+    run();
+}
+
 void AdminShell::run(){
     string adminCommand; 
     cout << "Starting Server Administrator Shell.\n";

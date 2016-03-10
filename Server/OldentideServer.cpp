@@ -52,13 +52,12 @@ void OldentideServer::run(){
     sockaddr_in client;
     socklen_t len = sizeof(client);
     bool listen = true;
-    // Main listening loop.
-    //TBD// thread shell (startAdminShell, sql);
+    thread shell(*adminshell);
     cout << "Server Running!\n";
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        if ((gamestate->verifySession(packet->sessionId)) || (packet->packetType == PACKET_GENERIC) || (packet->packetType == PACKET_CONNECT)){ 
+        if ((gamestate->verifySession(packet->sessionId)) || (packet->packetType == PACKET_GENERIC) || (packet->packetType == PACKET_CONNECT){
             switch (packet->packetType){
                 case GENERIC:
                     genericHandler((PACKET_GENERIC*)packet);
@@ -108,7 +107,7 @@ void OldentideServer::run(){
             }
         }
     }
-    //TBD// shell.join();
+    shell.join();
     return;
 }
 
