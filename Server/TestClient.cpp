@@ -97,9 +97,9 @@ int main(int argc, char * argv[]){
                 packet.packetId = packetNumber;
                 packet.sessionId = session;
                 cout << "Account: ";
-                cin >> packet.account;
+                cin.getline(packet.account, sizeof(packet.account));
                 cout << "Password: ";
-                cin >> packet.password;
+                cin.getline(packet.password, sizeof(packet.password));
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 break;
             }

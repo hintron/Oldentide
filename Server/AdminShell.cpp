@@ -5,6 +5,7 @@
 //              the server.  This class will handle all server admin commands.
 
 #include "AdminShell.h"
+#include "Utils.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -34,7 +35,7 @@ void AdminShell::run(){
             cout << "  OldentideAdmin@" << serverHostname << ": ";
             getline(cin,adminCommand);
 	    }while(adminCommand.empty());
-        vector<string> adminTokens = split(adminCommand, ' ');
+        vector<string> adminTokens = tokenfy(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
             cout << "  Oldentide Dedicated Server is shutting down..." << endl;
             exit(EXIT_SUCCESS);
@@ -42,6 +43,7 @@ void AdminShell::run(){
         }
         else if (adminTokens[0] == "/list"){
             if (adminTokens.size() == 2){
+                cout << adminTokens[1];
                 if (adminTokens[1] == "players"){
                     cout << "PCSSSSSS" << endl;          
                 }
@@ -87,14 +89,4 @@ void AdminShell::printLogo(){
     cout << "                               \\ /" << endl;
     cout << "                                |" << endl;
     cout << "   " << endl;
-}
-
-vector<string> AdminShell::split(string s, char delim) {
-    string token;
-    vector<string> tokens;
-    istringstream ss(s);
-    while(getline(ss, token, delim)){
-        tokens.push_back(token);
-    }
-    return tokens;
 }

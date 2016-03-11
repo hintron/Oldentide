@@ -7,6 +7,7 @@
 //              perform the bulk of database interactions.
 
 #include "GameState.h"
+#include "Utils.h"
 #include <iterator>
 #include <iostream>
 
@@ -50,14 +51,14 @@ bool GameState::loginUser(PACKET_LOGIN * packet){
         
 void GameState::playerCommand(PACKET_SENDPLAYERCOMMAND * packet){
     cout << packet->command << endl;
-    /*string pCommand(packet->command);
-    vector<string> pCommandTokens = split(pCommand, ' ');
+    string pCommand(packet->command);
+    vector<string> pCommandTokens = tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s"){
-        
+        cout << "poop" << endl;
     }
     else if (pCommandTokens[0] == "/h"){
-        
-    }*/
+        cout << "pee" << endl;
+    }
 }
 
 void GameState::selectPlayer(PACKET_SELECTCHARACTER * packet){

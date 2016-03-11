@@ -20,7 +20,6 @@ class AdminShell {
         void run();
         void printUsage();
         void printLogo();
-        std::vector<std::string> split(std::string s, char delim);
     private:
         SQLConnector * sql;
         char serverHostname[HOST_NAME_MAX];
