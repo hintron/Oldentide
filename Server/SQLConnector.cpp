@@ -33,8 +33,3 @@ void SQLConnector::execute(string cmd){
     }
 }
 
-bool SQLConnector::loginUser(char * username, char * password){
-    cout << username << endl;
-    cout << password << endl;
-    return true;
-}

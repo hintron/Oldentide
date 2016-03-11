@@ -22,17 +22,21 @@ class GameState{
         GameState(SQLConnector * sql);
         ~GameState();
         bool verifySession(PACKET_GENERIC * packet);
-        Player loadPlayer(std::string name);
-        void storePlayer(std::string name);
-        int generateSession();
+        bool verifyActiveSession(int sessionId);
+        bool loginUser(PACKET_LOGIN * packet);
+        void playerCommand(PACKET_SENDPLAYERCOMMAND * packet);
+        void selectPlayer(PACKET_SELECTCHARACTER * packet);
+        int generateSession(PACKET_CONNECT * packet);
     private:
         SQLConnector * sql;
         std::set<Player> players;
         std::set<Npc> npcs;
         std::set<Object> objects;
         std::set<int> sessions;
+        std::set<int> activeSessions;
         int curSession;
-        bool playerSessionLookup(int session);
+        Player readPlayer(std::string name);
+        void storePlayer(std::string name);
 };
 
 #endif // OLDENTIDE_GAMESTATE_H

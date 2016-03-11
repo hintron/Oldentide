@@ -113,20 +113,23 @@ void OldentideServer::run(){
     return;
 }
 
+// Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
     cout << "GENERIC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
+// Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
 void OldentideServer::ackHandler(PACKET_ACK * packet){
     cout << "ACK Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
+// Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.  Do not generate new sessions.
 void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client){
     cout << "CONNECT Enum ID: " << packet->packetType << endl;
     PACKET_CONNECT returnPacket;
-    returnPacket.sessionId = gamestate->generateSession();
+    returnPacket.sessionId = gamestate->generateSession(packet);
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
@@ -138,9 +141,7 @@ void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet){
     cout << "LOGIN Enum ID: " << packet->packetType << endl;
-    cout << "Username: " << packet->account << endl;
-    cout << "Password: " << packet->password << endl;
-    bool temp = sql->loginUser(packet->account, packet->password);
+    bool temp = gamestate->loginUser(packet);
     free(packet);
 }
 
@@ -151,6 +152,7 @@ void OldentideServer::listCharactersHandler(PACKET_LISTCHARACTERS * packet){
 
 void OldentideServer::selectCharacterHandler(PACKET_SELECTCHARACTER * packet){
     cout << "SELECTCHARACTER Enum ID: " << packet->packetType << endl;
+    gamestate->selectPlayer(packet);
     free(packet);
 }
 
@@ -181,7 +183,12 @@ void OldentideServer::updateNpcHandler(PACKET_UPDATENPC * packet){
 
 void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
     cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
-
+    if (gamestate->verifyActiveSession(packet->sessionId)){
+        gamestate->playerCommand(packet);
+    }
+    else{
+        cout << "Nonactive session requested to send a player command..." << packet->sessionId << endl;
+    }
     free(packet);
 }
 

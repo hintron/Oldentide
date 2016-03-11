@@ -8,12 +8,13 @@
 
 #include "GameState.h"
 #include <iterator>
+#include <iostream>
 
 using namespace std;
 
 GameState::GameState(SQLConnector * input){
     sql = input;
-    curSession = 0;
+    curSession = 1;
 }
 
 GameState::~GameState(){
@@ -24,7 +25,7 @@ bool GameState::verifySession(PACKET_GENERIC * packet){
     if (sessions.find(packet->sessionId) != sessions.end()){
         return true;
     }
-    else if (packet->packetType == GENERIC || packet->packetType == CONNECT){
+    else if ( packet->packetType == CONNECT){
         return true;
     }
     else{
@@ -32,7 +33,41 @@ bool GameState::verifySession(PACKET_GENERIC * packet){
     }
 }
 
-Player GameState::loadPlayer(string name){
+bool GameState::verifyActiveSession(int sessionId){
+    if (activeSessions.find(sessionId) != activeSessions.end()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool GameState::loginUser(PACKET_LOGIN * packet){
+    cout << "Account: " << packet->account << endl;
+    cout << "Password: " << packet->password << endl;
+    return true;
+}
+        
+void GameState::playerCommand(PACKET_SENDPLAYERCOMMAND * packet){
+    cout << packet->command << endl;
+    /*string pCommand(packet->command);
+    vector<string> pCommandTokens = split(pCommand, ' ');
+    if (pCommandTokens[0] == "/s"){
+        
+    }
+    else if (pCommandTokens[0] == "/h"){
+        
+    }*/
+}
+
+void GameState::selectPlayer(PACKET_SELECTCHARACTER * packet){
+    if (sessions.find(packet->sessionId) != sessions.end()){
+        activeSessions.insert(packet->sessionId);
+    }
+    return;
+}
+
+Player GameState::readPlayer(string name){
     return Player("example", 0, 0, "Poop", "Stain", "Human", "Male", "Shaman", 0, 0, 0, 0, 0.0, "Newcomers_Guild");   
 }
 
@@ -40,19 +75,13 @@ void GameState::storePlayer(string name){
     return;   
 }
 
-int GameState::generateSession(){
-    sessions.insert(curSession);
-    curSession++;
-    return (curSession - 1);
-}
-
-bool GameState::playerSessionLookup(int session){
-    set<Player>::iterator it;
-    for (it = players.begin(); it != players.end(); ++it){
-        Player temp(*it);
-        if (temp.getSession() == session){
-            return true;
-        }
+int GameState::generateSession(PACKET_CONNECT * packet){
+    if (sessions.find(packet->sessionId) != sessions.end()){
+        return packet->sessionId;
     }
-    return false;
+    else{
+        sessions.insert(curSession);
+        curSession++;
+        return (curSession - 1);
+    }
 }
