@@ -134,8 +134,10 @@ void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client
     free(packet);
 }
 
+// Remove the session for a given user, effectively disconnecting it from the server.
 void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
     cout << "DISCONNECT Enum ID: " << packet->packetType << endl;
+    gamestate->disconnectSession(packet);
     free(packet);
 }
 

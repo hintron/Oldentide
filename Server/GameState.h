@@ -24,6 +24,7 @@ class GameState{
         bool verifySession(PACKET_GENERIC * packet);
         bool verifyActiveSession(int sessionId);
         bool loginUser(PACKET_LOGIN * packet);
+        void disconnectSession(PACKET_DISCONNECT * packet);
         void playerCommand(PACKET_SENDPLAYERCOMMAND * packet);
         void selectPlayer(PACKET_SELECTCHARACTER * packet);
         int generateSession(PACKET_CONNECT * packet);
