@@ -1,3 +1,4 @@
-You will need the following libraries installed on your machine to compile:
-libsqlite3-dev
-libssl-dev
+#####Prerequisites:<br><br>
+You will need the following libraries installed on your machine to compile:<br>
+* libsqlite3-dev
+* SOON - libssl-dev
