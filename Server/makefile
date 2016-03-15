@@ -9,7 +9,7 @@ database : mkdir
 	sqlite3 db/Oldentide.db < InitializeDb.sql
 
 server : mkdir
-	g++ -g AdminShell.cpp Character.cpp GameState.cpp Main.cpp Npc.cpp Object.cpp OldentideServer.cpp Player.cpp SQLConnector.cpp Utils.cpp lib/sqlite3/sqlite3.lib -std=c++11 -ldl -lpthread -pthread -o bin/Server 
+	g++ -g AdminShell.cpp Character.cpp GameState.cpp Main.cpp Npc.cpp Object.cpp OldentideServer.cpp Player.cpp SQLConnector.cpp Utils.cpp -std=c++11 -ldl -lpthread -lsqlite3 -pthread -o bin/Server 
 
 client : mkdir
 	g++ -g TestClient.cpp Utils.cpp -std=c++11 -o bin/Client
