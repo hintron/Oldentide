@@ -6,6 +6,7 @@
 #include "Packets.h"
 #include <arpa/inet.h>
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <netinet/in.h>
 #include <stdlib.h>
@@ -55,7 +56,9 @@ int main(int argc, char * argv[]){
         cout << "13: SENDPLAYERACTION" << endl;
         cout << "14 SENDSERVERACTION" << endl;
         int packetType;
-        cin >> packetType;
+        char option[25];
+        cin.getline(option, 25);
+        packetType = atoi(option);
         switch (packetType){
             case 0: {
                 PACKET_GENERIC packet;
@@ -159,7 +162,6 @@ int main(int argc, char * argv[]){
                 cin.getline(packet.command, sizeof(packet.command));
                 cout << packet.command;
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                running = false;
                 break;
             }
             case 13: {

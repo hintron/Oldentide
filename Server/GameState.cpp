@@ -48,7 +48,13 @@ bool GameState::loginUser(PACKET_LOGIN * packet){
     cout << "Password: " << packet->password << endl;
     return true;
 }
-        
+
+void GameState::disconnectSession(PACKET_DISCONNECT * packet){
+    activeSessions.erase(packet->sessionId);
+    sessions.erase(packet->sessionId);
+    return;
+}
+
 void GameState::playerCommand(PACKET_SENDPLAYERCOMMAND * packet){
     cout << packet->command << endl;
     string pCommand(packet->command);
