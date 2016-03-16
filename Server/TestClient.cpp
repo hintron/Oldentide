@@ -18,7 +18,7 @@ using namespace std;
 
 int main(int argc, char * argv[]){
 
-    int sockfd,n;
+    int sockfd;
     struct sockaddr_in servaddr,cliaddr;
     char * server_address;
     char * names[10];
