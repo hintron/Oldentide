@@ -31,3 +31,21 @@
 **Source**:    This is where Unreal Engine game source is stored.  (Complimentary to Server Code.)<br>
 
 ###Please contact me immediately if you see any bugs or want to contribute.  I need help developing the game!
+
+
+
+==================================
+
+###How to run the Oldentide server:
+
+cd into Server/ and run the make command.
+
+If everything build properly, run
+    ./Server 1337
+where 1337 is the port the server is using.
+
+To test that the server is running, in a separate terminal, run
+    ./Client 127.0.0.1 1337
+or
+    ./Client localhost 1337
+where 127.0.0.1 is the address of the server (localhost) and 1337 is the port of the server.

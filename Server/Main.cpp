@@ -9,6 +9,13 @@
 using namespace std;
 
 int main(int argc, char* argv[]){
+    // TODO: Parameter checking
+    // Have parameter checking and exit gracefully if server address and port aren't specified
+    if(argc != 2){
+        cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << endl;
+        return 1;
+    }
+
     int port = atoi(argv[1]);
     OldentideServer * server = new OldentideServer(port);
     server->run();
