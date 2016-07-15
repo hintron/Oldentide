@@ -38,7 +38,7 @@
 
 ###How to run the Oldentide server:
 
-In linux, cd into Server/ and run the make command.
+In linux, cd into Oldentide/Server/ and run the make command.
 In order for the server to properly build, you will need to make sure that these packages are installed:
 
     sqlite3
@@ -55,8 +55,6 @@ To test that the server is running, in a separate terminal, run
 
     ./Client 127.0.0.1 1337
 
-or
-
-    ./Client localhost 1337
-
 where 127.0.0.1 is the address of the server (localhost) and 1337 is the port of the server.
+
+Connect to the server by sending a CONNECT (2) packet from the client. Then other commands will get through. Send a disconnect packet to close the connection.
