@@ -26,6 +26,13 @@ int main(int argc, char * argv[]){
     int packetNumber = 1;
     bool running = true;
 
+    // TODO: Parameter checking
+    // Have parameter checking and exit gracefully if server address and port aren't specified
+    if(argc != 3){
+        cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << endl;
+        return 1;
+    }
+
     // Read in server address.
     server_address = argv[1];
     int port = atoi(argv[2]);
@@ -155,7 +162,7 @@ int main(int argc, char * argv[]){
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 break;
             }
-            case 12: { 
+            case 12: {
                 PACKET_SENDPLAYERCOMMAND packet;
                 packet.packetId = packetNumber;
                 packet.sessionId = session;
