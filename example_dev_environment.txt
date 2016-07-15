@@ -1,0 +1,31 @@
+Example Development Environment (@hintron's dev setup):
+
+OS Environment:
+    Linux (Debian - debian-8.5.0-amd64-netinst.iso) running on Oracle VM VirtualBox with 768 MB base memory in Windows 10
+
+Tools:
+    To install, log in as root:
+        su root
+    Then do:
+        apt-get install {package}
+
+    Required Packages:
+        make
+        git
+        sqlite3
+        libsqlite3-dev      # Dev just means that a "sqlite3.h" is put into /usr/include/, so it can be included in code development
+        libssl-dev
+        g++
+
+    Important packages:
+        valgrind
+        vim
+
+    Optional Packages:
+        strace
+        linux-tools      #(For perf)
+        gdc
+        nasm
+
+
+    Note: You need to have both sqlite3 installed (to create the initial db) and libsqlite3-dev (for #include <sqlite3.h>)
