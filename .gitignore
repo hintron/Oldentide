@@ -70,3 +70,7 @@ DerivedDataCache/*
 *.swp
 *.swo
 .ctrlp_cache/
+
+# Sublime Text 3 text editor files
+*.sublime-project
+*.sublime-workspace
