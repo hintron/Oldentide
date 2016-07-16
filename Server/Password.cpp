@@ -37,7 +37,7 @@ main(int argc, char *argv[]) {
         md_function = EVP_sha256();
     }
     else {
-        md_function = EVP_get_digestbyname(argv[1]);
+        md_function = EVP_get_digestbyname(argv[2]);
         if(!md_function) {
             printf("Unknown message digest function %s\n", argv[2]);
             exit(1);
