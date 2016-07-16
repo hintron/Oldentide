@@ -3,6 +3,7 @@
 // The following is an example from https://www.openssl.org/docs/man1.0.2/crypto/EVP_DigestInit.html
 #include <stdio.h>
 #include <openssl/evp.h>
+#include <string.h>
 
 main(int argc, char *argv[]) {
     EVP_MD_CTX *mdctx;
