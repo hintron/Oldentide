@@ -59,6 +59,7 @@ void OldentideServer::run(){
         if (gamestate->verifySession(packet)){
             switch (packet->packetType){
                 case GENERIC:
+		    cout << "PAcket 0 received";
                     genericHandler((PACKET_GENERIC*)packet);
                     break;
                 case ACK: 
