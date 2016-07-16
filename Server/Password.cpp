@@ -1,40 +1,61 @@
+// Compile this file with the following command
+// g++ Password.cpp -lcrypto -o mdtest
+
+// Example usage:
+// ./mdtest "Hello, World!"
+// Output Hash:
+// dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f
+
+
 // NOTE: OpenSSL 1.0.2h needs to be installed on the system! It is the LTS solution and will be supported until Dec 2019
 
-// The following is an example from https://www.openssl.org/docs/man1.0.2/crypto/EVP_DigestInit.html
+// Terminology:
+// message = plaintext
+// message digest function = hash function
+// message digest (MD) = digest = fingerprint = output of a hash function
+
+// The following is based off an example from https://www.openssl.org/docs/man1.0.2/crypto/EVP_DigestInit.html
 #include <stdio.h>
 #include <openssl/evp.h>
 #include <string.h>
 
 main(int argc, char *argv[]) {
-    EVP_MD_CTX *mdctx;
-    const EVP_MD *md;
-    char mess1[] = "Test Message\n";
-    char mess2[] = "Hello World\n";
+    EVP_MD_CTX *md_context;
+    const EVP_MD *md_function;
     unsigned char md_value[EVP_MAX_MD_SIZE];
     unsigned int md_len, i;
 
     OpenSSL_add_all_digests();
 
     if(!argv[1]) {
-        printf("Usage: mdtest digestname\n");
+        printf("Usage: mdtest message-to-hash digestname\n");
         exit(1);
     }
 
-    md = EVP_get_digestbyname(argv[1]);
-
-    if(!md) {
-        printf("Unknown message digest %s\n", argv[1]);
-        exit(1);
+    if(!argv[2]) {
+        printf("Using SHA-256 by default...\n");
+        md_function = EVP_sha256();
+    }
+    else {
+        md_function = EVP_get_digestbyname(argv[1]);
+        if(!md_function) {
+            printf("Unknown message digest function %s\n", argv[2]);
+            exit(1);
+        }
     }
 
-    mdctx = EVP_MD_CTX_create();
-    EVP_DigestInit_ex(mdctx, md, NULL);
-    EVP_DigestUpdate(mdctx, mess1, strlen(mess1));
-    EVP_DigestUpdate(mdctx, mess2, strlen(mess2));
-    EVP_DigestFinal_ex(mdctx, md_value, &md_len);
-    EVP_MD_CTX_destroy(mdctx);
 
-    printf("Digest is: ");
+    printf("Getting hash of string \"%s\"\n", argv[1]);
+
+    md_context = EVP_MD_CTX_create();
+    EVP_DigestInit_ex(md_context, md_function, NULL);
+    EVP_DigestUpdate(md_context, argv[1], strlen(argv[1]));
+    // You can add multiple strings to the message before executing the final digest
+    //EVP_DigestUpdate(md_context, mess2, strlen(mess2));
+    EVP_DigestFinal_ex(md_context, md_value, &md_len);
+    EVP_MD_CTX_destroy(md_context);
+
+    printf("Digest is: \n");
     for(i = 0; i < md_len; i++)
         printf("%02x", md_value[i]);
     printf("\n");
@@ -51,10 +72,6 @@ main(int argc, char *argv[]) {
 // #include <openssl/evp.h>
 // // See https://www.openssl.org/docs/manmaster/crypto/EVP_sha512.html
 
-// // Terminology:
-// // message = plaintext
-// // message digest function = hash function
-// // message digest (MD) = digest = fingerprint = output of a hash function
 
 // // TODO: Use uint8_t in place of unsigned char from stdtype?
 // // #include <stdtype.h>
