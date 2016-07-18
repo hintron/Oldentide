@@ -55,14 +55,20 @@ main(int argc, char *argv[]) {
 
     printf("Salting and stretching password \"%s\"\n", argv[1]);
     
-    // TODO: Generate at least a 256-bit salt
+    // Generate at least a 256-bit salt
     BIGNUM * salt = BN_new();
+    // Create the random number (openssl should auto-seed from /dev/urandom)
     BN_rand(salt, SALT_BIT_SIZE, -1, 0);
-    
+   
+    // Convert the salt to a decimal string 
     char * salt_string_dec = BN_bn2dec(salt);
     printf("Salt:\n%s\n", salt_string_dec);
-    exit(0);
+    // Free the string after use.
+    // NOTE: This function doesn't show up in the 
+    // 1.0.2 docs (shows up in master), but it works
+    OPENSSL_free(salt_string_dec);
 
+    // Run through the stretching algorithm
 
     md_context = EVP_MD_CTX_create();
     EVP_DigestInit(md_context, md_function);
@@ -73,11 +79,10 @@ main(int argc, char *argv[]) {
     // Execute the hash and clean up md_context
     EVP_DigestFinal_ex(md_context, md_value, &md_len);
     EVP_MD_CTX_destroy(md_context);
-    // NOTE: EVP_DigestFinal() == EVP_DigestFinal_ex() + EVP_MD_CTX_free()
+    // NOTE: EVP_DigestFinal() should == EVP_DigestFinal_ex() + EVP_MD_CTX_destroy()
 
-
-
-
+    // Clear the allocated BIGNUM pointer
+    BN_clear_free(salt);
 
   
     printf("Digest is: \n");
