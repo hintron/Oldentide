@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <openssl/evp.h>
 #include <string.h>
-
+#include <openssl/bn.h>
 // // TODO: Use uint8_t in place of unsigned char from stdtype?
 // // #include <stdtype.h>
 // // #include <assert.h>
@@ -20,6 +20,11 @@
 // generate a random salt, stretch the password for n iterations,
 // save the salted password and salt in the sqlite db, and 
 // time the process to see how long it took, sending an error if too quick (< 200ms)
+
+#define MAX_PASSWORD_LENGTH 64
+#define MIN_PASSWORD_LENGTH 8
+#define SALT_BIT_SIZE 256
+
 main(int argc, char *argv[]) {
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
@@ -31,15 +36,32 @@ main(int argc, char *argv[]) {
         exit(1);
     }
 
+    // get the password
+    // Check to make sure password is at least 8 chars and that it is not longer than 64 chars
+    if(strlen(argv[1]) > MAX_PASSWORD_LENGTH){
+        printf("Password is too large to process!\n");
+        exit(0); 
+    }
+    else if(strlen(argv[1]) < MIN_PASSWORD_LENGTH){
+        printf("Password is too small to process!\n" );
+        exit(0); 
+    }
+    else {
+        // Password is of a good length
+    }
+
     printf("Using SHA-512\n");
     md_function = EVP_sha512();
 
     printf("Salting and stretching password \"%s\"\n", argv[1]);
     
-    // TODO: get the password
-    // TODO: Check to make sure password is at least 8 chars and that it is not longer than 64 chars
-
     // TODO: Generate at least a 256-bit salt
+    BIGNUM * salt = BN_new();
+    BN_rand(salt, SALT_BIT_SIZE, -1, 0);
+    
+    char * salt_string_dec = BN_bn2dec(salt);
+    printf("Salt:\n%s\n", salt_string_dec);
+    exit(0);
 
 
     md_context = EVP_MD_CTX_create();
