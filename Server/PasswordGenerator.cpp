@@ -29,6 +29,7 @@ main(int argc, char *argv[]) {
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
     unsigned char md_value[EVP_MAX_MD_SIZE];
+    unsigned char md_value_temp[EVP_MAX_MD_SIZE];
     unsigned int md_len, i;
 
     if(!argv[1]) {
@@ -37,12 +38,13 @@ main(int argc, char *argv[]) {
     }
 
     // get the password
+    char * password = argv[1];
     // Check to make sure password is at least 8 chars and that it is not longer than 64 chars
-    if(strlen(argv[1]) > MAX_PASSWORD_LENGTH){
+    if(strlen(password) > MAX_PASSWORD_LENGTH){
         printf("Password is too large to process!\n");
         exit(0); 
     }
-    else if(strlen(argv[1]) < MIN_PASSWORD_LENGTH){
+    else if(strlen(password) < MIN_PASSWORD_LENGTH){
         printf("Password is too small to process!\n" );
         exit(0); 
     }
@@ -53,7 +55,10 @@ main(int argc, char *argv[]) {
     printf("Using SHA-512\n");
     md_function = EVP_sha512();
 
-    printf("Salting and stretching password \"%s\"\n", argv[1]);
+    printf("Salting and stretching password \"%s\"\n", password);
+
+    // TODO: Have a second param that is the salt, so that the key can be regenerated if the salt is known
+    // If I can consistently regenerate the key from the password and salt, then it works
     
     // Generate at least a 256-bit salt
     BIGNUM * salt = BN_new();
@@ -63,72 +68,97 @@ main(int argc, char *argv[]) {
     // Convert the salt to a decimal string 
     char * salt_string_dec = BN_bn2dec(salt);
     printf("Salt:\n%s\n", salt_string_dec);
-    // Free the string after use.
-    // NOTE: This function doesn't show up in the 
-    // 1.0.2 docs (shows up in master), but it works
-    OPENSSL_free(salt_string_dec);
 
     // Run through the stretching algorithm
 
-    md_context = EVP_MD_CTX_create();
-    EVP_DigestInit(md_context, md_function);
-    // Set the password to be hashed
-    EVP_DigestUpdate(md_context, argv[1], strlen(argv[1]));
-    // You can add multiple strings to the message before executing the final digest
-    //EVP_DigestUpdate(md_context, mess2, strlen(mess2));
-    // Execute the hash and clean up md_context
-    EVP_DigestFinal_ex(md_context, md_value, &md_len);
-    EVP_MD_CTX_destroy(md_context);
-    // NOTE: EVP_DigestFinal() should == EVP_DigestFinal_ex() + EVP_MD_CTX_destroy()
+    /*
+    // Pseudocode for salting and stretching a password
+    // See pg 304 of Cryptography Engineering (21.2.1 - Salting and Stretching)
+    
+    x = 0
+    // The salt is simply a random number that is stored alongside the key. Use at least a 256bit salt.
+    // Each user needs a different salt, so an attacker would always have to recalculate the key per user,
+    // even if the attacker guesses the same password (e.g. "password") for each user.
+    salt = rand256()
+    
+    for (int i = 0; i < ITERATIONS; ++i) {
+        // (note: || means append)
+        x = hash512(x || password || salt);
+    }
+    
+    key = x
+    // Store the salt and the key in the db. The salt can be public.
+    */
 
-    // Clear the allocated BIGNUM pointer
-    BN_clear_free(salt);
 
-  
-    printf("Digest is: \n");
-    for(i = 0; i < md_len; i++)
+
+     /* Implementation */
+    
+    // md_temp_value needs to be initialized to all zeros, since it's on the stack
+    for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+        md_value_temp[i] = 0;
+    } 
+
+    // Iterations should be calibrated so the whole process takes 200-1000 ms
+    #define EXTRA_BITS_OF_SECURITY 20
+    long long ITERATIONS = 1 << EXTRA_BITS_OF_SECURITY; // i.e. 2^20
+    //long long ITERATIONS = 5;
+    for (long long i = 0; i < ITERATIONS; ++i) {
+        //printf("%dth iteration: \n", i);
+        md_context = EVP_MD_CTX_create();
+        EVP_DigestInit(md_context, md_function);
+        // Append the previous hash, pasword, and salt together 
+        //x = hash512(x || password || salt);
+        EVP_DigestUpdate(md_context, md_value_temp, EVP_MAX_MD_SIZE);
+        EVP_DigestUpdate(md_context, password, strlen(password));
+        // TODO: How should the salt be represented - as a string? Hex? Dec? Does it matter?
+        EVP_DigestUpdate(md_context, salt_string_dec, strlen(salt_string_dec));
+        // Execute the hash and store it in md_value
+        EVP_DigestFinal_ex(md_context, md_value, &md_len);
+        // clean up md_context
+        EVP_MD_CTX_destroy(md_context);
+        // NOTE: EVP_DigestFinal() should == EVP_DigestFinal_ex() + EVP_MD_CTX_destroy()
+
+        if(i == 0){
+            printf("Hash of 0th iteration: \n");
+            for(int j = 0; j < md_len; j++){
+                printf("%02x", md_value[j]);
+            }
+            printf("\n");
+        }
+
+        // Copy md_value to md_value_temp, since md_value is supposed to be a const char *
+        for(int i=0; i < EVP_MAX_MD_SIZE; ++i){
+            md_value_temp[i] = md_value[i];
+        }
+
+    }
+    // End loop
+
+    printf("Final salted and stretched password is: \n");
+    for(i = 0; i < md_len; i++){
         printf("%02x", md_value[i]);
+    }
     printf("\n");
 
 
+    // TODO: Save the salt and the generated key (salted password) in the sqlite db
 
-// /*
-// // Pseudocode for salting and stretching a password
-// // See pg 304 of Cryptography Engineering (21.2.1 - Salting and Stretching)
+    //
+    //// Free up memory allocations
+    //
 
-// x = 0
-// // The salt is simply a random number that is stored alongside the key. Use at least a 256bit salt.
-// // Each user needs a different salt, so an attacker would always have to recalculate the key per user,
-// // even if the attacker guesses the same password (e.g. "password") for each user.
-// salt = rand256()
+    // Free the salt string
+    // NOTE: This function doesn't show up in the 
+    // 1.0.2 docs (shows up in master), but it works
+    OPENSSL_free(salt_string_dec);
+    // Clear the allocated BIGNUM pointer
+    BN_clear_free(salt);
 
-// for (int i = 0; i < ITERATIONS; ++i) {
-//     // (note: || means append)
-//     x = hash512(x || password || salt);
-// }
+    // NOTE: clear_free variants are for sensitive info, opposed to just free.
+    // The salts aren't sensitive, but the password and key are.
+    // So just use clear_free for everything I can
 
-// key = x
-// // Store the salt and the key in the db. The salt can be public.
-// */
-
-
-    // /* Implementation */
-    
-//    #define EXTRA_BITS_OF_SECURITY 20
-//    // Iterations should be calibrated so the whole process takes 200-1000 ms
-//    #define ITERATIONS 1 << EXTRA_BITS_OF_SECURITY
-//    
-//    // TODO: How to hold 256 bits or 512 bits of data? C Array?
-//    // For 512 bits, thats 512/8 = 64 bytes
-//    // Create an array to hold 512 bits (64 bytes - 64 chars) of information
-//    unsigned char x[64];
-//    // Password can be up to 32 characters (backfill with zeros)
-//    unsigned char password[32];
-//    for (int i = 0; i < ITERATIONS; ++i) {
-//        const EVP_MD *EVP_sha512(void);
-//    
-//        x = hash512(x || password || salt);
-//    }
 
 
 
