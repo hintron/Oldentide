@@ -1,8 +1,8 @@
 // Compile this file with the following command
-// g++ Password.cpp -lcrypto -o mdtest
+// g++ mdtest.cpp -lcrypto -o mdtest.o
 
 // Example usage:
-// ./mdtest "Hello, World!"
+// ./mdtest.o "Hello, World!"
 // Output Hash:
 // dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f
 
@@ -28,7 +28,7 @@ main(int argc, char *argv[]) {
     OpenSSL_add_all_digests();
 
     if(!argv[1]) {
-        printf("Usage: mdtest message-to-hash digestname\n");
+        printf("Usage: ./mdtest.o message-to-hash digestname\n");
         exit(1);
     }
 
