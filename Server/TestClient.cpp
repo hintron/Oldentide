@@ -45,23 +45,81 @@ int main(int argc, char * argv[]){
     servaddr.sin_addr.s_addr = inet_addr(server_address);
     servaddr.sin_port = htons(port);
 
+    int clientState = 0;
+
     while (running){
-        cout << "Please choose a packet type to send:" << endl;
-        cout << "0: GENERIC" << endl;
-        cout << "1: ACK" << endl;
-        cout << "2: CONNECT" << endl;
-        cout << "3: DISCONNECT" << endl;
-        cout << "4: LOGIN" << endl;
-        cout << "5: LISTCHARACTERS" << endl;
-        cout << "6: SELECTCHARACTER" << endl;
-        cout << "7: DELETECHARACTER" << endl;
-        cout << "8: CREATECHARACTER" << endl;
-        cout << "9: INITIALIZEGAME" << endl;
-        cout << "10: UPDATEPC" << endl;
-        cout << "11: UPDATENPC" << endl;
-        cout << "12: SENDPLAYERCOMMAND" << endl;
-        cout << "13: SENDPLAYERACTION" << endl;
-        cout << "14 SENDSERVERACTION" << endl;
+        switch (clientState){
+            // Initial State.
+            case 0: {
+                cout << "Connect? (Y/N) " << endl;
+                string response;
+                getline (cin, response);
+                if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
+                    PACKET_CONNECT packet;
+                    packet.packetId = packetNumber;
+                    packetNumber++;
+                    packet.sessionId = session;
+                    sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                    PACKET_CONNECT * returnPacket = (PACKET_CONNECT*) malloc(sizeof(PACKET_CONNECT));
+                    sockaddr_in servret;
+                    socklen_t len = sizeof(servret);
+                    int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&servret, &len);
+                    cout << "Connected! Given the session id: " << returnPacket->sessionId << endl;
+                    session = returnPacket->sessionId;
+                    free(returnPacket);
+                    clientState = 1;
+                }
+                else {
+                    cout << "Shutting down!" << endl;
+                    running = false;
+                }
+                break;
+            }
+            // Connected.
+            case 1: {
+                cout << "Connected!" << endl;
+                PACKET_LOGIN packet;
+                packet.packetId = packetNumber;
+                packet.sessionId = session;
+                cout << "Account: ";
+                cin.getline(packet.account, sizeof(packet.account));
+                cout << "Password: ";
+                cin.getline(packet.password, sizeof(packet.password));
+                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                clientState = 2;
+                break;
+            }
+            // Logged In.
+            case 2: {
+                cout << "Logged in as <name>" << endl;
+                running = false;
+                break;
+            }
+            // 
+            case 3: {
+            }
+        }
+    }
+        
+        /* 
+         * Depricated...
+         * cout << "Please choose a packet type to send:" << endl;
+         * cout << "0: GENERIC" << endl;
+         * cout << "1: ACK" << endl;
+         * cout << "2: CONNECT" << endl;
+         * cout << "3: DISCONNECT" << endl;
+         * cout << "4: LOGIN" << endl;
+         * cout << "5: LISTCHARACTERS" << endl;
+         * cout << "6: SELECTCHARACTER" << endl;
+         * cout << "7: DELETECHARACTER" << endl;
+         * cout << "8: CREATECHARACTER" << endl;
+         * cout << "9: INITIALIZEGAME" << endl;
+         * cout << "10: UPDATEPC" << endl;
+         * cout << "11: UPDATENPC" << endl;
+         * cout << "12: SENDPLAYERCOMMAND" << endl;
+         * cout << "13: SENDPLAYERACTION" << endl;
+         * cout << "14 SENDSERVERACTION" << endl;
+
         int packetType;
         char option[25];
         cin.getline(option, 25);
@@ -187,4 +245,5 @@ int main(int argc, char * argv[]){
             }
         }
     }
+    */
 }

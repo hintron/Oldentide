@@ -116,76 +116,77 @@ void OldentideServer::run(){
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
-    cout << "GENERIC Enum ID: " << packet->packetType << endl;
+    //cout << "GENERIC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
 void OldentideServer::ackHandler(PACKET_ACK * packet){
-    cout << "ACK Enum ID: " << packet->packetType << endl;
+    //cout << "ACK Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 // Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.  Do not generate new sessions.
 void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client){
-    cout << "CONNECT Enum ID: " << packet->packetType << endl;
+    //cout << "CONNECT Enum ID: " << packet->packetType << endl;
     PACKET_CONNECT returnPacket;
     returnPacket.sessionId = gamestate->generateSession(packet);
+    cout << "  New connection started, session id " << returnPacket.sessionId << " sent to client!" << endl;
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 
 // Remove the session for a given user, effectively disconnecting it from the server.
 void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
-    cout << "DISCONNECT Enum ID: " << packet->packetType << endl;
+    //cout << "DISCONNECT Enum ID: " << packet->packetType << endl;
     gamestate->disconnectSession(packet);
     free(packet);
 }
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet){
-    cout << "LOGIN Enum ID: " << packet->packetType << endl;
+    //cout << "LOGIN Enum ID: " << packet->packetType << endl;
     bool temp = gamestate->loginUser(packet);
     free(packet);
 }
 
 void OldentideServer::listCharactersHandler(PACKET_LISTCHARACTERS * packet){
-    cout << "LISTCHARACTERS Enum ID: " << packet->packetType << endl;
+    //cout << "LISTCHARACTERS Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::selectCharacterHandler(PACKET_SELECTCHARACTER * packet){
-    cout << "SELECTCHARACTER Enum ID: " << packet->packetType << endl;
+    //cout << "SELECTCHARACTER Enum ID: " << packet->packetType << endl;
     gamestate->selectPlayer(packet);
     free(packet);
 }
 
 void OldentideServer::deleteCharacterHandler(PACKET_DELETECHARACTER * packet){
-    cout << "DELETECHARACTER Enum ID: " << packet->packetType << endl;
+    //cout << "DELETECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::createCharacterHandler(PACKET_CREATECHARACTER * packet){
-    cout << "CREATECHARACTER Enum ID: " << packet->packetType << endl;
+    //cout << "CREATECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::initializeGameHandler(PACKET_INITIALIZEGAME * packet){
-    cout << "INITIALIZEGAME Enum ID: " << packet->packetType << endl;
+    //cout << "INITIALIZEGAME Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updatePcHandler(PACKET_UPDATEPC * packet){
-    cout << "UPDATEPC Enum ID: " << packet->packetType << endl;
+    //cout << "UPDATEPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updateNpcHandler(PACKET_UPDATENPC * packet){
-    cout << "UPDATENPC Enum ID: " << packet->packetType << endl;
+    //cout << "UPDATENPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
-    cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
+    //cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
     if (gamestate->verifyActiveSession(packet->sessionId)){
         gamestate->playerCommand(packet);
     }
@@ -196,11 +197,11 @@ void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet
 }
 
 void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
-    cout << "SENDPLAYERACTION Enum ID: " << packet->packetType << endl;
+    //cout << "SENDPLAYERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
-    cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
+    //cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }
