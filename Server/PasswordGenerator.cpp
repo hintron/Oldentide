@@ -25,9 +25,13 @@
 #define MIN_PASSWORD_LENGTH 8
 #define SALT_BIT_SIZE 512
 
+// TODO: Create some simple test cases to prove that I'm doing it the way I think I am
+// TODO: Modularize code for reuse, so creating a new key uses same code for return visits
+// TODO: Time code and print that to output
 main(int argc, char *argv[]) {
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
+    // TODO: I don't think I need a temp string
     unsigned char md_value[EVP_MAX_MD_SIZE];
     unsigned char md_value_temp[EVP_MAX_MD_SIZE];
     unsigned int md_len, i;
@@ -51,16 +55,19 @@ main(int argc, char *argv[]) {
     else {
         // Password is of a good length
     }
+    
 
-    printf("Using SHA-512\n");
+    printf("Salting and stretching the password...\n");
+
+    // TODO: allow the option to choose between 256 and 512?
+    printf("Hash Function: SHA-512\n");
     md_function = EVP_sha512();
 
-    printf("Salting and stretching password \"%s\"\n", password);
+    printf("Password: \"%s\"\n", password);
 
     // TODO: Have a second param that is the salt, so that the key can be regenerated if the salt is known
     // If I can consistently regenerate the key from the password and salt, then it works
     
-    // Generate at least a 256-bit salt
     BIGNUM * salt = BN_new();
     // Create the random number (openssl should auto-seed from /dev/urandom)
     BN_rand(salt, SALT_BIT_SIZE, -1, 0);
@@ -73,33 +80,10 @@ main(int argc, char *argv[]) {
     int salt_length = BN_bn2bin(salt, salt_string_bin);
     char * salt_string_hex = BN_bn2hex(salt);
     
-    printf("Salt length - bytes - bits:\n%d - %d - %d\n", salt_length, salt_bytes, salt_bits);
-    printf("Salt(hex):\n%s\n", salt_string_hex);
+    printf("salt length : bytes : bits\n%d : %d : %d\n", salt_length, salt_bytes, salt_bits);
+    printf("Salt (hex):\n%s\n", salt_string_hex);
 
     // Run through the stretching algorithm
-
-    /*
-    // Pseudocode for salting and stretching a password
-    // See pg 304 of Cryptography Engineering (21.2.1 - Salting and Stretching)
-    
-    x = 0
-    // The salt is simply a random number that is stored alongside the key. Use at least a 256bit salt.
-    // Each user needs a different salt, so an attacker would always have to recalculate the key per user,
-    // even if the attacker guesses the same password (e.g. "password") for each user.
-    salt = rand256()
-    
-    for (int i = 0; i < ITERATIONS; ++i) {
-        // (note: || means append)
-        x = hash512(x || password || salt);
-    }
-    
-    key = x
-    // Store the salt and the key in the db. The salt can be public.
-    */
-
-
-
-     /* Implementation */
     
     // md_temp_value needs to be initialized to all zeros, since it's on the stack
     for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
@@ -109,7 +93,8 @@ main(int argc, char *argv[]) {
     // Iterations should be calibrated so the whole process takes 200-1000 ms
     #define EXTRA_BITS_OF_SECURITY 20
     long long ITERATIONS = 1 << EXTRA_BITS_OF_SECURITY; // i.e. 2^20
-    //long long ITERATIONS = 5;
+    //long long ITERATIONS = 2;
+    printf("Executing %d iterations...\n", ITERATIONS);
     for (long long i = 0; i < ITERATIONS; ++i) {
         //printf("%dth iteration: \n", i);
         md_context = EVP_MD_CTX_create();
@@ -125,13 +110,13 @@ main(int argc, char *argv[]) {
         EVP_MD_CTX_destroy(md_context);
         // NOTE: EVP_DigestFinal() should == EVP_DigestFinal_ex() + EVP_MD_CTX_destroy()
 
-        if(i == 0){
-            printf("Hash of 0th iteration: \n");
-            for(int j = 0; j < md_len; j++){
-                printf("%02x", md_value[j]);
-            }
-            printf("\n");
-        }
+        //if(i == 0){
+        //    printf("Hash of 0th iteration: \n");
+        //    for(int j = 0; j < md_len; j++){
+        //        printf("%02x", md_value[j]);
+        //    }
+        //    printf("\n");
+        //}
 
         // Copy md_value to md_value_temp, since md_value is supposed to be a const char *
         for(int i=0; i < EVP_MAX_MD_SIZE; ++i){
@@ -141,7 +126,7 @@ main(int argc, char *argv[]) {
     }
     // End loop
 
-    printf("Final salted and stretched password is: \n");
+    printf("Final salted and stretched password/key is: \n");
     for(i = 0; i < md_len; i++){
         printf("%02x", md_value[i]);
     }
@@ -149,6 +134,7 @@ main(int argc, char *argv[]) {
 
 
     // TODO: Save the salt and the generated key (salted password) in the sqlite db
+    // Make sure when storing the salt and key, that any leading zeros or zero bits are preserved!
 
     //
     //// Free up memory allocations
@@ -165,12 +151,25 @@ main(int argc, char *argv[]) {
     // The salts aren't sensitive, but the password and key are.
     // So just use clear_free for everything I can
 
-
-
-
-
     exit(0);
 }
 
 
+/*
+// Pseudocode for salting and stretching a password
+// See pg 304 of Cryptography Engineering (21.2.1 - Salting and Stretching)
 
+x = 0
+// The salt is simply a random number that is stored alongside the key. Use at least a 256bit salt.
+// Each user needs a different salt, so an attacker would always have to recalculate the key per user,
+// even if the attacker guesses the same password (e.g. "password") for each user.
+salt = rand256()
+
+for (int i = 0; i < ITERATIONS; ++i) {
+    // (note: || means append)
+    x = hash512(x || password || salt)
+}
+
+key = x
+// Store the salt and the key in the db. The salt can be public.
+*/
