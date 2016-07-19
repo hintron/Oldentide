@@ -30,6 +30,7 @@
 // If it is any quicker, it defeats the point of salting and stretching!
 // 2^20 iterations will effectively add 20 bits to the password
 const long long ITERATIONS = 1 << 20;
+// NOTE: The generated key depends on the number of iterations.
 
 //
 //// TESTING:
@@ -50,7 +51,6 @@ main(int argc, char *argv[]) {
     // TODO: I don't think I need a temp string. Need to test
     // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
     unsigned char md_value[EVP_MAX_MD_SIZE];
-    unsigned char md_value_temp[EVP_MAX_MD_SIZE];
     unsigned int md_len, i;
 
     if(!argv[1]) {
@@ -99,27 +99,27 @@ main(int argc, char *argv[]) {
     unsigned char salt_string_bin[salt_bytes];
     int salt_length = BN_bn2bin(salt, salt_string_bin);
     
-    printf("salt length : bytes : bits\n%d : %d : %d\n", salt_length, salt_bytes, salt_bits);
     printf("Salt (hex):\n");
     for(int i = 0; i < salt_length; i++){
         printf("%02x", salt_string_bin[i]);
     }
     printf("\n");
+    printf("Salt length : bytes : bits\n%d : %d : %d\n", salt_length, salt_bytes, salt_bits);
     // Run through the stretching algorithm
     
     // md_temp_value needs to be initialized to all zeros, since it's on the stack
     for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
-        md_value_temp[i] = 0;
+        md_value[i] = 0;
     } 
 
-    printf("Executing %d iterations...\n", ITERATIONS);
+    printf("Iterations: %d\n", ITERATIONS);
     for (long long i = 0; i < ITERATIONS; ++i) {
         //printf("%dth iteration: \n", i);
         md_context = EVP_MD_CTX_create();
         EVP_DigestInit(md_context, md_function);
         // Append the previous hash, pasword, and salt together in this order: 
         //x = hash512(x || password || salt);
-        EVP_DigestUpdate(md_context, md_value_temp, EVP_MAX_MD_SIZE);
+        EVP_DigestUpdate(md_context, md_value, EVP_MAX_MD_SIZE);
         EVP_DigestUpdate(md_context, password, strlen(password));
         EVP_DigestUpdate(md_context, salt_string_bin, salt_bytes);
         // Execute the hash and store it in md_value
@@ -127,12 +127,6 @@ main(int argc, char *argv[]) {
         // clean up md_context
         EVP_MD_CTX_destroy(md_context);
         // NOTE: EVP_DigestFinal() should == EVP_DigestFinal_ex() + EVP_MD_CTX_destroy()
-
-        // Copy md_value to md_value_temp, since md_value is supposed to be a const char *
-        for(int j = 0; j < EVP_MAX_MD_SIZE; ++j){
-            md_value_temp[j] = md_value[j];
-        }
-
     }
     // End loop
 
@@ -145,6 +139,7 @@ main(int argc, char *argv[]) {
 
     // TODO: Save the salt and the generated key (salted password) in the sqlite db
     // Make sure when storing the salt and key, that any leading zeros or zero bits are preserved!
+    // TODO: Save the number of iterations used to generate the key in the db 
 
     //
     //// Free up memory allocations
