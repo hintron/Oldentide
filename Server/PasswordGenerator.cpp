@@ -23,7 +23,7 @@
 
 #define MAX_PASSWORD_LENGTH 64
 #define MIN_PASSWORD_LENGTH 8
-#define SALT_BIT_SIZE 256
+#define SALT_BIT_SIZE 512
 
 main(int argc, char *argv[]) {
     EVP_MD_CTX *md_context;
@@ -65,9 +65,16 @@ main(int argc, char *argv[]) {
     // Create the random number (openssl should auto-seed from /dev/urandom)
     BN_rand(salt, SALT_BIT_SIZE, -1, 0);
    
-    // Convert the salt to a decimal string 
-    char * salt_string_dec = BN_bn2dec(salt);
-    printf("Salt:\n%s\n", salt_string_dec);
+    int salt_bytes = BN_num_bytes(salt);
+    int salt_bits = BN_num_bits(salt);
+    unsigned char salt_string_bin[salt_bytes];
+    // Convert the salt to other formats 
+    //unsigned char * salt_string_bin;
+    int salt_length = BN_bn2bin(salt, salt_string_bin);
+    char * salt_string_hex = BN_bn2hex(salt);
+    
+    printf("Salt length - bytes - bits:\n%d - %d - %d\n", salt_length, salt_bytes, salt_bits);
+    printf("Salt(hex):\n%s\n", salt_string_hex);
 
     // Run through the stretching algorithm
 
@@ -107,12 +114,11 @@ main(int argc, char *argv[]) {
         //printf("%dth iteration: \n", i);
         md_context = EVP_MD_CTX_create();
         EVP_DigestInit(md_context, md_function);
-        // Append the previous hash, pasword, and salt together 
+        // Append the previous hash, pasword, and salt together in this order: 
         //x = hash512(x || password || salt);
         EVP_DigestUpdate(md_context, md_value_temp, EVP_MAX_MD_SIZE);
         EVP_DigestUpdate(md_context, password, strlen(password));
-        // TODO: How should the salt be represented - as a string? Hex? Dec? Does it matter?
-        EVP_DigestUpdate(md_context, salt_string_dec, strlen(salt_string_dec));
+        EVP_DigestUpdate(md_context, salt_string_bin, salt_bytes);
         // Execute the hash and store it in md_value
         EVP_DigestFinal_ex(md_context, md_value, &md_len);
         // clean up md_context
@@ -148,10 +154,10 @@ main(int argc, char *argv[]) {
     //// Free up memory allocations
     //
 
-    // Free the salt string
+    // Free the salt hex string
     // NOTE: This function doesn't show up in the 
     // 1.0.2 docs (shows up in master), but it works
-    OPENSSL_free(salt_string_dec);
+    OPENSSL_free(salt_string_hex);
     // Clear the allocated BIGNUM pointer
     BN_clear_free(salt);
 
