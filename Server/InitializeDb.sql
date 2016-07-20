@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS npcs;
 CREATE TABLE accounts
 (
     id integer not null primary key autoincrement,
-    account_name text not null unique,
-    key text not null,
-    salt text not null,
+    account_name text not null unique collate nocase,
+    key text not null collate nocase,
+    salt text not null collate nocase,
     salt_iterations numeric not null,
     real_name text
 );
