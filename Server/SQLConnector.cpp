@@ -52,9 +52,15 @@ void SQLConnector::execute(string cmd){
     }
 }
 
-void SQLConnector::create_account(){
+void SQLConnector::create_account(char *account_name, char *key, char *salt, long long iterations){
     std::stringstream query;
-    query << "insert into accounts (account_name, key, salt, salt_iterations) values (\"Hintron\",\"key\",\"salty\",10)";
+    query << "insert into accounts (account_name, key, salt, salt_iterations) values (";
+    query << "\"" << account_name << "\",";
+    query << "\"" << key << "\",";
+    query << "\"" << salt << "\",";
+    query << iterations << ")";
+    // Debug
+    //cout << query.str() << endl;
     execute(query.str()); 
 }
 
@@ -66,6 +72,12 @@ void SQLConnector::list_accounts(){
 
 // Callback adapted from https://www.sqlite.org/quickstart.html
 // This can't be a method, since it is being passed as a c function pointer
+// TODO: Should this be here? Or inside the execute method? Is that even possible?
+// NOTE: This callback is invoked for each returned ROW
+// This will NOT be called after create, update, or delete calls 
+// argc is number of columns in the row
+// argv stores the column values of the row
+// azColName stores the column names in alphabetical order
 static int execute_callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){

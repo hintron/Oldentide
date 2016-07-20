@@ -47,15 +47,15 @@ const long long ITERATIONS = 1 << 20;
 
 // TODO: Time code and print that to output
 // TODO: Have option to quiet output
-// Pass in an empty, initialized BIGNUM for salt, a string for password,
-// and an empty array pointer of size EVP_MAX_MD_SIZE for the output
-// TODO: What's the better way - passing and modifying a pointer to an array on the stack,
-// or returning a pointer to an malloc'ed array on the heap that need to be freed?
+// Pass in an empty, initialized BIGNUM* for salt, a string for password,
+// and an initialized BIGNUM* for md_value empty array pointer of size EVP_MAX_MD_SIZE for the output
 // Returns the number of iterations it took
-long long generate_key(const char *password, BIGNUM *salt, unsigned char *md_value){
+long long generate_key(const char *password, BIGNUM *salt, BIGNUM *generated_key){
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
     unsigned int md_len, i;
+    unsigned char md_value[EVP_MAX_MD_SIZE];
+    // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
 
     printf("\n\nSalting and stretching the password...\n");
 
@@ -75,9 +75,8 @@ long long generate_key(const char *password, BIGNUM *salt, unsigned char *md_val
     }
     printf("\n");
     printf("Salt length : bytes : bits\n%d : %d : %d\n", salt_length, salt_bytes, salt_bits);
-    // Run through the stretching algorithm
     
-    // md_temp_value needs to be initialized to all zeros, since it's on the stack
+    // md_value needs to be initialized to all zeros, since it's on the stack
     for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
         md_value[i] = 0;
     } 
@@ -105,6 +104,9 @@ long long generate_key(const char *password, BIGNUM *salt, unsigned char *md_val
         printf("%02x", md_value[i]);
     }
     printf("\n");
+
+    // Convert from binary big-endian md_value to BIGNUM 
+    BN_bin2bn(md_value, EVP_MAX_MD_SIZE, generated_key);
 
     return ITERATIONS;
 }
@@ -134,11 +136,9 @@ main(int argc, char *argv[]) {
     }
 
     // TODO: Impose restrictions on account length
-
     // Initialize salt and generated key
     BIGNUM *salt = BN_new();
-    unsigned char generated_key[EVP_MAX_MD_SIZE];
-    // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
+    BIGNUM *generated_key = BN_new();
 
     if(argv[3]) {
         //
@@ -147,6 +147,10 @@ main(int argc, char *argv[]) {
         
         // TODO: First check to make sure account name does not already exist
         // Exit if it does   
+    
+        // TODO: Make sure to parameterize the user inputs
+        // TODO: Make sure the account name is all converted to lowercase
+        // TODO: only allow ascii acount names?
 
  
         // Since argument was not supplied, generate a random salt
@@ -154,13 +158,22 @@ main(int argc, char *argv[]) {
         BN_rand(salt, SALT_BIT_SIZE, -1, 0);
     
         int iterations = generate_key(password, salt, generated_key);
+       
+        // Convert the salt BIGNUM to a hex string to store in the db as text 
+        // Store the key as hex, so it is easy to read out
+        // Note: This needs to be freed later
+        char *salt_string_hex = BN_bn2hex(salt);
+        char *generated_key_string_hex = BN_bn2hex(generated_key);
         
         SQLConnector *sql = new SQLConnector();
         printf("Creating new account and saving account_name, salt, key, and iterations\n");
-        sql->create_account();
+        sql->create_account(account_name, generated_key_string_hex, salt_string_hex, iterations);
         printf("Listing all created accounts...\n");
         sql->list_accounts();
         delete sql;
+        OPENSSL_free(generated_key_string_hex);
+        OPENSSL_free(salt_string_hex);
+        // TODO: Use clear_free() version - might need crypto.h though
     }
     else {
         //
@@ -169,7 +182,6 @@ main(int argc, char *argv[]) {
        
         // TODO: Check to make sure account already exists
         // Exit if it doesn't
- 
         // TODO: Use the passed account name to look up the salt
 
         // Have the second param be the salt (in hex), so that the key
@@ -194,6 +206,7 @@ main(int argc, char *argv[]) {
 
     // Clear the allocated BIGNUM pointer
     BN_clear_free(salt);
+    BN_clear_free(generated_key);
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
     //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
