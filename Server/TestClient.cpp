@@ -77,7 +77,6 @@ int main(int argc, char * argv[]){
             }
             // Connected.
             case 1: {
-                cout << "Connected!" << endl;
                 PACKET_LOGIN packet;
                 packet.packetId = packetNumber;
                 packet.sessionId = session;
@@ -86,12 +85,22 @@ int main(int argc, char * argv[]){
                 cout << "Password: ";
                 cin.getline(packet.password, sizeof(packet.password));
                 sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                clientState = 2;
+                PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
+                sockaddr_in servret;
+                socklen_t len = sizeof(servret);
+                int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
+                if ((strcmp(returnPacket->account, packet.account)) == 0) {
+                    cout << "Logged in as " << returnPacket->account << "!" << endl;
+                    clientState = 2;
+                }
+                else {
+                    cout << "Login Failed! Please try again." << endl;
+                }
+                free(returnPacket);
                 break;
             }
             // Logged In.
             case 2: {
-                cout << "Logged in as <name>" << endl;
                 running = false;
                 break;
             }
@@ -100,150 +109,4 @@ int main(int argc, char * argv[]){
             }
         }
     }
-        
-        /* 
-         * Depricated...
-         * cout << "Please choose a packet type to send:" << endl;
-         * cout << "0: GENERIC" << endl;
-         * cout << "1: ACK" << endl;
-         * cout << "2: CONNECT" << endl;
-         * cout << "3: DISCONNECT" << endl;
-         * cout << "4: LOGIN" << endl;
-         * cout << "5: LISTCHARACTERS" << endl;
-         * cout << "6: SELECTCHARACTER" << endl;
-         * cout << "7: DELETECHARACTER" << endl;
-         * cout << "8: CREATECHARACTER" << endl;
-         * cout << "9: INITIALIZEGAME" << endl;
-         * cout << "10: UPDATEPC" << endl;
-         * cout << "11: UPDATENPC" << endl;
-         * cout << "12: SENDPLAYERCOMMAND" << endl;
-         * cout << "13: SENDPLAYERACTION" << endl;
-         * cout << "14 SENDSERVERACTION" << endl;
-
-        int packetType;
-        char option[25];
-        cin.getline(option, 25);
-        packetType = atoi(option);
-        switch (packetType){
-            case 0: {
-                PACKET_GENERIC packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 1: {
-                PACKET_ACK packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 2: {
-                PACKET_CONNECT packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                PACKET_CONNECT * returnPacket = (PACKET_CONNECT*) malloc(sizeof(PACKET_CONNECT));
-                sockaddr_in servret;
-                socklen_t len = sizeof(servret);
-                int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&servret, &len);
-                cout << "Given the session id: " << returnPacket->sessionId << endl;
-                session = returnPacket->sessionId;
-                free(returnPacket);
-                break;
-            }
-            case 3: {
-                PACKET_DISCONNECT packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 4: {
-                PACKET_LOGIN packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                cout << "Account: ";
-                cin.getline(packet.account, sizeof(packet.account));
-                cout << "Password: ";
-                cin.getline(packet.password, sizeof(packet.password));
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 5: {
-                PACKET_LISTCHARACTERS packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 6: {
-                PACKET_SELECTCHARACTER packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 7: {
-                PACKET_DELETECHARACTER packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 8: {
-                PACKET_CREATECHARACTER packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 9: {
-                PACKET_INITIALIZEGAME packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 10: {
-                PACKET_UPDATEPC packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 11: {
-                PACKET_UPDATENPC packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 12: {
-                PACKET_SENDPLAYERCOMMAND packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                cin.getline(packet.command, sizeof(packet.command));
-                cout << packet.command;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 13: {
-                PACKET_SENDPLAYERACTION packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-            case 14: {
-                PACKET_SENDSERVERACTION packet;
-                packet.packetId = packetNumber;
-                packet.sessionId = session;
-                sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                break;
-            }
-        }
-    }
-    */
 }

@@ -33,7 +33,7 @@ class OldentideServer{
         void ackHandler(PACKET_ACK * packet);
         void connectHandler(PACKET_CONNECT * packet, sockaddr_in client);
         void disconnectHandler(PACKET_DISCONNECT * packet);
-        void loginHandler(PACKET_LOGIN * packet);
+        void loginHandler(PACKET_LOGIN * packet, sockaddr_in client);
         void listCharactersHandler(PACKET_LISTCHARACTERS * packet);
         void selectCharacterHandler(PACKET_SELECTCHARACTER * packet);
         void deleteCharacterHandler(PACKET_DELETECHARACTER * packet);

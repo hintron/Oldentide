@@ -4,6 +4,7 @@
 // Purpose:     Dedicated server class.
 
 #include "OldentideServer.h"
+#include <cstring>
 #include <iostream>
 #include <istream>
 #include <iterator>
@@ -72,7 +73,7 @@ void OldentideServer::run(){
                     disconnectHandler((PACKET_DISCONNECT*)packet);
                     break;
                 case LOGIN: 
-                    loginHandler((PACKET_LOGIN*)packet);
+                    loginHandler((PACKET_LOGIN*)packet, client);
                     break;
                 case LISTCHARACTERS: 
                     listCharactersHandler((PACKET_LISTCHARACTERS*)packet);
@@ -143,9 +144,20 @@ void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
     free(packet);
 }
 
-void OldentideServer::loginHandler(PACKET_LOGIN * packet){
+void OldentideServer::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
     //cout << "LOGIN Enum ID: " << packet->packetType << endl;
     bool temp = gamestate->loginUser(packet);
+    if (temp) {
+        cout << "  User " << packet->account << " logged in successfully!" << endl;
+        sendto(sockfd, (void *)packet, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&client, sizeof(client));
+    }
+    else {
+        PACKET_LOGIN returnPacket = *packet;
+        string failedAccount = "FAILED";
+        memcpy(returnPacket.account, failedAccount.c_str(), failedAccount.size());
+        cout << "  Failed login attempt for user: " << packet->account << endl;
+        sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&client, sizeof(client));
+    }
     free(packet);
 }
 

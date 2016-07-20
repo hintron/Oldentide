@@ -44,8 +44,8 @@ bool GameState::verifyActiveSession(int sessionId){
 }
 
 bool GameState::loginUser(PACKET_LOGIN * packet){
-    cout << "Account: " << packet->account << endl;
-    cout << "Password: " << packet->password << endl;
+    cout << "  Account: " << packet->account << endl;
+    cout << "  Password: " << packet->password << endl;
     return true;
 }
 
