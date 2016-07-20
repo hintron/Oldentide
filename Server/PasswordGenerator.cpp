@@ -157,7 +157,8 @@ main(int argc, char *argv[]) {
         
         SQLConnector *sql = new SQLConnector();
         printf("Creating new account and saving account_name, salt, key, and iterations\n");
-        //sql->execute();
+        sql->create_account();
+        sql->list_accounts();
         delete sql;
     }
     else {

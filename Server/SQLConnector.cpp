@@ -6,6 +6,7 @@
 #include "SQLConnector.h"
 #include <iostream>
 #include <string.h>
+#include <sstream>
 
 using namespace std;
 
@@ -24,12 +25,48 @@ SQLConnector::~SQLConnector(){
 }
 
 void SQLConnector::execute(string cmd){
-    sqls = sqlite3_exec(database, cmd.c_str(), 0, 0, NULL);
+    char *error_message = 0;
+    sqls = sqlite3_exec(database, cmd.c_str(), 0, 0, &error_message);
     if (sqls != SQLITE_OK){
-        cout << "Could not execute SQL query!" << endl;
+        cout << "Could not execute SQL query! Return Code:" << sqls << endl;
+        //switch(sqls){
+        //    case SQLITE_IOERR:
+        //        cout << "Some kind of I/O error happened. Do you have permission(sudo)?" << endl;
+        //        break;
+        //    default:
+        //        break;        
+        //}
+        //cout << "error code: " << sqls;
     }
     else {
-        cout << sqls;
+        cout << "Executed Successfully. Return Code:" << sqls;
+    }
+
+    if(error_message){
+        // Print out the error message if any
+        cout << "SQL ERROR MESSAGE: " << error_message << endl;
+        // Free the error message, since it was alloced in exec()
+        sqlite3_free(error_message);
     }
 }
+
+
+void SQLConnector::create_account(){
+    std::stringstream query;
+    query << "insert into accounts (account_name, key, salt, salt_iterations) values (\"Hintron\",\"key\",\"salty\",10)";
+    execute(query.str()); 
+}
+
+
+
+void SQLConnector::list_accounts(){
+    std::stringstream query;
+    query << "select * from accounts";
+    execute(query.str()); 
+}
+
+
+
+
+
 

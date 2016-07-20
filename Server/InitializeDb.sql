@@ -5,7 +5,7 @@ CREATE TABLE accounts
 (
     id integer not null primary key autoincrement,
     account_name text not null unique,
-    password text not null,
+    key text not null,
     salt text not null,
     salt_iterations numeric not null,
     real_name text
