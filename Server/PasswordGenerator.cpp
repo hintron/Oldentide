@@ -1,5 +1,5 @@
 // Compile this file with the following command
-// g++ PasswordGenerator.cpp -lcrypto -o passwordgen.o
+// g++ PasswordGenerator.cpp SQLConnector.cpp -lcrypto -lsqlite3 -o passwordgen.o
 
 // NOTE: OpenSSL 1.0.2h needs to be installed on the system! It is the LTS solution and will be supported until Dec 2019
 
@@ -7,6 +7,7 @@
 #include <openssl/evp.h>
 #include <string.h>
 #include <openssl/bn.h>
+#include "SQLConnector.h"
 
 //
 //// Terminology:
@@ -23,56 +24,38 @@
 // save the salted password and salt in the sqlite db, and 
 // time the process to see how long it took, sending an error if too quick (< 200ms)
 
+
+// TODO: Impose restrinctions on account length
 #define MIN_PASSWORD_LENGTH 8
-#define MAX_PASSWORD_LENGTH 64
+#define MAX_PASSWORD_LENGTH 1000
 #define SALT_BIT_SIZE 512
 // Iterations should be calibrated so the whole process takes 200-1000 ms
 // If it is any quicker, it defeats the point of salting and stretching!
 // 2^20 iterations will effectively add 20 bits to the password
 const long long ITERATIONS = 1 << 20;
 // NOTE: The generated key depends on the number of iterations.
-
 //
 //// TESTING:
 //
 // Run this: 
-//      ./passwordgen.o [password]
-// This will generate a key using a randomly-created salt and the password.
-// Copy the 512-bit salt hex string and paste it into this command using the same password:
-//      ./passwordgen.o [password] [paste_salt_here]
-// If the output keys for both commands are the same, then it worked properly!
+//      ./passwordgen.o [account_name] [password] new
+// This will generate a new account and create a key using a randomly-created salt and the password.
+//      ./passwordgen.o [account_name] [password]
 
 
-// TODO: Modularize code for reuse, so creating a new key uses same code for return visits
+
+
 // TODO: Time code and print that to output
-main(int argc, char *argv[]) {
+// TODO: Have option to quiet output
+// Pass in an empty, initialized BIGNUM for salt, a string for password,
+// and an empty array pointer of size EVP_MAX_MD_SIZE for the output
+// TODO: What's the better way - passing and modifying a pointer to an array on the stack,
+// or returning a pointer to an malloc'ed array on the heap that need to be freed?
+// Returns the number of iterations it took
+long long generate_key(const char *password, BIGNUM *salt, unsigned char *md_value){
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
-    // TODO: I don't think I need a temp string. Need to test
-    // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
-    unsigned char md_value[EVP_MAX_MD_SIZE];
     unsigned int md_len, i;
-
-    if(!argv[1]) {
-        printf("Usage: ./passwordgen.o [password_to_salt] [salt_in_hex]\n");
-        exit(1);
-    }
-
-    // get the password
-    char * password = argv[1];
-    // Check to make sure password is at least 8 chars and that it is not longer than 64 chars
-    if(strlen(password) > MAX_PASSWORD_LENGTH){
-        printf("Password is too large to process!\n");
-        exit(0); 
-    }
-    else if(strlen(password) < MIN_PASSWORD_LENGTH){
-        printf("Password is too small to process!\n" );
-        exit(0); 
-    }
-    else {
-        // Password is of a good length
-    }
-    
 
     printf("\n\nSalting and stretching the password...\n");
 
@@ -80,19 +63,6 @@ main(int argc, char *argv[]) {
     md_function = EVP_sha512();
 
     printf("Password: \"%s\"\n", password);
-
-    BIGNUM * salt = BN_new();
-    if(!argv[2]) {
-        // Since argument was not supplied, generate a random salt
-        // Create the random number (openssl should auto-seed from /dev/urandom)
-        BN_rand(salt, SALT_BIT_SIZE, -1, 0);
-    }
-    else {
-        // Have the second param be the salt (in hex), so that the key
-        // can be manually regenerated if the salt is known
-        // convert salt argument from hex to bn
-        BN_hex2bn(&salt, argv[2]);     
-    }
 
     int salt_bytes = BN_num_bytes(salt);
     int salt_bits = BN_num_bits(salt);
@@ -136,7 +106,82 @@ main(int argc, char *argv[]) {
     }
     printf("\n");
 
+    return ITERATIONS;
+}
 
+
+main(int argc, char *argv[]) {
+    // The account name will be used to look up the salt to work with
+    if(!argv[1] || !argv[2]) {
+        printf("Usage: ./passwordgen.o account_name password [new]\n");
+        exit(1);
+    }
+
+    // get the account name and password
+    char * account_name = argv[1];
+    char * password = argv[2];
+    // Check to make sure password is reasonable
+    if(strlen(password) > MAX_PASSWORD_LENGTH){
+        printf("Password is too large to process!\n");
+        exit(0); 
+    }
+    else if(strlen(password) < MIN_PASSWORD_LENGTH){
+        printf("Password is too small to process!\n" );
+        exit(0); 
+    }
+    else {
+        // Password is of a good length
+    }
+
+    // TODO: Impose restrictions on account length
+
+    // Initialize salt and generated key
+    BIGNUM *salt = BN_new();
+    unsigned char generated_key[EVP_MAX_MD_SIZE];
+    // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
+
+    if(argv[3]) {
+        //
+        //// Create a new account
+        //
+        
+        // TODO: First check to make sure account name does not already exist
+        // Exit if it does   
+
+ 
+        // Since argument was not supplied, generate a random salt
+        // Create the random number (openssl should auto-seed from /dev/urandom)
+        BN_rand(salt, SALT_BIT_SIZE, -1, 0);
+    
+        int iterations = generate_key(password, salt, generated_key);
+        
+        SQLConnector *sql = new SQLConnector();
+        printf("Creating new account and saving account_name, salt, key, and iterations\n");
+        //sql->execute();
+        delete sql;
+    }
+    else {
+        //
+        //// Authenticate - perform a key lookup and check
+        //
+       
+        // TODO: Check to make sure account already exists
+        // Exit if it doesn't
+ 
+        // TODO: Use the passed account name to look up the salt
+
+        // Have the second param be the salt (in hex), so that the key
+        // can be manually regenerated if the salt is known
+        // convert salt argument from hex to bn
+        // TODO: insert the actual salt
+        BN_hex2bn(&salt, argv[2]);     
+        int iterations = generate_key(password, salt, generated_key);
+        SQLConnector *sql = new SQLConnector();
+        printf("Checking to see if generated key matches key in account\n");
+        //sql->execute();
+        delete sql;
+    }
+    
     // TODO: Save the salt and the generated key (salted password) in the sqlite db
     // Make sure when storing the salt and key, that any leading zeros or zero bits are preserved!
     // TODO: Save the number of iterations used to generate the key in the db 
@@ -147,6 +192,14 @@ main(int argc, char *argv[]) {
 
     // Clear the allocated BIGNUM pointer
     BN_clear_free(salt);
+    // TODO: Overwrite stack sensitive variables with with 0's,
+    // since it doesn't get zeroed out once it's off the stack
+    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+    //    generated_key[i] = 0;
+    //} 
+    //for(int i = strlen(); i > 0); --i){
+    //    password[i] = 0;
+    //} 
 
     // NOTE: clear_free variants are for sensitive info, opposed to just free.
     // The salts aren't sensitive, but the password and key are.
