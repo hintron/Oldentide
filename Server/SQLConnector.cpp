@@ -14,6 +14,7 @@ SQLConnector::SQLConnector(){
     sqls = sqlite3_open("db/Oldentide.db", &database);
     if(sqls){
         cout << "Can't open database!" << endl;
+        sqlite3_close(database);
     }
     else{
         cout << "Oldentide database opened successfully." << endl;
@@ -26,7 +27,8 @@ SQLConnector::~SQLConnector(){
 
 void SQLConnector::execute(string cmd){
     char *error_message = 0;
-    sqls = sqlite3_exec(database, cmd.c_str(), 0, 0, &error_message);
+
+    sqls = sqlite3_exec(database, cmd.c_str(), &execute_callback, 0, &error_message);
     if (sqls != SQLITE_OK){
         cout << "Could not execute SQL query! Return Code:" << sqls << endl;
         //switch(sqls){
@@ -39,7 +41,7 @@ void SQLConnector::execute(string cmd){
         //cout << "error code: " << sqls;
     }
     else {
-        cout << "Executed Successfully. Return Code:" << sqls;
+        cout << "Executed Successfully. Return Code:" << sqls << endl;
     }
 
     if(error_message){
@@ -50,14 +52,11 @@ void SQLConnector::execute(string cmd){
     }
 }
 
-
 void SQLConnector::create_account(){
     std::stringstream query;
     query << "insert into accounts (account_name, key, salt, salt_iterations) values (\"Hintron\",\"key\",\"salty\",10)";
     execute(query.str()); 
 }
-
-
 
 void SQLConnector::list_accounts(){
     std::stringstream query;
@@ -65,8 +64,17 @@ void SQLConnector::list_accounts(){
     execute(query.str()); 
 }
 
-
-
+// Callback adapted from https://www.sqlite.org/quickstart.html
+// This can't be a method, since it is being passed as a c function pointer
+static int execute_callback(void *NotUsed, int argc, char **argv, char **azColName){
+    int i;
+    for(i = 0; i < argc; i++){
+        cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
+        cout << " | ";
+    }
+    cout << endl;
+    return 0;
+}
 
 
 

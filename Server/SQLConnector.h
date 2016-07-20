@@ -21,4 +21,9 @@ class SQLConnector{
         int sqls;
 };
 
+// This can't be a private method, because it needs to be passed as a pointer to sqlite3_exec()
+// and methods of a c++ class have a hidden function pointer to the class instance
+// See http://stackoverflow.com/a/8045331  
+static int execute_callback(void *, int, char **, char **);
+
 #endif // OLDENTIDE_SQLCONNECTOR_H
