@@ -4,23 +4,16 @@ DROP TABLE IF EXISTS npcs;
 CREATE TABLE accounts
 (
     id integer not null primary key autoincrement,
-    account text not null,
+    account_name text not null unique,
     password text not null,
-    playercharacter0 text not null,
-    playercharacter1 text not null,
-    playercharacter2 text not null,
-    playercharacter3 text not null,
-    playercharacter4 text not null,
-    playercharacter5 text not null,
-    playercharacter6 text not null,
-    playercharacter7 text not null,
-    playercharacter8 text not null,
-    playercharacter9 text not null
+    salt text not null,
+    salt_iterations numeric not null,
+    real_name text
 );
-CREATE TABLE players 
+CREATE TABLE players
 (
     id integer not null primary key autoincrement,
-    account text not null,
+    account_id numeric not null,
     session integer not null,
     firstname text not null,
     lastname text not null,
@@ -95,5 +88,5 @@ CREATE TABLE players
 );
 --CREATE TABLE npcs
 --(
---        
+--
 --);
