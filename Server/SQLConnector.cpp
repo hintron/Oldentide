@@ -4,6 +4,7 @@
 // Purpose:     SQL Connector class to handle SQLite3 queries.
 
 #include "SQLConnector.h"
+#include "AccountManager.h"
 #include <iostream>
 #include <string.h>
 #include <sstream>
@@ -52,9 +53,9 @@ void SQLConnector::execute(string cmd){
     }
 }
 
-// TODO: Sanitize Key, salt, and iterations as well?
+// TODO: Sanitize Key, salt, and iterations
 /**
-    Created a new account record.
+    Insert a new account record.
 
     @param account_name: IN. A c string that has already been sanitized to make sure it only has characters
                             a-z,A-Z,0-9,_ If not sanitized, could lead to SQL Injection!
@@ -62,7 +63,7 @@ void SQLConnector::execute(string cmd){
     @param salt: IN. A c string of the salt used to generate the key. Will be a string of hex.
     @param iterations: IN. The number of iterations the key_generator algorithm used.
 **/
-void SQLConnector::create_account(char *account_name, char *key, char *salt, long long iterations){
+void SQLConnector::insert_account(char *account_name, char *key, char *salt, long long int iterations){
     std::stringstream query;
     query << "insert into accounts (account_name, key, salt, salt_iterations) values (";
     query << "trim(\"" << account_name << "\"),";
@@ -90,10 +91,10 @@ void SQLConnector::list_accounts(){
                              be stored.
     @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
 **/
-int SQLConnector::get_account_salt(char *account_name, const unsigned char *salt_string_hex){
+int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     std::stringstream query;
+    // TODO: Use sanitize account name instead of parameterization
     // Trim whitespace from account name with trim function
-    // TODO: Use the quote() function to quote out " and ' - is it needed with parameterization?
     query << "select * from accounts where account_name = trim(?)";
     sqlite3_stmt *statement; 
     sqlite3_prepare_v2(database, query.str().c_str(), -1, &statement, NULL);
@@ -112,10 +113,10 @@ int SQLConnector::get_account_salt(char *account_name, const unsigned char *salt
         //int salt_bytes = sqlite3_column_bytes(statement, column_salt); 
         //cout << "Account found! The salt is " << salt_bytes << "+1 bytes!" << endl;
         // Get the salt text
-        const unsigned char * salt_string_hex_temp = sqlite3_column_text(statement, column_salt);
+        char * salt_string_hex_temp = (char *)sqlite3_column_text(statement, column_salt);
         // sqlite3_column_text returns a string pointer that sqlite will autodeestroy soon
         // So, we need to copy it to a place that won't get destroyed after returning from this function 
-        strcpy((char *)salt_string_hex, (char *)salt_string_hex_temp);        
+        strcpy(salt_string_hex, salt_string_hex_temp);
         cout << "Salt hex from db: " <<  salt_string_hex << endl;
         return_value = 1;
     }
