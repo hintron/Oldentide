@@ -11,7 +11,9 @@
 #include <regex>
 
 #define MIN_ACCOUNT_NAME_LENGTH 3
+#define MIN_ACCOUNT_NAME_LENGTH_STRING "3"
 #define MAX_ACCOUNT_NAME_LENGTH 30
+#define MAX_ACCOUNT_NAME_LENGTH_STRING "30"
 #define MIN_PASSWORD_LENGTH 8
 #define MAX_PASSWORD_LENGTH 1000
 #define SALT_BIT_SIZE 512
@@ -138,9 +140,17 @@ int main(int argc, char *argv[]) {
         // Account name is of good length
     }
 
-    // TODO: Sanitize account name - use regex to check that it is only alpha-numeric
-
-
+    // TODO: Wow. Adding regex stuff adds a full three seconds to the compile time... What's the deal?
+    // Use regex to check that the account name is only alpha-numeric
+    // TODO: Break this out into its own function? Could be useful for things other than account_name
+    // Regex: \^\w{3,30}$\
+    // Tested regex at regex101.com using javascript (ECMAScript) flavor
+    // Note: In C, adjacent string literals are concatenated (MACRO
+    std::regex account_regex("^\\w{" MIN_ACCOUNT_NAME_LENGTH_STRING "," MAX_ACCOUNT_NAME_LENGTH_STRING "}$");
+    if(!regex_match(account_name, account_regex)){
+        printf("Invalid account name! Account name must be only contain characters a-z, A-Z, 0-9, _\n");
+        exit(0);
+    }; 
 
 
     // Initialize salt and generated key

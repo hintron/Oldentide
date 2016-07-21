@@ -83,6 +83,8 @@ int SQLConnector::get_account_salt(char *account_name, const unsigned char *salt
     sqlite3_bind_text(statement, 1, account_name, -1, SQLITE_STATIC);
     // NOTE: Column 3 should be the salt column! Don't change db definition!
     // TODO: Do a for loop until I find the clumn index that matches "salt" using sqlite3_column_name?
+    // use strcmp to compare returned column name with "salt" to see if it is accurate
+    // TODO: Do this in the constructor once? SELECT * FROM accounts LIMIT 1
     int column_salt = 3;
     int rc = sqlite3_step(statement);
     int return_value = 0;
