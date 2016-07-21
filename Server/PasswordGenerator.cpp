@@ -152,6 +152,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }; 
 
+    // NOTE: Account names are stored in a case-insensitive way in the db
 
     // Initialize salt and generated key
     BIGNUM *salt = BN_new();
@@ -162,14 +163,6 @@ int main(int argc, char *argv[]) {
         //// Create a new account
         //
         
-        // TODO: First check to make sure account name does not already exist
-        // Exit if it does   
-    
-        // TODO: Make sure to parameterize the user inputs
-        // TODO: Make sure the account name is all converted to lowercase
-        // TODO: only allow ascii acount names?
-
- 
         // Since argument was not supplied, generate a random salt
         // Create the random number (openssl should auto-seed from /dev/urandom)
         BN_rand(salt, SALT_BIT_SIZE, -1, 0);

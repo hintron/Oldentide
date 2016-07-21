@@ -14,9 +14,11 @@ class SQLConnector{
         SQLConnector();
         ~SQLConnector();
         void execute(std::string cmd);
+        // TODO: Rename insert_account
         void create_account(char *, char *, char *, long long);
         void list_accounts();
         int get_account_salt(char *, const unsigned char *);
+        //int get_acccount_key(char *, char *);
     private:
         sqlite3 * database;
         int sqls;
