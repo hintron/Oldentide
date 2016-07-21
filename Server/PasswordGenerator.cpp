@@ -168,6 +168,8 @@ int main(int argc, char *argv[]) {
        
         printf("Salt string hex size: %d\n", sizeof(salt_string_hex));
  
+        // Save the salt and the generated key (salted password) in the sqlite db
+        // Save the number of iterations used to generate the key in the db 
         SQLConnector *sql = new SQLConnector();
         printf("Creating new account and saving account_name, salt, key, and iterations\n");
         sql->create_account(account_name, generated_key_string_hex, salt_string_hex, iterations);
@@ -184,27 +186,28 @@ int main(int argc, char *argv[]) {
         //
        
         SQLConnector *sql = new SQLConnector();
-        // TODO: Check to make sure account already exists
-        // Exit if it doesn't
         // Use the passed account name to look up the salt
         // The salt, in hex, will be 2*64+1, or 128+1 = 129 (add +1 for nul char)
         unsigned char salt_string_hex[EVP_MAX_MD_SIZE*2+1];
         //unsigned char * salt_string_hex;
-        sql->get_account_salt(account_name, salt_string_hex);
-        printf("Salt retrieved:\n%s\n", salt_string_hex);
-        printf("Checking to see if generated key matches key in account\n");
-        BN_hex2bn(&salt, (char *)salt_string_hex);     
-        int iterations = generate_key(password, salt, generated_key);
-        
-        // TODO: Send off generated key to the server to see
-        // if it is the same as the key on file
-        //sql->authenticate_key(salt_string_hex);
+        int success = sql->get_account_salt(account_name, salt_string_hex);
+        // Check to make sure account already exists
+        if(success){
+            printf("Salt retrieved:\n%s\n", salt_string_hex);
+            printf("Checking to see if generated key matches key in account\n");
+            BN_hex2bn(&salt, (char *)salt_string_hex);     
+            int iterations = generate_key(password, salt, generated_key);
+            
+            // TODO: Send off generated key to the server to see
+            // if it is the same as the key on file
+            //sql->authenticate_key(salt_string_hex);
+        }
+        else {
+            printf("Salt retrieval failed. Account probably doesn't exist\n");
+        }
         delete sql;
     }
     
-    // TODO: Save the salt and the generated key (salted password) in the sqlite db
-    // Make sure when storing the salt and key, that any leading zeros or zero bits are preserved!
-    // TODO: Save the number of iterations used to generate the key in the db 
 
     //
     //// Free up memory allocations

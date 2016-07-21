@@ -16,7 +16,7 @@ class SQLConnector{
         void execute(std::string cmd);
         void create_account(char *, char *, char *, long long);
         void list_accounts();
-        void get_account_salt(char *, const unsigned char *);
+        int get_account_salt(char *, const unsigned char *);
     private:
         sqlite3 * database;
         int sqls;
