@@ -57,7 +57,7 @@ long long generate_key(const char *password, BIGNUM *salt, BIGNUM *generated_key
     unsigned char md_value[EVP_MAX_MD_SIZE];
     // NOTE: EVP_MAX_MD_SIZE is 64 (512 bits)
 
-    printf("\n\nSalting and stretching the password...\n");
+    printf("Salting and stretching the password...\n");
 
     printf("Hash Function: SHA-512\n");
     md_function = EVP_sha512();
@@ -112,7 +112,8 @@ long long generate_key(const char *password, BIGNUM *salt, BIGNUM *generated_key
 }
 
 
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
+    printf("\n\n");
     // The account name will be used to look up the salt to work with
     if(!argv[1] || !argv[2]) {
         printf("Usage: ./passwordgen.o account_name password [new]\n");
@@ -164,7 +165,9 @@ main(int argc, char *argv[]) {
         // Note: This needs to be freed later
         char *salt_string_hex = BN_bn2hex(salt);
         char *generated_key_string_hex = BN_bn2hex(generated_key);
-        
+       
+        printf("Salt string hex size: %d\n", sizeof(salt_string_hex));
+ 
         SQLConnector *sql = new SQLConnector();
         printf("Creating new account and saving account_name, salt, key, and iterations\n");
         sql->create_account(account_name, generated_key_string_hex, salt_string_hex, iterations);
@@ -180,19 +183,22 @@ main(int argc, char *argv[]) {
         //// Authenticate - perform a key lookup and check
         //
        
+        SQLConnector *sql = new SQLConnector();
         // TODO: Check to make sure account already exists
         // Exit if it doesn't
-        // TODO: Use the passed account name to look up the salt
-
-        // Have the second param be the salt (in hex), so that the key
-        // can be manually regenerated if the salt is known
-        // convert salt argument from hex to bn
-        // TODO: insert the actual salt
-        BN_hex2bn(&salt, argv[2]);     
-        int iterations = generate_key(password, salt, generated_key);
-        SQLConnector *sql = new SQLConnector();
+        // Use the passed account name to look up the salt
+        // The salt, in hex, will be 2*64+1, or 128+1 = 129 (add +1 for nul char)
+        unsigned char salt_string_hex[EVP_MAX_MD_SIZE*2+1];
+        //unsigned char * salt_string_hex;
+        sql->get_account_salt(account_name, salt_string_hex);
+        printf("Salt retrieved:\n%s\n", salt_string_hex);
         printf("Checking to see if generated key matches key in account\n");
-        //sql->execute();
+        BN_hex2bn(&salt, (char *)salt_string_hex);     
+        int iterations = generate_key(password, salt, generated_key);
+        
+        // TODO: Send off generated key to the server to see
+        // if it is the same as the key on file
+        //sql->authenticate_key(salt_string_hex);
         delete sql;
     }
     

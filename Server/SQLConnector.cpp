@@ -26,19 +26,11 @@ SQLConnector::~SQLConnector(){
 }
 
 void SQLConnector::execute(string cmd){
-    char *error_message = 0;
+    char *error_message = NULL;
 
     sqls = sqlite3_exec(database, cmd.c_str(), &execute_callback, 0, &error_message);
     if (sqls != SQLITE_OK){
         cout << "Could not execute SQL query! Return Code:" << sqls << endl;
-        //switch(sqls){
-        //    case SQLITE_IOERR:
-        //        cout << "Some kind of I/O error happened. Do you have permission(sudo)?" << endl;
-        //        break;
-        //    default:
-        //        break;        
-        //}
-        //cout << "error code: " << sqls;
     }
     else {
         cout << "Executed Successfully. Return Code:" << sqls << endl;
@@ -52,10 +44,12 @@ void SQLConnector::execute(string cmd){
     }
 }
 
+// TODO: account_name needs serious parameterization! Or the user could inject sql
+// Or is it just easier to trim and only check for alphanumeric and reject all others?
 void SQLConnector::create_account(char *account_name, char *key, char *salt, long long iterations){
     std::stringstream query;
     query << "insert into accounts (account_name, key, salt, salt_iterations) values (";
-    query << "\"" << account_name << "\",";
+    query << "trim(\"" << account_name << "\"),";
     query << "\"" << key << "\",";
     query << "\"" << salt << "\",";
     query << iterations << ")";
@@ -69,6 +63,61 @@ void SQLConnector::list_accounts(){
     query << "select * from accounts";
     execute(query.str()); 
 }
+
+// Whew... paramaterization makes it so I can't use sqlite3_exec, which makes things way more verbose
+// Returns 
+void SQLConnector::get_account_salt(char *account_name, const unsigned char *salt_string_hex){
+    std::stringstream query;
+    // Trim whitespace from account name with trim function
+    // TODO: Use the quote() function to quote out " and ' - is it needed with parameterization?
+    query << "select * from accounts where account_name = trim(?)";
+    
+    sqlite3_stmt *statement; 
+    int return_code = sqlite3_prepare_v2(database, query.str().c_str(), -1, &statement, NULL);
+    if(return_code != SQLITE_OK){
+        cout << "An SQL error occurred in SQLConnector::get_account() sqlite3_prepare_v2" << endl;
+        // TODO: Return? Finalize and return? Quit?
+    }
+
+    // If 4th param is negative, then it reads from account_name until hits nul character
+    // The last param indicates that account_name doesn't need a destructor function pointer
+    return_code = sqlite3_bind_text(statement, 1, account_name, -1, SQLITE_STATIC);
+    if(return_code != SQLITE_OK){
+        cout << "An SQL error occurred in SQLConnector::get_account() sqlite3_bind_text() return code: " << return_code << endl;
+    }
+    // reset return code
+    return_code = SQLITE_OK;
+    int column_salt = 3;
+    return_code = sqlite3_step(statement);
+    if (return_code == SQLITE_ROW){
+        // Process each row
+        int salt_bytes = sqlite3_column_bytes(statement, column_salt); 
+        cout << "Account found! The salt is " << salt_bytes << "+1 bytes!" << endl;
+        // TODO: Malloc?
+        // TODO: Get the salt text
+        //salt_string_hex = (unsigned const *) malloc(salt_bytes + 1);
+
+        const unsigned char * salt_string_hex_temp = sqlite3_column_text(statement, column_salt);
+        // sqlite3_column_text returns a string pointer that is on the heap and will deallocate soon
+        // (sqlite auto-destroys it)
+        // So, we need to copy it to a place that won't get destroyed after returning from this funcrion 
+        strcpy((char *)salt_string_hex, (char *)salt_string_hex_temp);        
+        cout << "Salt hex from db: " <<  salt_string_hex << endl;
+    }
+    else if(return_code == SQLITE_DONE){
+        // User account wasn't found
+        cout << "Account wasn't found..." << endl;
+    }
+    else{
+        cout << "An SQL error occurred in SQLConnector::get_account() sqlite3_step() return code: " << return_code << endl;
+    }
+    return_code = sqlite3_finalize(statement);
+    if(return_code != SQLITE_OK){
+        cout << "An SQL error occurred in SQLConnector::get_account() sqlite3_finalize()" << return_code << endl;
+        // TODO: Do I care about the return of finalize?
+    }
+}
+
 
 // Callback adapted from https://www.sqlite.org/quickstart.html
 // This can't be a method, since it is being passed as a c function pointer
