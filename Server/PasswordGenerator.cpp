@@ -1,5 +1,5 @@
 // Compile this file with the following command
-// g++ PasswordGenerator.cpp SQLConnector.cpp -lcrypto -lsqlite3 -o passwordgen.o
+// g++ PasswordGenerator.cpp SQLConnector.cpp -lcrypto -lsqlite3 -std=c++11 -o passwordgen.o
 
 // NOTE: OpenSSL 1.0.2h needs to be installed on the system! It is the LTS solution and will be supported until Dec 2019
 
@@ -8,24 +8,10 @@
 #include <string.h>
 #include <openssl/bn.h>
 #include "SQLConnector.h"
+#include <regex>
 
-//
-//// Terminology:
-//
-// message = plaintext
-// message digest function = hash function
-// message digest (MD) = digest = fingerprint = output of a hash function
-
-//
-//// Task:
-//
-// Create a program that will take an input password,
-// generate a random salt, stretch the password for n iterations,
-// save the salted password and salt in the sqlite db, and 
-// time the process to see how long it took, sending an error if too quick (< 200ms)
-
-
-// TODO: Impose restrinctions on account length
+#define MIN_ACCOUNT_NAME_LENGTH 3
+#define MAX_ACCOUNT_NAME_LENGTH 30
 #define MIN_PASSWORD_LENGTH 8
 #define MAX_PASSWORD_LENGTH 1000
 #define SALT_BIT_SIZE 512
@@ -42,14 +28,18 @@ const long long ITERATIONS = 1 << 20;
 // This will generate a new account and create a key using a randomly-created salt and the password.
 //      ./passwordgen.o [account_name] [password]
 
-
-
-
 // TODO: Time code and print that to output
 // TODO: Have option to quiet output
-// Pass in an empty, initialized BIGNUM* for salt, a string for password,
-// and an initialized BIGNUM* for md_value empty array pointer of size EVP_MAX_MD_SIZE for the output
-// Returns the number of iterations it took
+
+/**
+    Takes a password of any length and a 512-bit salt and calculates a 512-bit key.
+    Uses the OpenSSL implementation of sha512.
+
+    @param password : IN. A c string containing the password of the user.
+    @param salt : IN. The salt to use to generate the key.
+    @param generated_key : OUT. Should be passed in as an empty initialized BIGNUM.
+    @return : The number of iterations used in the algorithm to generate the key
+**/
 long long generate_key(const char *password, BIGNUM *salt, BIGNUM *generated_key){
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
@@ -83,7 +73,6 @@ long long generate_key(const char *password, BIGNUM *salt, BIGNUM *generated_key
 
     printf("Iterations: %d\n", ITERATIONS);
     for (long long i = 0; i < ITERATIONS; ++i) {
-        //printf("%dth iteration: \n", i);
         md_context = EVP_MD_CTX_create();
         EVP_DigestInit(md_context, md_function);
         // Append the previous hash, pasword, and salt together in this order: 
@@ -125,18 +114,35 @@ int main(int argc, char *argv[]) {
     char * password = argv[2];
     // Check to make sure password is reasonable
     if(strlen(password) > MAX_PASSWORD_LENGTH){
-        printf("Password is too large to process!\n");
+        printf("Password is too large!\n");
         exit(0); 
     }
     else if(strlen(password) < MIN_PASSWORD_LENGTH){
-        printf("Password is too small to process!\n" );
+        printf("Password is too small!\n" );
         exit(0); 
     }
     else {
         // Password is of a good length
     }
 
-    // TODO: Impose restrictions on account length
+    // Check to make sure account_name is reasonable
+    if(strlen(account_name) > MAX_ACCOUNT_NAME_LENGTH){
+        printf("Account name is too large!\n");
+        exit(0);
+    }
+    else if(strlen(account_name) < MIN_ACCOUNT_NAME_LENGTH){
+        printf("Account name is too small!\n" );
+        exit(0);
+    }
+    else {
+        // Account name is of good length
+    }
+
+    // TODO: Sanitize account name - use regex to check that it is only alpha-numeric
+
+
+
+
     // Initialize salt and generated key
     BIGNUM *salt = BN_new();
     BIGNUM *generated_key = BN_new();
@@ -232,6 +238,21 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
+
+//
+//// Terminology:
+//
+// message = plaintext
+// message digest function = hash function
+// message digest (MD) = digest = fingerprint = output of a hash function
+
+//
+//// Task:
+//
+// Create a program that will take an input password,
+// generate a random salt, stretch the password for n iterations,
+// save the salted password and salt in the sqlite db, and
+// time the process to see how long it took, sending an error if too quick (< 200ms)
 
 /*
 // Pseudocode for salting and stretching a password

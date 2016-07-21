@@ -64,7 +64,13 @@ void SQLConnector::list_accounts(){
 }
 
 // Whew... paramaterization makes it so I can't use sqlite3_exec, which makes things way more verbose
-// Returns a 1 if salt is found and a 0 otherwise 
+/**
+    @param account_name: IN. A c string on the account_name to look the salt up. It should be screened
+                                 so it is ONLY an alphanumeric string to prevent SQL injection attacks
+    @param salt_string_hex: OUT. An empty c string allocated to 129 bytes. This is where the salt will
+                             be stored.
+    @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
+**/
 int SQLConnector::get_account_salt(char *account_name, const unsigned char *salt_string_hex){
     std::stringstream query;
     // Trim whitespace from account name with trim function
@@ -75,6 +81,8 @@ int SQLConnector::get_account_salt(char *account_name, const unsigned char *salt
     // Negative number makes it read from account_name until it hits nul character
     // SQLITE_STATIC indicates that account_name doesn't need a destructor function
     sqlite3_bind_text(statement, 1, account_name, -1, SQLITE_STATIC);
+    // NOTE: Column 3 should be the salt column! Don't change db definition!
+    // TODO: Do a for loop until I find the clumn index that matches "salt" using sqlite3_column_name?
     int column_salt = 3;
     int rc = sqlite3_step(statement);
     int return_value = 0;
