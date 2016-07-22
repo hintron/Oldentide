@@ -13,8 +13,8 @@ int main(int argc, char *argv[]) {
     }
 
     // get the account name and password
-    char * account_name = argv[1];
-    char * password = argv[2];
+    char *account_name = argv[1];
+    char *password = argv[2];
 
     if(!AccountManager::check_password_length(password)){
         exit(1);

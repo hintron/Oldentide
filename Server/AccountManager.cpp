@@ -21,6 +21,10 @@
 // NOTE: The generated key depends on the number of iterations.
 const long long int AccountManager::ITERATIONS = 1 << 20;
 
+
+/**
+    CLIENT.
+**/
 int AccountManager::check_password_length(char *password) {
     // Check to make sure password is reasonable
     if(strlen(password) > MAX_PASSWORD_LENGTH){
@@ -37,6 +41,9 @@ int AccountManager::check_password_length(char *password) {
     }
 }
 
+/**
+    CLIENT/SERVER.
+**/
 int AccountManager::check_account_name_length(char *account_name){
     // Check to make sure account_name is reasonable
     if(strlen(account_name) > MAX_ACCOUNT_NAME_LENGTH){
@@ -52,7 +59,11 @@ int AccountManager::check_account_name_length(char *account_name){
         return 1;
     }
 }
+/**
+    CLIENT/SERVER. Checks to make sure the passed string looks like a valid account name
 
+    Checks the length of the string, and then makes sure it is alphanumeric and underscore only.
+**/
 int AccountManager::sanitize_account_name(char *account_name) {
     if(!AccountManager::check_account_name_length(account_name)){
         return 0;
@@ -65,14 +76,17 @@ int AccountManager::sanitize_account_name(char *account_name) {
         return 1;
     }
 }
-
-// TODO: Wow. Adding regex stuff adds a full three seconds to the compile time... What's the deal?
+/**
+    CLIENT/SERVER. Checks to makesure the passed string is only alphanumeric characters and underscore.
+    
+    Use regex to check that the account name is only alpha-numeric
+    Regex: \^\w{3,30}$\
+    Tested regex at regex101.com using javascript (ECMAScript) flavor
+    NOTE: Account names are stored in a case-insensitive way in the db
+    NOTE: In C, adjacent string literals are concatenated (MACRO
+    TODO: Wow. Adding regex stuff adds a full three seconds to the compile time... What's the deal?
+**/
 int AccountManager::sanitize_alphanumeric(char *string) {
-    // Use regex to check that the account name is only alpha-numeric
-    // Regex: \^\w{3,30}$\
-    // Tested regex at regex101.com using javascript (ECMAScript) flavor
-    // NOTE: Account names are stored in a case-insensitive way in the db
-    // NOTE: In C, adjacent string literals are concatenated (MACRO
     std::regex check_alpha_regex("^\\w{" MIN_ACCOUNT_NAME_LENGTH_STRING "," MAX_ACCOUNT_NAME_LENGTH_STRING "}$");
     if(!regex_match(string, check_alpha_regex)){
         return 0;
@@ -82,12 +96,23 @@ int AccountManager::sanitize_alphanumeric(char *string) {
     }
 }
 
-// TODO:
-//int AccountManager::sanitize_hex_string(char *hex_string) {
-//}
+/**
+    CLIENT/SERVER. Checks to make sure the passed string is only hex - a-f, A-F, 0-9.
+    Returns 1 if it's hex, 0 if not.
+**/
+int AccountManager::sanitize_hex_string(char *string) {
+    // Check to see if the passed string is at least one character (+) of only hex characters 
+    std::regex check_hex_regex("^[a-fA-F0-9]+$");
+    if(!regex_match(string, check_hex_regex)){
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
 
 /**
-    Takes a password of any length and a 512-bit salt and calculates a 512-bit key.
+    CLIENT. Takes a password of any length and a 512-bit salt and calculates a 512-bit key.
     Uses the OpenSSL implementation of sha512.
 
     @param password : IN. A c string containing the password of the user.
@@ -173,7 +198,13 @@ long long AccountManager::generate_key(char *password, char *salt_string_hex, ch
 }
 
 /**
+    CLIENT.
 
+    @param account_name : The account_name of the new account to create.
+    @param password : The password that will be used to generate the key 
+                    for the new account to create. It will NOT be stored.
+
+    @return : Returns 1 if account was successfully created, 0 otherwise.
 **/
 int AccountManager::create_new_account(char *account_name, char *password){
     // Initialize salt and generated key BIGNUMs
@@ -199,17 +230,20 @@ int AccountManager::create_new_account(char *account_name, char *password){
     SQLConnector *sql = new SQLConnector();
     printf("Creating new account and saving account_name, salt, key, and iterations\n");
 
-    printf("Inserting new record:\n");
-    printf("Account:\n%s\n", account_name);
-    printf("Key:\n%s\n", generated_key_string_hex);
-    printf("salt:\n%s\n", salt_string_hex);
-    printf("iterations:\n%d\n", iterations);
-
-
-    sql->insert_account(account_name, generated_key_string_hex, salt_string_hex, iterations);
+    //printf("Inserting new record:\n");
+    //printf("Account:\n%s\n", account_name);
+    //printf("Key:\n%s\n", generated_key_string_hex);
+    //printf("salt:\n%s\n", salt_string_hex);
+    //printf("iterations:\n%d\n", iterations);
+    int success = 0;
+    if(sql->insert_account(account_name, generated_key_string_hex, salt_string_hex, iterations)){
+        success = 1;
+    }
+    else {
+        printf("Unable to insert account record into database...\n");
+    }
     printf("Listing all created accounts...\n");
     sql->list_accounts();
-
 
     //
     //// Free up memory allocations
@@ -231,11 +265,11 @@ int AccountManager::create_new_account(char *account_name, char *password){
     // NOTE: clear_free variants are for sensitive info, opposed to just free.
     // The salts aren't sensitive, but the password and key are.
     // So just use clear_free for everything I can
-    return 1;
+    return success;
 }
 
 /**
-
+    CLIENT.
 **/
 int AccountManager::authenticate_account(char *account_name, char *password){
     //

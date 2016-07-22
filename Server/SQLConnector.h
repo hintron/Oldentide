@@ -13,11 +13,13 @@ class SQLConnector{
     public:
         SQLConnector();
         ~SQLConnector();
-        void execute(std::string cmd);
-        void insert_account(char *, char *, char *, long long int);
+        int execute(std::string cmd);
+        int insert_account(char *, char *, char *, long long int);
         void list_accounts();
         int get_account_salt(char *, char *);
         int get_account_key(char *, char *);
+        // For counting how many records were returne
+        int row_counter;
     private:
         sqlite3 * database;
         int sqls;
@@ -27,6 +29,6 @@ class SQLConnector{
 // and methods of a c++ class have a hidden function pointer to the class instance
 // See http://stackoverflow.com/a/8045331  
 static int execute_callback(void *, int, char **, char **);
-static int get_account_key_callback(void *, int, char **, char **);
+static int return_string_callback(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H

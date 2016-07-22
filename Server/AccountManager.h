@@ -12,8 +12,7 @@ class AccountManager{
         static int check_account_name_length(char *);
         static int sanitize_account_name(char *);
         static int sanitize_alphanumeric(char *);
-        //static int sanitize_hex_string(char *);
-        //static int sanitize_password(char *);
+        static int sanitize_hex_string(char *);
     private:
         static const long long int ITERATIONS;
 };
