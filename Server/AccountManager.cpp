@@ -243,40 +243,57 @@ int AccountManager::authenticate_account(char *account_name, char *password){
     //
     // Initialize salt and generated key BIGNUMs
     BIGNUM *salt = BN_new();
-    BIGNUM *generated_key = BN_new();
+    int success = 0;
 
     SQLConnector *sql = new SQLConnector();
     // Use the passed account name to look up the salt
     // The salt, in hex, will be 2*64+1, or 128+1 = 129 (add +1 for nul char)
     char salt_string_hex[EVP_MAX_MD_SIZE*2+1];
-    char * generated_key_string_hex;
-    //char * salt_string_hex;
-    int success = sql->get_account_salt(account_name, salt_string_hex);
+    char *candidate_key_string_hex;
     // Check to make sure account already exists
-    if(success){
+    if(!sql->get_account_salt(account_name, salt_string_hex)){
+        printf("Salt retrieval failed. Account probably doesn't exist\n");
+    }
+    else {
         printf("Salt retrieved:\n%s\n", salt_string_hex);
         printf("Checking to see if generated key matches key in account\n");
         BN_hex2bn(&salt, (char *)salt_string_hex);
-        int iterations = generate_key(password, salt_string_hex, &generated_key_string_hex);
+        int iterations = generate_key(password, salt_string_hex, &candidate_key_string_hex);
 
-        // For now, manually see if the keys are the same
-        // TODO: Send off generated key to the server to see
-        // if it is the same as the key on file
-        //sql->authenticate_key(account_name, generated_key_string_hex);
-    }
-    else {
-        printf("Salt retrieval failed. Account probably doesn't exist\n");
-    }
+        // Create a container to hold the canonized key string hex
+        char canonized_key_string_hex[EVP_MAX_MD_SIZE*2+1];
+        sql->get_account_key(account_name, canonized_key_string_hex);
 
+        // Initialize salt and generated key BIGNUMs
+        BIGNUM *candidate_key = BN_new();
+        BIGNUM *canonized_key = BN_new();
+
+        // Convert both keys to openssl bn BIGNUM
+        BN_hex2bn(&candidate_key, candidate_key_string_hex);
+        BN_hex2bn(&canonized_key, canonized_key_string_hex);
+
+        printf("Candidate Key: \n%s\n", candidate_key_string_hex);
+        printf("Canonized Key: \n%s\n", canonized_key_string_hex);
+
+        // Compare both BIGNUMs to each other.
+        // If the same, then return 1 (success)
+        // If not, return 0.
+        if(BN_cmp(canonized_key, candidate_key) == 0){
+            printf("Authentication is a success!!\n");
+            success = 1;
+        }
+        // Free the BIGNUMs and malloced strings
+        BN_clear_free(canonized_key);
+        BN_clear_free(candidate_key);
+        OPENSSL_free(candidate_key_string_hex);
+    }
     //
     //// Free up memory allocations
     //
 
     delete sql;
-    OPENSSL_free(generated_key_string_hex);
     // Clear the allocated BIGNUM pointer
     BN_clear_free(salt);
-    BN_clear_free(generated_key);
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
     //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
@@ -290,7 +307,6 @@ int AccountManager::authenticate_account(char *account_name, char *password){
     // So just use clear_free for everything I can
     return success;
 }
-
 
 //
 //// Terminology:

@@ -17,7 +17,7 @@ class SQLConnector{
         void insert_account(char *, char *, char *, long long int);
         void list_accounts();
         int get_account_salt(char *, char *);
-        //int get_acccount_key(char *, char *);
+        int get_account_key(char *, char *);
     private:
         sqlite3 * database;
         int sqls;
@@ -27,5 +27,6 @@ class SQLConnector{
 // and methods of a c++ class have a hidden function pointer to the class instance
 // See http://stackoverflow.com/a/8045331  
 static int execute_callback(void *, int, char **, char **);
+static int get_account_key_callback(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H

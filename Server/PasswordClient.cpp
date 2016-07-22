@@ -40,10 +40,10 @@ int main(int argc, char *argv[]) {
         //// Authenticate - perform a key lookup and check
         //
         if(AccountManager::authenticate_account(account_name, password)){
-            //std::cout << "Successfully authenticated account \"" << account_name << "\"!" << std::endl;
+            std::cout << "Successfully authenticated account \"" << account_name << "\"!" << std::endl;
         }
         else {
-            //std::cout << "ERROR: Failed to authenticate account \"" << account_name << "\"." << std::endl;
+            std::cout << "ERROR: Failed to authenticate account \"" << account_name << "\"." << std::endl;
         }
     }
 }

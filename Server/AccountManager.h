@@ -6,7 +6,6 @@ class AccountManager{
         AccountManager();
         ~AccountManager();
         static int create_new_account(char *, char *);
-        static int authenticate_key(char *, char *);
         static int authenticate_account(char *, char *);
         static long long int generate_key(char *, char *, char **);
         static int check_password_length(char *);
