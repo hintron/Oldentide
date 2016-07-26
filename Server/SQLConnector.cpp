@@ -4,7 +4,7 @@
 // Purpose:     SQL Connector class to handle SQLite3 queries.
 
 #include "SQLConnector.h"
-#include "AccountManager.h"
+#include "Utils.h"
 #include <iostream>
 #include <string.h>
 #include <sstream>
@@ -72,15 +72,15 @@ int SQLConnector::execute(string cmd){
 int SQLConnector::insert_account(char *account_name, char *key, char *salt, long long int iterations){
     std::stringstream query;
     // Sanitize Key, salt, and iterations
-    if(!AccountManager::sanitize_account_name(account_name)){
+    if(!Utils::sanitize_account_name(account_name)){
         cout << "Account_name is invalid! Cannot insert account record" << endl;
         return 0;
     }
-    if(!AccountManager::sanitize_hex_string(key)){
+    if(!Utils::sanitize_hex_string(key)){
         cout << "Key is invalid! Cannot insert account record" << endl;
         return 0;
     }
-    if(!AccountManager::sanitize_hex_string(salt)){
+    if(!Utils::sanitize_hex_string(salt)){
         cout << "Salt is invalid! Cannot insert account record" << endl;
         return 0;
     }
@@ -132,7 +132,7 @@ void SQLConnector::list_accounts(){
 **/
 int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     // Sanitize the account name before preceeding
-    if(!AccountManager::sanitize_account_name(account_name)){
+    if(!Utils::sanitize_account_name(account_name)){
         return 0;
     }
     char *error_message = NULL;
@@ -159,7 +159,7 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
 
     // TODO: There should be a better way to do this, but for now...
     // Check to see if the salt was retrieved
-    if(AccountManager::sanitize_hex_string(salt_string_hex)){
+    if(Utils::sanitize_hex_string(salt_string_hex)){
         return 1;
     }
     else {
@@ -178,7 +178,7 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
 **/
 int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     // Sanitize the account name before preceeding
-    if(!AccountManager::sanitize_account_name(account_name)){
+    if(!Utils::sanitize_account_name(account_name)){
         return 0;
     }
 

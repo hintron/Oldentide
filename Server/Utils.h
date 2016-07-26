@@ -11,4 +11,16 @@
 
 std::vector<std::string> tokenfy(std::string s, char delim);
 
+class Utils{
+    public:
+        Utils();
+        ~Utils();
+        static int check_password_length(char *);
+        static int check_account_name_length(char *);
+        static int sanitize_account_name(char *);
+        static int sanitize_alphanumeric(char *);
+        static int sanitize_hex_string(char *);
+};
+
+
 #endif // OLDENTIDE_UTILS_H
