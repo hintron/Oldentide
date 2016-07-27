@@ -23,6 +23,7 @@ class GameState{
         ~GameState();
         bool verifySession(PACKET_GENERIC * packet);
         bool verifyActiveSession(int sessionId);
+        bool createAccount(PACKET_CREATEACCOUNT * packet);
         bool loginUser(PACKET_LOGIN * packet);
         void disconnectSession(PACKET_DISCONNECT * packet);
         void playerCommand(PACKET_SENDPLAYERCOMMAND * packet);

@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include <iterator>
 #include <iostream>
+#include "AccountManager.h"
 
 using namespace std;
 
@@ -43,10 +44,28 @@ bool GameState::verifyActiveSession(int sessionId){
     }
 }
 
-bool GameState::loginUser(PACKET_LOGIN * packet){
+bool GameState::createAccount(PACKET_CREATEACCOUNT *packet){
+    cout << "  Creating Account..." << endl;
     cout << "  Account: " << packet->account << endl;
-    cout << "  Password: " << packet->password << endl;
-    return true;
+    cout << "  Key: " << packet->keyStringHex << endl;
+    cout << "  Salt: " << packet->saltStringHex << endl;
+    bool success = false;
+    if(sql->insert_account(packet->account, packet->keyStringHex, packet->saltStringHex, 1 << 20)){
+        success = true;
+    }
+    else {
+        printf("Unable to insert new account record into database...\n");
+    }
+    printf("Listing all created accounts...\n");
+    sql->list_accounts();
+    return success;
+}
+
+bool GameState::loginUser(PACKET_LOGIN * packet){
+    cout << "  Logging in..." << endl;
+    cout << "  Account: " << packet->account << endl;
+    cout << "  Key: " << packet->keyStringHex << endl;
+    return AccountManager::authenticate_account(packet->account, packet->keyStringHex);
 }
 
 void GameState::disconnectSession(PACKET_DISCONNECT * packet){

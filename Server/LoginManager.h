@@ -5,8 +5,8 @@ class LoginManager{
     public:
         LoginManager();
         ~LoginManager();
-        static int create_new_account(char *, char *);
-        static int authenticate_account(char *, char *);
+        static void generate_salt_and_key(char *, char *, char *);
+        //static int authenticate_account(char *, char *);
         static long long int generate_key(char *, char *, char **);
     private:
         static const long long int ITERATIONS;

@@ -5,10 +5,8 @@ class AccountManager{
     public:
         AccountManager();
         ~AccountManager();
-        static int create_new_account(char *, char *);
+        //static int create_new_account(char *, char *, char *);
         static int authenticate_account(char *, char *);
-    private:
-        static const long long int ITERATIONS;
 };
 
 #endif // OLDENTIDE_ACCOUNTMANAGER_H

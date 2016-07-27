@@ -100,15 +100,15 @@ long long LoginManager::generate_key(char *password, char *salt_string_hex, char
 }
 
 /**
-    CLIENT.
-
-    @param account_name : The account_name of the new account to create.
-    @param password : The password that will be used to generate the key 
-                    for the new account to create. It will NOT be stored.
-
-    @return : Returns 1 if account was successfully created, 0 otherwise.
+    TODO: Make is so that caller doesn't need to free anything - caller pre-allocates space
+    Figure out who needs to free what 
+    
+    @param password : IN. The password that will be used to generate the key 
+                    for the new account. It will NOT be stored.
+    @param salt_string_hex : OUT. The newly-generated random salt that was used to generate the new key.
+    @param generated_key_string_hex : OUT. The newly-generated key.
 **/
-int LoginManager::create_new_account(char *account_name, char *password){
+void LoginManager::generate_salt_and_key(char *password, char *salt_string_hex, char *generated_key_string_hex){
     // Initialize salt and generated key BIGNUMs
     BIGNUM *salt = BN_new();
 
@@ -119,117 +119,91 @@ int LoginManager::create_new_account(char *account_name, char *password){
     // Convert the salt BIGNUM to a hex string to store in the db as text
     // Store the key as hex, so it is easy to read out
     // Note: This needs to be freed later
-    char *salt_string_hex = BN_bn2hex(salt);
-    // Free the BIGNU since we don't need it anymore
-    // Create a pointer for the key string to go
-    char *generated_key_string_hex;
-    int iterations = LoginManager::generate_key(password, salt_string_hex, &generated_key_string_hex);
+    char *salt_string_hex_temp = BN_bn2hex(salt);
+    char *generated_key_string_hex_temp;
+    int iterations = LoginManager::generate_key(password, salt_string_hex_temp, &generated_key_string_hex_temp);
 
-    printf("Salt string hex size (not including null): %d\n", strlen(salt_string_hex));
+    // Instead of making the caller free it, copy the contents to the passed pointers, and then free it
+    strcpy(salt_string_hex, salt_string_hex_temp); 
+    strcpy(generated_key_string_hex, generated_key_string_hex_temp); 
 
-    // TODO: Create a packet requesting the creation of a new account
-
-    // Save the salt and the generated key (salted password) in the sqlite db
-    // Save the number of iterations used to generate the key in the db
-    SQLConnector *sql = new SQLConnector();
-    printf("Creating new account and saving account_name, salt, key, and iterations\n");
-
-    int success = 0;
-    if(sql->insert_account(account_name, generated_key_string_hex, salt_string_hex, iterations)){
-        success = 1;
-    }
-    else {
-        printf("Unable to insert account record into database...\n");
-    }
-    printf("Listing all created accounts...\n");
-    sql->list_accounts();
-
-    //
-    //// Free up memory allocations
-    //
-    delete sql;
+    OPENSSL_free(generated_key_string_hex_temp);
+    OPENSSL_free(salt_string_hex_temp);
     BN_clear_free(salt);
-    OPENSSL_free(generated_key_string_hex);
-    OPENSSL_free(salt_string_hex);
     // TODO: Use clear_free() version - might need crypto.h though
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
     // NOTE: clear_free variants are for sensitive info, opposed to just free.
     // The salts aren't sensitive, but the password and key are.
     // So just use clear_free for everything I can
-    return success;
 }
 
 /**
     CLIENT.
 **/
-int LoginManager::authenticate_account(char *account_name, char *password){
-    //
-    //// Authenticate - perform a key lookup and check
-    //
-    // Initialize salt and generated key BIGNUMs
-    BIGNUM *salt = BN_new();
-    int success = 0;
-
-    SQLConnector *sql = new SQLConnector();
-    // Use the passed account name to look up the salt
-    // The salt, in hex, will be 2*64+1, or 128+1 = 129 (add +1 for nul char)
-    char salt_string_hex[EVP_MAX_MD_SIZE*2+1];
-    char *candidate_key_string_hex;
-
-    // TODO: Send packet requesting salt for the passed account
-
-    // Check to make sure account already exists
-    if(!sql->get_account_salt(account_name, salt_string_hex)){
-        printf("Salt retrieval failed. Account probably doesn't exist\n");
-    }
-    else {
-        printf("Salt retrieved:\n%s\n", salt_string_hex);
-        printf("Checking to see if generated key matches key in account\n");
-        BN_hex2bn(&salt, (char *)salt_string_hex);
-        int iterations = generate_key(password, salt_string_hex, &candidate_key_string_hex);
-
-        // Create a container to hold the canonized key string hex
-        char canonized_key_string_hex[EVP_MAX_MD_SIZE*2+1];
-        sql->get_account_key(account_name, canonized_key_string_hex);
-
-        // Initialize salt and generated key BIGNUMs
-        BIGNUM *candidate_key = BN_new();
-        BIGNUM *canonized_key = BN_new();
-
-        // Convert both keys to openssl bn BIGNUM
-        BN_hex2bn(&candidate_key, candidate_key_string_hex);
-        BN_hex2bn(&canonized_key, canonized_key_string_hex);
-
-        printf("Candidate Key: \n%s\n", candidate_key_string_hex);
-        printf("Canonized Key: \n%s\n", canonized_key_string_hex);
-
-        // Compare both BIGNUMs to each other.
-        // If the same, then return 1 (success)
-        // If not, return 0.
-        if(BN_cmp(canonized_key, candidate_key) == 0){
-            printf("Authentication is a success!!\n");
-            success = 1;
-        }
-        // Free the BIGNUMs and malloced strings
-        BN_clear_free(canonized_key);
-        BN_clear_free(candidate_key);
-        OPENSSL_free(candidate_key_string_hex);
-    }
-    //
-    //// Free up memory allocations
-    //
-
-    delete sql;
-    // Clear the allocated BIGNUM pointer
-    BN_clear_free(salt);
-    // TODO: Overwrite stack sensitive variables with with 0's,
-    // since it doesn't get zeroed out once it's off the stack
-    // NOTE: clear_free variants are for sensitive info, opposed to just free.
-    // The salts aren't sensitive, but the password and key are.
-    // So just use clear_free for everything I can
-    return success;
-}
+//int LoginManager::authenticate_account(char *account_name, char *password, char *salt_string_hex){
+//    //
+//    //// Authenticate - perform a key lookup and check
+//    //
+//    // Initialize salt and generated key BIGNUMs
+//    BIGNUM *salt = BN_new();
+//    int success = 0;
+//
+//    char *candidate_key_string_hex;
+//
+//    // TODO: Send packet requesting salt for the passed account
+//
+//    // Check to make sure account already exists
+//    if(!sql->get_account_salt(account_name, salt_string_hex)){
+//        printf("Salt retrieval failed. Account probably doesn't exist\n");
+//    }
+//    else {
+//        printf("Salt retrieved:\n%s\n", salt_string_hex);
+//        printf("Checking to see if generated key matches key in account\n");
+//        BN_hex2bn(&salt, (char *)salt_string_hex);
+//        int iterations = generate_key(password, salt_string_hex, &candidate_key_string_hex);
+//
+//        // Create a container to hold the canonized key string hex
+//        char canonized_key_string_hex[EVP_MAX_MD_SIZE*2+1];
+//        sql->get_account_key(account_name, canonized_key_string_hex);
+//
+//        // Initialize salt and generated key BIGNUMs
+//        BIGNUM *candidate_key = BN_new();
+//        BIGNUM *canonized_key = BN_new();
+//
+//        // Convert both keys to openssl bn BIGNUM
+//        BN_hex2bn(&candidate_key, candidate_key_string_hex);
+//        BN_hex2bn(&canonized_key, canonized_key_string_hex);
+//
+//        printf("Candidate Key: \n%s\n", candidate_key_string_hex);
+//        printf("Canonized Key: \n%s\n", canonized_key_string_hex);
+//
+//        // Compare both BIGNUMs to each other.
+//        // If the same, then return 1 (success)
+//        // If not, return 0.
+//        if(BN_cmp(canonized_key, candidate_key) == 0){
+//            printf("Authentication is a success!!\n");
+//            success = 1;
+//        }
+//        // Free the BIGNUMs and malloced strings
+//        BN_clear_free(canonized_key);
+//        BN_clear_free(candidate_key);
+//        OPENSSL_free(candidate_key_string_hex);
+//    }
+//    //
+//    //// Free up memory allocations
+//    //
+//
+//    delete sql;
+//    // Clear the allocated BIGNUM pointer
+//    BN_clear_free(salt);
+//    // TODO: Overwrite stack sensitive variables with with 0's,
+//    // since it doesn't get zeroed out once it's off the stack
+//    // NOTE: clear_free variants are for sensitive info, opposed to just free.
+//    // The salts aren't sensitive, but the password and key are.
+//    // So just use clear_free for everything I can
+//    return success;
+//}
 
 //
 //// Terminology:

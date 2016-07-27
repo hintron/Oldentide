@@ -12,6 +12,8 @@ enum PTYPE{
     ACK,
     CONNECT,
     DISCONNECT,
+    GETSALT,
+    CREATEACCOUNT,
     LOGIN,
     LISTCHARACTERS,
     SELECTCHARACTER,
@@ -50,13 +52,32 @@ struct PACKET_DISCONNECT {
     int sessionId;
 };
 
+struct PACKET_GETSALT {
+    PTYPE packetType = GETSALT;
+    int packetId;
+    int sessionId;
+    char account[30];
+    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
+    char saltStringHex[129]; 
+};
+
+struct PACKET_CREATEACCOUNT {
+    PTYPE packetType = CREATEACCOUNT;
+    int packetId;
+    int sessionId;
+    char account[30];
+    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
+    char saltStringHex[129]; 
+    char keyStringHex[129]; 
+};
+
 struct PACKET_LOGIN {
     PTYPE packetType = LOGIN;
     int packetId;
     int sessionId;
-    // This is insecure, someday I will make an encrypted protocol for logging in.
-    char account[25];
-    char password[25]; 
+    char account[30];
+    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
+    char keyStringHex[129]; 
 };
 
 struct PACKET_LISTCHARACTERS {
