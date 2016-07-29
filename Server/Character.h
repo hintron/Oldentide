@@ -2,15 +2,15 @@
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Child class representing any living object in Oldentide.
-//        :  Inherits from "Object" class.
+//        :  Inherits from "GameObject" class.
 
 #ifndef OLDENTIDE_CHARACTER_H_
 #define OLDENTIDE_CHARACTER_H_
 
-#include "Object.h"
+#include "GameObject.h"
 #include <string>
 
-class Character : public Object {
+class Character : public GameObject {
 
     protected:
 

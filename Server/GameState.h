@@ -10,7 +10,7 @@
 #define OLDENTIDE_GAMESTATE_H
 
 #include "Npc.h"
-#include "Object.h"
+#include "GameObject.h"
 #include "Packets.h"
 #include "Player.h"
 #include "SQLConnector.h"
@@ -32,7 +32,7 @@ class GameState{
         SQLConnector * sql;
         std::set<Player> players;
         std::set<Npc> npcs;
-        std::set<Object> objects;
+        std::set<GameObject> gameObjects;
         std::set<int> sessions;
         std::set<int> activeSessions;
         int curSession;

@@ -1,7 +1,0 @@
-Bardic
-Conjuring
-Druidic
-Illusion
-Necromancy
-Sorcery
-Shamanic

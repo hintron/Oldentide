@@ -2,7 +2,7 @@
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Child class representing any living object in Oldentide.
-//        :  Inherits from "Object" class.
+//        :  Inherits from "GameObject" class.
 
 #include "Character.h"
 
@@ -15,7 +15,7 @@ using namespace std;
 Character::Character(string name, string lastname, string race, string gender,
                      string profession, int weight, int x, int y, int z,
                      float direction, string zone)
-          :Object(weight, x, y, z, direction, zone){
+          :GameObject(weight, x, y, z, direction, zone){
     setName(name);
     setLastname(lastname);
     setRace(race);
@@ -25,7 +25,7 @@ Character::Character(string name, string lastname, string race, string gender,
 
 Character::Character(string name, string lastname, string race, string gender,
                      string profession) 
-          :Object(0, 0, 0, 0, 0.0, "Newcomers_Guild"){
+          :GameObject(0, 0, 0, 0, 0.0, "Newcomers_Guild"){
     setName(name);
     setLastname(lastname);
     setRace(race);

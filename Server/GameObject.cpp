@@ -1,9 +1,9 @@
-// File:     Object.cpp
+// File:     GameObject.cpp
 // Created:  April 19, 2015
 // Author:   Joseph DeVictoria
 // Purpose:  Base class representing any game object in Oldentide.
 
-#include "Object.h"
+#include "GameObject.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Object::Object(int weight, int x, int y, int z, float direction, string zone){
+GameObject::GameObject(int weight, int x, int y, int z, float direction, string zone){
     setWeight(weight);
     setX(x);
     setY(y);
@@ -24,27 +24,27 @@ Object::Object(int weight, int x, int y, int z, float direction, string zone){
 //----------                      Getter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-int Object::getWeight(){
+int GameObject::getWeight(){
     return weight;
 }
 
-int Object::getX(){
+int GameObject::getX(){
     return x;
 }
 
-int Object::getY(){
+int GameObject::getY(){
     return y;
 }
 
-int Object::getZ(){
+int GameObject::getZ(){
     return z;
 }
 
-float Object::getDirection(){
+float GameObject::getDirection(){
     return direction;
 }
 
-string Object::getZone(){
+string GameObject::getZone(){
     return zone;
 }
 
@@ -52,27 +52,27 @@ string Object::getZone(){
 //----------                      Setter Functions                    ----------//
 //------------------------------------------------------------------------------//
 
-void Object::setWeight(int weight){
+void GameObject::setWeight(int weight){
     this->weight = weight;
 }
 
-void Object::setX(int x){
+void GameObject::setX(int x){
     this->x = x;
 }
 
-void Object::setY(int y){
+void GameObject::setY(int y){
     this->y = y;
 }
 
-void Object::setZ(int z){
+void GameObject::setZ(int z){
     this->z = z;
 }
 
-void Object::setDirection(float direction){
+void GameObject::setDirection(float direction){
     this->direction = direction;
 }
 
-void Object::setZone(string zone){
+void GameObject::setZone(string zone){
     this->zone = zone;
 }
 
