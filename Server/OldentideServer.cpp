@@ -152,6 +152,7 @@ void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
 
 // Remove the session for a given user, effectively disconnecting it from the server.
 void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
+    cout << "saltHandler" << endl;
     // Check to make sure account already exists
     // If account doesn't exist, notify user
     // else, return the salt so the user can start key calculation
@@ -163,7 +164,7 @@ void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
         cout << "  User " << packet->account << " was not found on the server!" << endl;
         string failedAccount = "FAILED";
         strcpy(packet->account, failedAccount.c_str());
-        
+        sql->list_accounts();
     }
     // Either return the salt or return the response
     sendto(sockfd, (void *)&packet, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&client, sizeof(client));
@@ -171,6 +172,7 @@ void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
 }
 
 void OldentideServer::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client){
+    cout << "createAccountHandler" << endl;
     if(gamestate->createAccount(packet)) {
         cout << "  User " << packet->account << " was created successfully!" << endl;
     }
@@ -186,6 +188,7 @@ void OldentideServer::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockadd
 
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
+    cout << "loginHandler" << endl;
     //cout << "LOGIN Enum ID: " << packet->packetType << endl;
     if (gamestate->loginUser(packet)) {
         cout << "  User " << packet->account << " logged in successfully!" << endl;

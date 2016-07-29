@@ -58,6 +58,17 @@ bool GameState::createAccount(PACKET_CREATEACCOUNT *packet){
     }
     printf("Listing all created accounts...\n");
     sql->list_accounts();
+    // TODO: Overwrite stack sensitive variables with with 0's,
+    // since it doesn't get zeroed out once it's off the stack
+    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+    //    generated_key[i] = 0;
+    //}
+    //for(int i = strlen(); i > 0); --i){
+    //    password[i] = 0;
+    //}
+    // NOTE: clear_free variants are for sensitive info, opposed to just free.
+    // The salts aren't sensitive, but the password and key are.
+    // So just use clear_free for everything I can
     return success;
 }
 

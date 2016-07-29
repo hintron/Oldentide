@@ -6,7 +6,6 @@ class LoginManager{
         LoginManager();
         ~LoginManager();
         static void generate_salt_and_key(char *, char *, char *);
-        //static int authenticate_account(char *, char *);
         static long long int generate_key(char *, char *, char **);
     private:
         static const long long int ITERATIONS;

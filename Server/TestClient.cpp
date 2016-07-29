@@ -162,7 +162,7 @@ int main(int argc, char * argv[]){
                             packetCreate.sessionId = session;
                             strcpy(packetCreate.account, packetSalt.account);
                             LoginManager::generate_salt_and_key(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
-                            sendto(sockfd,(void*)&packetNumber,sizeof(packetNumber),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                            sendto(sockfd,(void*)&packetCreate,sizeof(packetCreate),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                             cout << "New account created (hopefully)" << endl;
                             // TODO: Print success if account was successfully created
                             //PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
