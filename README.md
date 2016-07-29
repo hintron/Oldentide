@@ -21,7 +21,6 @@
 
 ####Directories:
 
-**Artifacts**: A place where any previous iteration of code goes.<br>
 **Concepts**:  A place where any concept art, drawings, sketches or purely conceptual code goes.<br>
 **Config**:    Configuration settings for Unreal Engine Editor.<br>
 **Content**:   Where Unreal Assets are stored once imported into the engine.<br>
