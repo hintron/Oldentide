@@ -50,6 +50,7 @@ bool GameState::createAccount(PACKET_CREATEACCOUNT *packet){
     cout << "  Key: " << packet->keyStringHex << endl;
     cout << "  Salt: " << packet->saltStringHex << endl;
     bool success = false;
+    // TODO: Remove iterations from insert_account and sql schema
     if(sql->insert_account(packet->account, packet->keyStringHex, packet->saltStringHex, 1 << 20)){
         success = true;
     }

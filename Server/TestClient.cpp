@@ -90,10 +90,12 @@ int main(int argc, char * argv[]){
                     break;
                 }
                 sendto(sockfd,(void*)&packetSalt,sizeof(packetSalt),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                PACKET_GETSALT *returnPacketSalt = (PACKET_GETSALT*) malloc(sizeof(PACKET_LOGIN));
+                PACKET_GETSALT *returnPacketSalt = (PACKET_GETSALT*) malloc(sizeof(PACKET_GETSALT));
                 sockaddr_in servretSalt;
                 socklen_t lenSalt = sizeof(servretSalt);
-                int n = recvfrom(sockfd, (void *)returnPacketSalt, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servretSalt, &lenSalt);
+                int n = recvfrom(sockfd, (void *)returnPacketSalt, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&servretSalt, &lenSalt);
+                cout << "Account retrieved from get salt:" << returnPacketSalt->account << endl;
+                cout << "Account on hand:" << packetSalt.account << endl;
                 if ((strcmp(returnPacketSalt->account, packetSalt.account)) == 0) {
                     cout << "Account exists! Recieved salt, calculating key..." << endl;
                     // Second packet - calculate key from salt and send key and account name
@@ -110,7 +112,12 @@ int main(int argc, char * argv[]){
                     if(!Utils::check_password_length(password)){
                         break;
                     }
-                    LoginManager::generate_key((char *)password, (char *)returnPacketSalt->saltStringHex, (char **) &(packetLogin.keyStringHex));
+                    // TODO: Salt here is not showing up sometimes! Get it to reliably show up!!
+                    cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << endl;
+                    // TODO: keyStringHex is not being correctly passed from generate_key() to keyStringHex!
+                    LoginManager::generate_key((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
+                    //strcpy(packetLogin.keyStringHex, generated_key_string_hex);
+                    cout << "Generated key used for login: " << packetLogin.keyStringHex << endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
                     sockaddr_in servret;
@@ -118,7 +125,8 @@ int main(int argc, char * argv[]){
                     int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
                     if ((strcmp(returnPacket->account, packetLogin.account)) == 0) {
                         cout << "Logged in as " << returnPacket->account << "!" << endl;
-                        clientState = 2;
+                        cout << "(" << packetLogin.account << ")" << endl;
+                        //clientState = 2;
                     }
                     else {
                         cout << "Login Failed! Please try again." << endl;

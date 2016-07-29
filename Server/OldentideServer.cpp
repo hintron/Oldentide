@@ -60,7 +60,6 @@ void OldentideServer::run(){
         if (gamestate->verifySession(packet)){
             switch (packet->packetType){
                 case GENERIC:
-		            cout << "Generic packet received";
                     genericHandler((PACKET_GENERIC*)packet);
                     break;
                 case ACK: 
@@ -123,6 +122,7 @@ void OldentideServer::run(){
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
+    cout << "Generic packet received" << endl;
     //cout << "GENERIC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
@@ -138,7 +138,7 @@ void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client
     //cout << "CONNECT Enum ID: " << packet->packetType << endl;
     PACKET_CONNECT returnPacket;
     returnPacket.sessionId = gamestate->generateSession(packet);
-    cout << "  New connection started, session id " << returnPacket.sessionId << " sent to client!" << endl;
+    cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << endl;
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
@@ -152,54 +152,58 @@ void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
 
 // Remove the session for a given user, effectively disconnecting it from the server.
 void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
+    PACKET_GETSALT returnPacket;
     cout << "saltHandler" << endl;
     // Check to make sure account already exists
     // If account doesn't exist, notify user
     // else, return the salt so the user can start key calculation
-    int account_exists = sql->get_account_salt(packet->account, packet->saltStringHex);
+    int account_exists = sql->get_account_salt(packet->account, returnPacket.saltStringHex);
     if(account_exists){
-        cout << "  User " << packet->account << " was found on the server." << endl;
+        strcpy(returnPacket.account, packet->account);
+        cout << "  User " << returnPacket.account << " was found on the server." << endl;
+        cout << "  Returning salt: " << returnPacket.saltStringHex << endl;
     }
     else {
         cout << "  User " << packet->account << " was not found on the server!" << endl;
-        string failedAccount = "FAILED";
-        strcpy(packet->account, failedAccount.c_str());
-        sql->list_accounts();
+        //string failedAccount = "FAILED";
+        strcpy(returnPacket.account, "failed");
     }
     // Either return the salt or return the response
-    sendto(sockfd, (void *)&packet, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&client, sizeof(client));
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 
 void OldentideServer::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client){
     cout << "createAccountHandler" << endl;
+    PACKET_CREATEACCOUNT returnPacket;
     if(gamestate->createAccount(packet)) {
         cout << "  User " << packet->account << " was created successfully!" << endl;
+        strcpy(returnPacket.account, packet->account);
     }
     else {
         cout << "  Failed to create user " << packet->account << endl;
         // Resue the same packet as the return packet
-        string failedAccount = "FAILED";
-        strcpy(packet->account, failedAccount.c_str());
+        strcpy(returnPacket.account, "FAILED");
     }
-    sendto(sockfd, (void *)&packet, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&client, sizeof(client));
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CREATEACCOUNT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 
 
 void OldentideServer::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
     cout << "loginHandler" << endl;
+    PACKET_CREATEACCOUNT returnPacket;
     //cout << "LOGIN Enum ID: " << packet->packetType << endl;
-    if (gamestate->loginUser(packet)) {
+    if(gamestate->loginUser(packet)) {
         cout << "  User " << packet->account << " logged in successfully!" << endl;
+        strcpy(returnPacket.account, packet->account);
     }
     else {
         cout << "  Failed login attempt for user: " << packet->account << endl;
         // Resue the same packet as the return packet
-        string failedAccount = "FAILED";
-        strcpy(packet->account, failedAccount.c_str());
+        strcpy(returnPacket.account, "FAILED");
     }
-    sendto(sockfd, (void *)&packet, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&client, sizeof(client));
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CREATEACCOUNT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 

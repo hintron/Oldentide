@@ -18,13 +18,10 @@ const long long int LoginManager::ITERATIONS = 1 << 20;
     Uses the OpenSSL implementation of sha512.
 
     @param password : IN. A c string containing the password of the user.
-    @param salt : IN. The salt to use to generate the key as a hex string.
-    @param generated_key : OUT. Should be passed in as a pointer to an empty char pointer.
-                           The caller will need to free it using OPENSSL_free(). It's a double-pointer
-                           so that the output can get through the stack without getting destoyed.
-    @return : The number of iterations used in the algorithm to generate the key
+    @param salt : IN. The salt to use to generate the key.
+    @param generated_ke_sring_hex : OUT. A pointer to where the key hex string should be copied to.
 **/
-long long LoginManager::generate_key(char *password, char *salt_string_hex, char **generated_key_string_hex){
+void LoginManager::generate_key(char *password, char *salt_string_hex, char *generated_key_string_hex){
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
     unsigned int md_len, i;
@@ -89,14 +86,17 @@ long long LoginManager::generate_key(char *password, char *salt_string_hex, char
     BN_bin2bn(md_value, EVP_MAX_MD_SIZE, generated_key);
     // Convert from BIGNUM to hex string and output it to user
     // Caller will need to deallocate this!
-    *generated_key_string_hex = BN_bn2hex(generated_key);
-    printf("Final key in hex:\n%s\n", *generated_key_string_hex);
+    char *generated_key_string_hex_temp;
+    generated_key_string_hex_temp = BN_bn2hex(generated_key);
+    // Copy the hex string out
+    strcpy(generated_key_string_hex, generated_key_string_hex_temp); 
+    printf("Final key in hex:\n%s\n", generated_key_string_hex);
+    // Free the malloced temp key string
+    OPENSSL_free(generated_key_string_hex_temp);
 
     // Clear the allocated BIGNUMs
     BN_clear_free(generated_key);
     BN_clear_free(salt);
-
-    return ITERATIONS;
 }
 
 /**
@@ -120,14 +120,11 @@ void LoginManager::generate_salt_and_key(char *password, char *salt_string_hex, 
     // Store the key as hex, so it is easy to read out
     // Note: This needs to be freed later
     char *salt_string_hex_temp = BN_bn2hex(salt);
-    char *generated_key_string_hex_temp;
-    int iterations = LoginManager::generate_key(password, salt_string_hex_temp, &generated_key_string_hex_temp);
+    LoginManager::generate_key(password, salt_string_hex_temp, generated_key_string_hex);
 
     // Instead of making the caller free it, copy the contents to the passed pointers, and then free it
     strcpy(salt_string_hex, salt_string_hex_temp); 
-    strcpy(generated_key_string_hex, generated_key_string_hex_temp); 
 
-    OPENSSL_free(generated_key_string_hex_temp);
     OPENSSL_free(salt_string_hex_temp);
     BN_clear_free(salt);
     // TODO: Use clear_free() version - might need crypto.h though
