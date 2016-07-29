@@ -4,7 +4,7 @@
 
 ==================================
 
-####Project Information:
+###Project Information:
 
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
@@ -19,9 +19,9 @@
 
 ==================================
 
-####Directories:
+###Directories:
 
 **Concepts**:  A place where any concept art, drawings, sketches or purely conceptual code goes.<br>
 **Server**:    A place where dedicated server code goes. (Complimentary to Unreal game Code.)<br>
 
-###Please contact me immediately if you see any bugs or want to contribute.  I need help developing the game!
+####Please contact me immediately if you see any bugs or want to contribute.  I need help developing the game!
