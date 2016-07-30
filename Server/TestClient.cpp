@@ -112,11 +112,8 @@ int main(int argc, char * argv[]){
                     if(!Utils::check_password_length(password)){
                         break;
                     }
-                    // TODO: Salt here is not showing up sometimes! Get it to reliably show up!!
                     cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << endl;
-                    // TODO: keyStringHex is not being correctly passed from generate_key() to keyStringHex!
                     LoginManager::generate_key((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
-                    //strcpy(packetLogin.keyStringHex, generated_key_string_hex);
                     cout << "Generated key used for login: " << packetLogin.keyStringHex << endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
@@ -137,7 +134,7 @@ int main(int argc, char * argv[]){
                     cout << "Account doesn't exist..." << endl;
                     cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/N) " << endl;
                     string response;
-                    getline (cin, response);
+                    getline(cin, response);
                     if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
                         char password[1000];
                         char password2[1000];
@@ -171,13 +168,18 @@ int main(int argc, char * argv[]){
                             strcpy(packetCreate.account, packetSalt.account);
                             LoginManager::generate_salt_and_key(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
                             sendto(sockfd,(void*)&packetCreate,sizeof(packetCreate),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                            cout << "New account created (hopefully)" << endl;
-                            // TODO: Print success if account was successfully created
-                            //PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
-                            //sockaddr_in servret;
-                            //socklen_t len = sizeof(servret);
-                            //int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
-                            // END Create account
+                            // Print success if account was successfully created
+                            PACKET_CREATEACCOUNT *returnPacket = (PACKET_CREATEACCOUNT*) malloc(sizeof(PACKET_CREATEACCOUNT));
+                            sockaddr_in servret;
+                            socklen_t len = sizeof(servret);
+                            int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
+                            if ((strcmp(returnPacket->account, packetCreate.account)) == 0) {
+                                cout << "New account \"" << returnPacket->account << "\" successfully created!" << endl;
+                            }
+                            else {
+                                cout << "New account \"" << packetCreate.account << "\" failed to create..." << endl;
+                            }
+                            free(returnPacket);
                         }
                         while(repeat_try);
                     }
