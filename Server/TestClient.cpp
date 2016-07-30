@@ -15,8 +15,22 @@
 #include <sys/socket.h>
 #include "LoginManager.h"
 #include "Utils.h"
+#include <thread>
 
 using namespace std;
+
+void parseCommands(){
+    long long int i = 0;
+    while(1){
+        string str;
+        getline(cin,str);
+        cout << i << ": " << endl;
+        ++i;
+    }
+    // Listen until disconnect is recieved from server?
+    return;
+}
+
 
 int main(int argc, char * argv[]){
 
@@ -27,6 +41,10 @@ int main(int argc, char * argv[]){
     int session = 0;
     int packetNumber = 1;
     bool running = true;
+    // Save the name of the logged in user
+    char loggedInAccount[30];
+    // This will be a thread to handle listening to the server
+    thread shell;
 
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
@@ -123,7 +141,12 @@ int main(int argc, char * argv[]){
                     if ((strcmp(returnPacket->account, packetLogin.account)) == 0) {
                         cout << "Logged in as " << returnPacket->account << "!" << endl;
                         cout << "(" << packetLogin.account << ")" << endl;
-                        //clientState = 2;
+                        // Save off the logged-in account name
+                        strcpy(loggedInAccount, returnPacket->account);
+                        // Spawn thread to start listening to server broadcasts
+                        shell = thread(parseCommands);
+                        // Now that user is logged in, start up client console 
+                        clientState = 2;
                     }
                     else {
                         cout << "Login Failed! Please try again." << endl;
@@ -187,14 +210,58 @@ int main(int argc, char * argv[]){
                 free(returnPacketSalt);
                 break;
             }
-            // Logged In.
+            // Logged In - User can execute commands
             case 2: {
-                running = false;
+                // TODO: How to listen to server broadcast?
+                // TODO: Spawn a thread to listen to the server broadcasts,
+                // and keep this thread to handle incoming text
+                string command;
+	            do{
+                    cout << loggedInAccount << "@OldentideConsole$ ";
+                    getline(cin, command);
+	            }
+                while(command.empty());
+                vector<string> tokens = tokenfy(command, ' ');
+                if (tokens[0] == "/quit" || tokens[0] == "/q"){
+                    cout << "\nQuitting oldentide..." << endl;
+                    // TODO: Exit program to close all threads... right?
+                    exit(EXIT_SUCCESS);
+                    //running = false;
+                    // Wait for the shell to return
+                    //shell.join();
+                }
+                else {
+                    cout << command << endl;
+                    // TODO: Send player command packet
+                    // Send text to server to rebroadcast to all clients
+                    //PACKET_SENDPLAYERCOMMAND *packet;
+                }
+                //else if (adminTokens[0] == "/list"){
+                //    if (adminTokens.size() == 2){
+                //        cout << adminTokens[1];
+                //        if (adminTokens[1] == "players"){
+                //            cout << "PCSSSSSS" << endl;          
+                //        }
+                //        if (adminTokens[1] == "npcs"){
+                //            cout << "NPCSSSSS" << endl;    
+                //        }
+                //    }
+                //    else{
+                //        printUsage();
+                //    }
+                //}
+                shell.join();
                 break;
             }
             // 
             case 3: {
+            
             }
+            default: {
+                cout << "Default case statement" << endl;
+            }
+                
         }
     }
+    // Exit main program
 }
