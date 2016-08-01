@@ -277,20 +277,22 @@ void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
 }
 
 void OldentideServer::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
-    cout << "server messageHandler" << endl;
+    //cout << "server messageHandler" << endl;
     PACKET_MESSAGE returnPacket;
     if(packet->globalMessageNumber != 0){
-        cout << "Message lookup" << endl;
+        //cout << "Message lookup" << endl;
         // Look up the requested message and return it
         if(packet->globalMessageNumber >= 1 && packet->globalMessageNumber <= MAX_MESSAGES){
             cout << "Looking up message " << packet->globalMessageNumber << endl;
+            // Look up the message and account name
             // Remember, index = messageNumber - 1
-            string message_lookup = globalMessageArray.at(packet->globalMessageNumber-1);
-            cout << message_lookup << endl; 
-            // Look up the message and return it
-            strcpy(returnPacket.message, message_lookup.c_str());
+            string lookupMessage = globalMessageArray.at(packet->globalMessageNumber-1);
+            string lookupAccountName = globalMessageAccountArray.at(packet->globalMessageNumber-1);
+            cout << lookupAccountName << ": " << lookupMessage << endl; 
+            // return them
+            strcpy(returnPacket.message, lookupMessage.c_str());
+            strcpy(returnPacket.accountName, lookupAccountName.c_str());
             returnPacket.globalMessageNumber = packet->globalMessageNumber;
-            // strcpy(returnPacket.account, globalMessageAccountArray[packet->globalMessageNumber]); 
         }
         else {
             // Invalid message
@@ -308,18 +310,17 @@ void OldentideServer::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client)
             cout << "Saving message with number " << globalMessageNumber << ": " << packet->message << endl;
             // TODO: Sanitize message?
             // TODO: Make this more efficient/effective 
+            // TODO: Are things guaranteed to be atomic and reentrant?
             // Increase the global message number (start at 1 - 0 means no messages)
-            // TODO: Atomically assign message a global message number
+            // Atomically assign message a global message number
             std::string message = packet->message;
-            //char *message = (char *) malloc(MAX_MESSAGE_LENGTH);
-            // TODO: Atomically store message in global array of messages
-            //strcpy(message, packet->message);
             // Store the first messsage at index 0, second message at 1, etc.
             globalMessageArray.push_back(message);
-            // TODO: Store the username of the account that sent the message
-            // globalMessageAccountArray[globalMessageNumber-1] = "dummy user";
-
-            // TODO: Create a packet that only has the message number
+            // Store the username of the account that sent the message
+            // TODO: Store only a number/index instead of the entire name, to save on space
+            std::string accountName = packet->accountName;
+            globalMessageAccountArray.push_back(accountName);
+            // TODO: Make the return packet GETLATESTMESSGE, since only needs number
             returnPacket.globalMessageNumber = globalMessageNumber;
         }
     }
@@ -330,7 +331,7 @@ void OldentideServer::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client)
 }
 
 void OldentideServer::getLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client){
-    cout << "server getLatestMessageHandler" << endl;
+    //cout << "server getLatestMessageHandler" << endl;
     PACKET_GETLATESTMESSAGE returnPacket;
 
     if(globalMessageNumber > MAX_MESSAGES){

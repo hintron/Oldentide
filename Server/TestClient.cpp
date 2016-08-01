@@ -53,7 +53,7 @@ void messageListener(char *server_address, int port, int session){
             cout << "Ran out of messages!" << endl;
         }
         else if (i < returnPacket->globalMessageNumber){
-            cout << "Pulling down messages from server..." << endl;
+            //cout << "Pulling down messages from server..." << endl;
             // Print out each message to the client
             bool getAnotherMessage = true;
             do {
@@ -69,7 +69,7 @@ void messageListener(char *server_address, int port, int session){
                 // TODO: If the message wasn't recieved properly, try again
  
                 // Print out the message
-                cout << returnPacketMsg->message << endl;
+                cout << returnPacketMsg->accountName << ": " << returnPacketMsg->message << endl;
 
                 if(i == returnPacket->globalMessageNumber){
                     getAnotherMessage = false;
@@ -279,7 +279,7 @@ int main(int argc, char * argv[]){
                 // and keep this thread to handle incoming text
                 string command;
 	            do{
-                    cout << loggedInAccount << "@OldentideConsole$ ";
+                    //cout << loggedInAccount << "@OldentideConsole$" << endl;
                     getline(cin, command);
 	            }
                 while(command.empty());
@@ -294,13 +294,17 @@ int main(int argc, char * argv[]){
                 }
                 else {
                     // If no commands are parsed, assume that it is a message
-                    cout << command << endl;
+                    //cout << command << endl;
                     // Send player command packet
                     PACKET_MESSAGE packetMessage;
                     packetMessage.sessionId = session;
+                    // 0 Means it's a new message
                     packetMessage.globalMessageNumber = 0;
+                    // Send message and user that created the message
                     strcpy(packetMessage.message, command.c_str());
-                    // TODO: For now, restrict message to 500 chars
+                    // TODO: What's to stop someone from specifying an arbitrary account?
+                    strcpy(packetMessage.accountName, loggedInAccount);
+                    // TODO: restrict message to 500 chars for now
                     // Send text to server to rebroadcast to all clients
                     sendto(sockfd,(void*)&packetMessage,sizeof(packetMessage),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 }

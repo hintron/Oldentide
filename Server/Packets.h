@@ -242,7 +242,7 @@ struct PACKET_MESSAGE {
     // The message number assigned to this chat
     long long int globalMessageNumber;
     // The name of the account associated with the message
-    char *accountName;
+    char accountName[30];
 };
 
 struct PACKET_GETLATESTMESSAGE {
