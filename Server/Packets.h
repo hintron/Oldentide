@@ -25,6 +25,8 @@ enum PTYPE{
     SENDPLAYERCOMMAND,
     SENDPLAYERACTION,
     SENDSERVERACTION,
+    MESSAGE,
+    GETLATESTMESSAGE,
 };
 
 struct PACKET_GENERIC {
@@ -225,6 +227,30 @@ struct PACKET_SENDSERVERACTION {
     PTYPE packetType = SENDSERVERACTION;
     int packetId;
     int sessionId;
+};
+
+// TODO: Make a send message packet?
+// This packet will be used for both sending and receiving messages
+// If messageNumber is empty, it is a message being sena from the client 
+// If messageNumber is not empty, it is a message lookup
+struct PACKET_MESSAGE {
+    PTYPE packetType = MESSAGE;
+    int packetId;
+    int sessionId;
+    // The contents of the chat
+    char message[500];
+    // The message number assigned to this chat
+    long long int globalMessageNumber;
+    // The name of the account associated with the message
+    char *accountName;
+};
+
+struct PACKET_GETLATESTMESSAGE {
+    PTYPE packetType = GETLATESTMESSAGE;
+    int packetId;
+    int sessionId;
+    // The message number of the most recent message on the server
+    long long int globalMessageNumber;
 };
 
 #endif //PACKETS_H

@@ -29,6 +29,14 @@ class OldentideServer{
         SQLConnector * sql;
         GameState * gamestate;
         AdminShell * adminshell;
+        // The index of the array will be the global message number
+        long long int globalMessageNumber;
+        // Create a global array of char pointers for the messages
+        // Malloc space for each new message
+        std::vector<std::string> globalMessageArray;
+        //char *globalMessageArray[500];
+        // Hold all the user names associated with each message
+        char *globalMessageAccountArray[500];
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
         void connectHandler(PACKET_CONNECT * packet, sockaddr_in client);
@@ -46,6 +54,8 @@ class OldentideServer{
         void sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
         void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
+        void getLatestMessageHandler(PACKET_GETLATESTMESSAGE * packet, sockaddr_in client);
+        void messageHandler(PACKET_MESSAGE * packet, sockaddr_in client);
 };
 
 #endif //OLDENTIDE_OLDENTIDESERVER_H

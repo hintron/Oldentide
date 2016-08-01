@@ -16,19 +16,81 @@
 #include "LoginManager.h"
 #include "Utils.h"
 #include <thread>
+#include <chrono>
 
 using namespace std;
 
-void parseCommands(){
+void messageListener(char *server_address, int port, int session){
+    // This will keep track of the lastest message the client recieved 
     long long int i = 0;
+    int sockfd;
+    struct sockaddr_in servaddr,cliaddr;
+    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = inet_addr(server_address);
+    servaddr.sin_port = htons(port);
+    
     while(1){
-        string str;
-        getline(cin,str);
-        cout << i << ": " << endl;
-        ++i;
+        // Wait for a reasonable amount of time before querying the server
+        // ping the server every 500ms or so to see if other players have chatted
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        // Ping server for chat updates
+        // TODO: Send packet to get the latest message from the server
+        PACKET_GETLATESTMESSAGE packet;
+        packet.globalMessageNumber = 0;
+        packet.sessionId = session;
+        sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+        PACKET_GETLATESTMESSAGE *returnPacket = (PACKET_GETLATESTMESSAGE*) malloc(sizeof(PACKET_GETLATESTMESSAGE));
+        sockaddr_in servret;
+        socklen_t len = sizeof(servret);
+        int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&servret, &len);
+ 
+        //cout << "Message number recieved: " << returnPacket->globalMessageNumber << endl;
+        if(i == 0 && returnPacket->globalMessageNumber == 0){
+            //cout << "No messages on the server..." << endl;
+        }
+        else if (i > 0 && returnPacket->globalMessageNumber == 0){
+            cout << "Ran out of messages!" << endl;
+        }
+        else if (i < returnPacket->globalMessageNumber){
+            cout << "Pulling down messages from server..." << endl;
+            // Print out each message to the client
+            bool getAnotherMessage = true;
+            do {
+                PACKET_MESSAGE messagePacket;
+                messagePacket.sessionId = session;
+                messagePacket.globalMessageNumber = (++i);
+                sendto(sockfd,(void*)&messagePacket,sizeof(messagePacket),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                PACKET_MESSAGE *returnPacketMsg = (PACKET_MESSAGE*) malloc(sizeof(PACKET_MESSAGE));
+                sockaddr_in servret;
+                socklen_t len = sizeof(servret);
+                int n = recvfrom(sockfd, (void *)returnPacketMsg, sizeof(PACKET_MESSAGE), 0, (struct sockaddr *)&servret, &len);
+              
+                // TODO: If the message wasn't recieved properly, try again
+ 
+                // Print out the message
+                cout << returnPacketMsg->message << endl;
+
+                if(i == returnPacket->globalMessageNumber){
+                    getAnotherMessage = false;
+                } 
+            }
+            while(getAnotherMessage);
+        }
+        else if (i == returnPacket->globalMessageNumber) {
+            //cout << "All caught up!" << endl;
+        }
+        else {
+            cout << "Unknown state" << endl;
+            cout << "i: " << i << endl;
+            cout << "retPacket msgNum: " << returnPacket->globalMessageNumber << endl;       
+        }
+
+        // TODO: If the server returns a message count different from what the client thinks,
+        // send another request for the rest of the messages and print them? 
+        free(returnPacket);
     }
-    // Listen until disconnect is recieved from server?
-    return;
+    // Listen until client exits program
 }
 
 
@@ -144,7 +206,7 @@ int main(int argc, char * argv[]){
                         // Save off the logged-in account name
                         strcpy(loggedInAccount, returnPacket->account);
                         // Spawn thread to start listening to server broadcasts
-                        shell = thread(parseCommands);
+                        shell = thread(messageListener, server_address, port, session);
                         // Now that user is logged in, start up client console 
                         clientState = 2;
                     }
@@ -231,10 +293,16 @@ int main(int argc, char * argv[]){
                     //shell.join();
                 }
                 else {
+                    // If no commands are parsed, assume that it is a message
                     cout << command << endl;
-                    // TODO: Send player command packet
+                    // Send player command packet
+                    PACKET_MESSAGE packetMessage;
+                    packetMessage.sessionId = session;
+                    packetMessage.globalMessageNumber = 0;
+                    strcpy(packetMessage.message, command.c_str());
+                    // TODO: For now, restrict message to 500 chars
                     // Send text to server to rebroadcast to all clients
-                    //PACKET_SENDPLAYERCOMMAND *packet;
+                    sendto(sockfd,(void*)&packetMessage,sizeof(packetMessage),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 }
                 //else if (adminTokens[0] == "/list"){
                 //    if (adminTokens.size() == 2){
@@ -250,7 +318,6 @@ int main(int argc, char * argv[]){
                 //        printUsage();
                 //    }
                 //}
-                shell.join();
                 break;
             }
             // 

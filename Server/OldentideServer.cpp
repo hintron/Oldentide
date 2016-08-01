@@ -17,11 +17,17 @@
 #include <limits.h>
 
 using namespace std;
+#define MAX_MESSAGES 500
+#define MAX_MESSAGE_LENGTH 500
+
 
 OldentideServer::OldentideServer(int port){
     sql = new SQLConnector();
     gamestate = new GameState(sql);
     adminshell = new AdminShell(sql);
+
+    // 0 means no messages. The first message will be 1. 
+    globalMessageNumber = 0;
 
     // Create server address struct.
     sockaddr_in server;
@@ -110,7 +116,13 @@ void OldentideServer::run(){
                 case SENDSERVERACTION: 
                     sendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
                     break;
-            }
+                case MESSAGE:
+                    messageHandler((PACKET_MESSAGE*)packet, client);
+                    break;
+                case GETLATESTMESSAGE:
+                    getLatestMessageHandler((PACKET_GETLATESTMESSAGE*)packet, client);
+                    break; 
+           }
         }
         else {
             free(packet);
@@ -261,5 +273,76 @@ void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
 
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
     //cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
+    free(packet);
+}
+
+void OldentideServer::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
+    cout << "server messageHandler" << endl;
+    PACKET_MESSAGE returnPacket;
+    if(packet->globalMessageNumber != 0){
+        cout << "Message lookup" << endl;
+        // Look up the requested message and return it
+        if(packet->globalMessageNumber >= 1 && packet->globalMessageNumber <= MAX_MESSAGES){
+            cout << "Looking up message " << packet->globalMessageNumber << endl;
+            // Remember, index = messageNumber - 1
+            string message_lookup = globalMessageArray.at(packet->globalMessageNumber-1);
+            cout << message_lookup << endl; 
+            // Look up the message and return it
+            strcpy(returnPacket.message, message_lookup.c_str());
+            returnPacket.globalMessageNumber = packet->globalMessageNumber;
+            // strcpy(returnPacket.account, globalMessageAccountArray[packet->globalMessageNumber]); 
+        }
+        else {
+            // Invalid message
+            returnPacket.globalMessageNumber = 0; 
+        }
+    }
+    else {
+        // Save the incoming message and return the assigned message number
+        if(globalMessageNumber > MAX_MESSAGES){
+            cout << "Ran out of message space! Reached max number of messages" << endl;
+            // Ran out of message space
+            returnPacket.globalMessageNumber = 0;
+        } else{
+            globalMessageNumber++;
+            cout << "Saving message with number " << globalMessageNumber << ": " << packet->message << endl;
+            // TODO: Sanitize message?
+            // TODO: Make this more efficient/effective 
+            // Increase the global message number (start at 1 - 0 means no messages)
+            // TODO: Atomically assign message a global message number
+            std::string message = packet->message;
+            //char *message = (char *) malloc(MAX_MESSAGE_LENGTH);
+            // TODO: Atomically store message in global array of messages
+            //strcpy(message, packet->message);
+            // Store the first messsage at index 0, second message at 1, etc.
+            globalMessageArray.push_back(message);
+            // TODO: Store the username of the account that sent the message
+            // globalMessageAccountArray[globalMessageNumber-1] = "dummy user";
+
+            // TODO: Create a packet that only has the message number
+            returnPacket.globalMessageNumber = globalMessageNumber;
+        }
+    }
+    
+    // Return the message number to indicate success, or null on error 
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_MESSAGE), 0, (struct sockaddr *)&client, sizeof(client));
+    free(packet);
+}
+
+void OldentideServer::getLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client){
+    cout << "server getLatestMessageHandler" << endl;
+    PACKET_GETLATESTMESSAGE returnPacket;
+
+    if(globalMessageNumber > MAX_MESSAGES){
+        // 0 means failed or no messages
+        // Ran out of message space
+        returnPacket.globalMessageNumber = 0;
+    }
+    else {
+        // Return the latest message number in the global message buffer
+        returnPacket.globalMessageNumber = globalMessageNumber;
+    }
+
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
