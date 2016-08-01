@@ -16,7 +16,6 @@ int main(int argc, char* argv[]){
         cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << endl;
         return 1;
     }
-
     int port = atoi(argv[1]);
     OldentideServer * server = new OldentideServer(port);
     server->run();

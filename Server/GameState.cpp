@@ -23,11 +23,9 @@ GameState::~GameState(){
     return;
 }
 
-bool GameState::verifySession(PACKET_GENERIC * packet){
-    if (sessions.find(packet->sessionId) != sessions.end()){
-        return true;
-    }
-    else if ( packet->packetType == CONNECT){
+// Checks if the session id given by the user is valid before allowing further interaction.
+bool GameState::verifySession(int sessionId){
+    if (sessions.find(sessionId) != sessions.end()){
         return true;
     }
     else{
@@ -35,6 +33,7 @@ bool GameState::verifySession(PACKET_GENERIC * packet){
     }
 }
 
+// Active sessions refer to users that have already authenticated and may or may not be already using a character.
 bool GameState::verifyActiveSession(int sessionId){
     if (activeSessions.find(sessionId) != activeSessions.end()){
         return true;
@@ -44,14 +43,14 @@ bool GameState::verifyActiveSession(int sessionId){
     }
 }
 
-bool GameState::createAccount(PACKET_CREATEACCOUNT *packet){
+bool GameState::createAccount(char * account, char * keyStringHex, char * saltStringHex){
     cout << "  Creating Account..." << endl;
-    cout << "  Account: " << packet->account << endl;
-    cout << "  Key: " << packet->keyStringHex << endl;
-    cout << "  Salt: " << packet->saltStringHex << endl;
+    cout << "  Account: " << account << endl;
+    cout << "  Key: " << keyStringHex << endl;
+    cout << "  Salt: " << saltStringHex << endl;
     bool success = false;
     // TODO: Remove iterations from insert_account and sql schema
-    if(sql->insert_account(packet->account, packet->keyStringHex, packet->saltStringHex, 1 << 20)){
+    if(sql->insert_account(account, keyStringHex, saltStringHex, 1 << 20)){
         success = true;
     }
     else {
@@ -73,22 +72,22 @@ bool GameState::createAccount(PACKET_CREATEACCOUNT *packet){
     return success;
 }
 
-bool GameState::loginUser(PACKET_LOGIN * packet){
+bool GameState::loginUser(char * account, char * keyStringHex){
     cout << "  Logging in..." << endl;
-    cout << "  Account: " << packet->account << endl;
-    cout << "  Key: " << packet->keyStringHex << endl;
-    return AccountManager::authenticate_account(packet->account, packet->keyStringHex);
+    cout << "  Account: " << account << endl;
+    cout << "  Key: " << keyStringHex << endl;
+    return AccountManager::authenticate_account(account, keyStringHex);
 }
 
-void GameState::disconnectSession(PACKET_DISCONNECT * packet){
-    activeSessions.erase(packet->sessionId);
-    sessions.erase(packet->sessionId);
+void GameState::disconnectSession(int sessionId){
+    activeSessions.erase(sessionId);
+    sessions.erase(sessionId);
     return;
 }
 
-void GameState::playerCommand(PACKET_SENDPLAYERCOMMAND * packet){
-    cout << packet->command << endl;
-    string pCommand(packet->command);
+void GameState::playerCommand(char * command){
+    cout << command << endl;
+    string pCommand(command);
     vector<string> pCommandTokens = tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s"){
         cout << "poop" << endl;
@@ -98,9 +97,9 @@ void GameState::playerCommand(PACKET_SENDPLAYERCOMMAND * packet){
     }
 }
 
-void GameState::selectPlayer(PACKET_SELECTCHARACTER * packet){
-    if (sessions.find(packet->sessionId) != sessions.end()){
-        activeSessions.insert(packet->sessionId);
+void GameState::selectPlayer(int sessionId){
+    if (sessions.find(sessionId) != sessions.end()){
+        activeSessions.insert(sessionId);
     }
     return;
 }
@@ -113,9 +112,9 @@ void GameState::storePlayer(string name){
     return;   
 }
 
-int GameState::generateSession(PACKET_CONNECT * packet){
-    if (sessions.find(packet->sessionId) != sessions.end()){
-        return packet->sessionId;
+int GameState::generateSession(int sessionId){
+    if (sessions.find(sessionId) != sessions.end()){
+        return sessionId;
     }
     else{
         sessions.insert(curSession);

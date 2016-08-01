@@ -53,11 +53,15 @@ void OldentideServer::run(){
     sockaddr_in client;
     socklen_t len = sizeof(client);
     cout << "Server Running!\n";
+	bool validSession = false;
     bool listen = true;
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        if (gamestate->verifySession(packet)){
+		if (packet->packetType != CONNECT){
+			validSession = gamestate->verifySession(packet->sessionId);
+		}
+        if (validSession){
             switch (packet->packetType){
                 case GENERIC:
                     genericHandler((PACKET_GENERIC*)packet);
@@ -122,22 +126,18 @@ void OldentideServer::run(){
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void OldentideServer::genericHandler(PACKET_GENERIC * packet){
-    cout << "Generic packet received" << endl;
-    //cout << "GENERIC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
 void OldentideServer::ackHandler(PACKET_ACK * packet){
-    //cout << "ACK Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 // Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.  Do not generate new sessions.
 void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client){
-    //cout << "CONNECT Enum ID: " << packet->packetType << endl;
     PACKET_CONNECT returnPacket;
-    returnPacket.sessionId = gamestate->generateSession(packet);
+    returnPacket.sessionId = gamestate->generateSession(packet->sessionId);
     cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << endl;
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
@@ -145,8 +145,7 @@ void OldentideServer::connectHandler(PACKET_CONNECT * packet, sockaddr_in client
 
 // Remove the session for a given user, effectively disconnecting it from the server.
 void OldentideServer::disconnectHandler(PACKET_DISCONNECT * packet){
-    //cout << "DISCONNECT Enum ID: " << packet->packetType << endl;
-    gamestate->disconnectSession(packet);
+    gamestate->disconnectSession(packet->sessionId);
     free(packet);
 }
 
@@ -160,11 +159,11 @@ void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
     int account_exists = sql->get_account_salt(packet->account, returnPacket.saltStringHex);
     if(account_exists){
         strcpy(returnPacket.account, packet->account);
-        cout << "  User " << returnPacket.account << " was found on the server." << endl;
-        cout << "  Returning salt: " << returnPacket.saltStringHex << endl;
+        cout << "User " << returnPacket.account << " was found on the server." << endl;
+        cout << "Returning salt: " << returnPacket.saltStringHex << endl;
     }
     else {
-        cout << "  User " << packet->account << " was not found on the server!" << endl;
+        cout << "User " << packet->account << " was not found on the server!" << endl;
         //string failedAccount = "FAILED";
         strcpy(returnPacket.account, "failed");
     }
@@ -174,14 +173,13 @@ void OldentideServer::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
 }
 
 void OldentideServer::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client){
-    cout << "createAccountHandler" << endl;
     PACKET_CREATEACCOUNT returnPacket;
-    if(gamestate->createAccount(packet)) {
-        cout << "  User " << packet->account << " was created successfully!" << endl;
+    if(gamestate->createAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
+        cout << "User " << packet->account << " was created successfully!" << endl;
         strcpy(returnPacket.account, packet->account);
     }
     else {
-        cout << "  Failed to create user " << packet->account << endl;
+        cout << "Failed to create user " << packet->account << endl;
         // Resue the same packet as the return packet
         strcpy(returnPacket.account, "FAILED");
     }
@@ -189,17 +187,14 @@ void OldentideServer::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockadd
     free(packet);
 }
 
-
 void OldentideServer::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
-    cout << "loginHandler" << endl;
     PACKET_CREATEACCOUNT returnPacket;
-    //cout << "LOGIN Enum ID: " << packet->packetType << endl;
-    if(gamestate->loginUser(packet)) {
-        cout << "  User " << packet->account << " logged in successfully!" << endl;
+    if(gamestate->loginUser(packet->account, packet->keyStringHex)) {
+        cout << "User " << packet->account << " logged in successfully!" << endl;
         strcpy(returnPacket.account, packet->account);
     }
     else {
-        cout << "  Failed login attempt for user: " << packet->account << endl;
+        cout << "Failed login attempt for user: " << packet->account << endl;
         // Resue the same packet as the return packet
         strcpy(returnPacket.account, "FAILED");
     }
@@ -208,45 +203,37 @@ void OldentideServer::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
 }
 
 void OldentideServer::listCharactersHandler(PACKET_LISTCHARACTERS * packet){
-    //cout << "LISTCHARACTERS Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::selectCharacterHandler(PACKET_SELECTCHARACTER * packet){
-    //cout << "SELECTCHARACTER Enum ID: " << packet->packetType << endl;
-    gamestate->selectPlayer(packet);
+    gamestate->selectPlayer(packet->sessionId);
     free(packet);
 }
 
 void OldentideServer::deleteCharacterHandler(PACKET_DELETECHARACTER * packet){
-    //cout << "DELETECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::createCharacterHandler(PACKET_CREATECHARACTER * packet){
-    //cout << "CREATECHARACTER Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::initializeGameHandler(PACKET_INITIALIZEGAME * packet){
-    //cout << "INITIALIZEGAME Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updatePcHandler(PACKET_UPDATEPC * packet){
-    //cout << "UPDATEPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::updateNpcHandler(PACKET_UPDATENPC * packet){
-    //cout << "UPDATENPC Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
-    //cout << "SENDPLAYERCOMMAND Enum ID: " << packet->packetType << endl;
     if (gamestate->verifyActiveSession(packet->sessionId)){
-        gamestate->playerCommand(packet);
+        gamestate->playerCommand(packet->command);
     }
     else{
         cout << "Nonactive session requested to send a player command..." << packet->sessionId << endl;
@@ -255,11 +242,9 @@ void OldentideServer::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet
 }
 
 void OldentideServer::sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
-    //cout << "SENDPLAYERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }
 
 void OldentideServer::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
-    //cout << "SENDSERVERACTION Enum ID: " << packet->packetType << endl;
     free(packet);
 }

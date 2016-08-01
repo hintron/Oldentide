@@ -11,7 +11,6 @@
 
 #include "Npc.h"
 #include "GameObject.h"
-#include "Packets.h"
 #include "Player.h"
 #include "SQLConnector.h"
 #include <set>
@@ -21,14 +20,14 @@ class GameState{
     public:
         GameState(SQLConnector * sql);
         ~GameState();
-        bool verifySession(PACKET_GENERIC * packet);
+        bool verifySession(int sessionId);
         bool verifyActiveSession(int sessionId);
-        bool createAccount(PACKET_CREATEACCOUNT * packet);
-        bool loginUser(PACKET_LOGIN * packet);
-        void disconnectSession(PACKET_DISCONNECT * packet);
-        void playerCommand(PACKET_SENDPLAYERCOMMAND * packet);
-        void selectPlayer(PACKET_SELECTCHARACTER * packet);
-        int generateSession(PACKET_CONNECT * packet);
+        bool createAccount(char * account, char * keyStringHex, char * saltStringHex);
+        bool loginUser(char * account, char * keyStringHex);
+        void disconnectSession(int sessionId);
+        void playerCommand(char * command);
+        void selectPlayer(int sessionId);
+        int generateSession(int sessionId);
     private:
         SQLConnector * sql;
         std::set<Player> players;

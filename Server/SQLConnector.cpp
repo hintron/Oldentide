@@ -49,7 +49,6 @@ int SQLConnector::execute(string cmd){
     else {
         cout << "Executed Successfully. Return Code:" << sqls << endl;
     }
-
     if(error_message){
         // Print out the error message if any
         cout << "SQL ERROR MESSAGE: " << error_message << endl;
@@ -92,7 +91,6 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt, long
     query << "\"" << salt << "\",";
     query << iterations << ")";
     execute(query.str());
-
     // TODO: Let user know that it is a constraint fail - i.e. the username is already taken
     // TODO: Do a client-side check first before trying to insert for convenience
     if(sqls == SQLITE_OK){
@@ -147,7 +145,6 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     else {
         cout << "Executed Successfully. Return Code:" << sqls << endl;
     }
-
     if(error_message){
         // Print out the error message if any
         cout << "SQL ERROR MESSAGE: " << error_message << endl;
@@ -155,8 +152,6 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
         sqlite3_free(error_message);
         return 0;
     }
-
-
     // TODO: There should be a better way to do this, but for now...
     // Check to see if the salt was retrieved
     if(Utils::sanitize_hex_string(salt_string_hex)){
@@ -181,7 +176,6 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     if(!Utils::sanitize_account_name(account_name)){
         return 0;
     }
-
     char *error_message = NULL;
     std::stringstream query;
     query << "select key from accounts where account_name = \"" << account_name << "\"";
@@ -194,7 +188,6 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     else {
         cout << "Executed Successfully. Return Code:" << sqls << endl;
     }
-
     if(error_message){
         // Print out the error message if any
         cout << "SQL ERROR MESSAGE: " << error_message << endl;
@@ -218,7 +211,6 @@ static int return_string_callback(void *string_to_return, int argc, char **argv,
         cout << " | ";
     }
     cout << endl;
-
     // The value will auto-destroy soon. So, we need to copy it to a place
     // that won't get destroyed after returning from this function
     strcpy((char *)string_to_return, argv[0]);

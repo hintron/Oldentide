@@ -32,12 +32,12 @@ void AdminShell::run(){
     while(true){
 	    do
 	    {
-            cout << "  OldentideAdmin@" << serverHostname << ": ";
+            cout << "OldentideAdmin@" << serverHostname << ": ";
             getline(cin,adminCommand);
 	    }while(adminCommand.empty());
         vector<string> adminTokens = tokenfy(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
-            cout << "  Oldentide Dedicated Server is shutting down..." << endl;
+            cout << "Oldentide Dedicated Server is shutting down..." << endl;
             exit(EXIT_SUCCESS);
             return;
         }
@@ -66,27 +66,27 @@ void AdminShell::run(){
 }
 
 void AdminShell::printUsage(){
-    cout << "    Dedicated Server Admin Usage:" << endl;
-    cout << "    /shutdown    = Shuts down the server." << endl;
-    cout << "    /list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << endl;
-    cout << "    /db <query>  = Runs a given sql query on the sqlite3 database." << endl;
+    cout << "Dedicated Server Admin Usage:" << endl;
+    cout << "/shutdown    = Shuts down the server." << endl;
+    cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << endl;
+    cout << "/db <query>  = Runs a given sql query on the sqlite3 database." << endl;
 }
 
 void AdminShell::printLogo(){
-    cout << "    ____           ___   _____         _____  _____  ___   _____" << endl;
-    cout << "   /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << endl;
-    cout << "  /      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << endl;
-    cout << "  |      | |      |    | |___   | \\ |    |      |    |   | |___" << endl;
-    cout << "  \\      / |      |   /  |      |  \\|    |      |    |   / |" << endl;
-    cout << "   \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << endl;
-    cout << "   " << endl; 
+    cout << "  ____           ___   _____         _____  _____  ___   _____" << endl;
+    cout << " /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << endl;
+    cout << "/      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << endl;
+    cout << "|      | |      |    | |___   | \\ |    |      |    |   | |___" << endl;
+    cout << "\\      / |      |   /  |      |  \\|    |      |    |   / |" << endl;
+    cout << " \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << endl;
+    cout << " " << endl; 
+    cout << "                              |" << endl;
+    cout << "                             / \\" << endl;
+    cout << "                            /\\_/\\" << endl;
+    cout << "                           / | | \\" << endl;
+    cout << "                           \\ |_| /" << endl;
+    cout << "                            \\/ \\/" << endl;
+    cout << "                             \\ /" << endl;
     cout << "                                |" << endl;
-    cout << "                               / \\" << endl;
-    cout << "                              /\\_/\\" << endl;
-    cout << "                             / | | \\" << endl;
-    cout << "                             \\ |_| /" << endl;
-    cout << "                              \\/ \\/" << endl;
-    cout << "                               \\ /" << endl;
-    cout << "                                |" << endl;
-    cout << "   " << endl;
+    cout << " " << endl;
 }
