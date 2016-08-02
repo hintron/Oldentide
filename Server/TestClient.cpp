@@ -27,6 +27,7 @@ int main(int argc, char * argv[]){
     int session = 0;
     int packetNumber = 1;
     bool running = true;
+    string userAccount;
 
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
@@ -122,8 +123,9 @@ int main(int argc, char * argv[]){
                     int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
                     if ((strcmp(returnPacket->account, packetLogin.account)) == 0) {
                         cout << "Logged in as " << returnPacket->account << "!" << endl;
+                        userAccount = returnPacket->account;
                         cout << "(" << packetLogin.account << ")" << endl;
-                        //clientState = 2;
+                        clientState = 2;
                     }
                     else {
                         cout << "Login Failed! Please try again." << endl;
@@ -189,11 +191,31 @@ int main(int argc, char * argv[]){
             }
             // Logged In.
             case 2: {
-                running = false;
+                cout << "Selecting a character would happen here..." << endl;
+                PACKET_SELECTCHARACTER selectCharacter;
+                selectCharacter.sessionId = session;
+                strcpy(selectCharacter.character, "Poopymouth");
+                sendto(sockfd,(void*)&selectCharacter,sizeof(selectCharacter),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                clientState = 3;
                 break;
             }
-            // 
+            // In game... 
             case 3: {
+                cout << userAccount << ": ";
+                string command;
+                getline(cin, command);
+                if (command.empty()){
+                    break;
+                }
+                if (tokenfy(command, ' ')[0] != "/s"){
+                    cout << "Please use a valid command!" << endl;   
+                    break;
+                };
+                PACKET_SENDPLAYERCOMMAND playerCommand;
+                playerCommand.sessionId = session;
+                strcpy(playerCommand.command, command.c_str());
+                sendto(sockfd,(void*)&playerCommand,sizeof(playerCommand),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                break;
             }
         }
     }

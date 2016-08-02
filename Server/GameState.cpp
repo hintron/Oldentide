@@ -86,15 +86,24 @@ void GameState::disconnectSession(int sessionId){
 }
 
 void GameState::playerCommand(char * command){
-    cout << command << endl;
     string pCommand(command);
     vector<string> pCommandTokens = tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s"){
-        cout << "poop" << endl;
+        cout << "Detected a say command!" << endl;
+    }
+    else if (pCommandTokens[0] == "/y"){
+        cout << "Detected a yell command!" << endl;
+    }
+    else if (pCommandTokens[0] == "/ooc"){
+        cout << "Detected an out of character command!" << endl;
     }
     else if (pCommandTokens[0] == "/h"){
-        cout << "pee" << endl;
+        cout << "Detected a help channel command!" << endl;
     }
+    else if (pCommandTokens[0] == "/w"){
+        cout << "Detected a whisper command!" << endl;
+    }
+    cout << "Full player command: " << command << endl;
 }
 
 void GameState::selectPlayer(int sessionId){
