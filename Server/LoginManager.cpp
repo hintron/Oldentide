@@ -59,7 +59,7 @@ void LoginManager::generate_key(char *password, char *salt_string_hex, char *gen
         md_value[i] = 0;
     }
 
-    printf("Iterations: %d\n", ITERATIONS);
+    printf("Iterations: %llu\n", ITERATIONS);
     for (long long i = 0; i < ITERATIONS; ++i) {
         md_context = EVP_MD_CTX_create();
         EVP_DigestInit(md_context, md_function);

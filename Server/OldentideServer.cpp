@@ -53,7 +53,7 @@ void OldentideServer::run(){
     sockaddr_in client;
     socklen_t len = sizeof(client);
     cout << "Server Running!\n";
-	bool validSession = false;
+	bool validSession = true;
     bool listen = true;
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
