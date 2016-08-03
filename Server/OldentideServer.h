@@ -29,18 +29,6 @@ class OldentideServer{
         SQLConnector * sql;
         GameState * gamestate;
         AdminShell * adminshell;
-        // The index of the array will be the global message number
-        long long int globalMessageNumber;
-        // Create a global array of char pointers for the messages
-        // Malloc space for each new message
-        std::vector<std::string> globalMessageArray;
-        std::vector<std::string> globalMessageAccountArray;
-        //// Create a lookup table where for usernames to index number
-        //// Hold all the user names associated with each message
-        //std::vector<std::string> globalUserLUT;
-        //// For each message, store an index to the globalUserLUT
-        //std::vector<int> globalMessageArrayUsers;
-
         void genericHandler(PACKET_GENERIC * packet);
         void ackHandler(PACKET_ACK * packet);
         void connectHandler(PACKET_CONNECT * packet, sockaddr_in client);

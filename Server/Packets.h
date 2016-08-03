@@ -60,7 +60,7 @@ struct PACKET_GETSALT {
     int sessionId;
     char account[30];
     // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char saltStringHex[129]; 
+    char saltStringHex[129];
 };
 
 struct PACKET_CREATEACCOUNT {
@@ -69,8 +69,8 @@ struct PACKET_CREATEACCOUNT {
     int sessionId;
     char account[30];
     // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char saltStringHex[129]; 
-    char keyStringHex[129]; 
+    char saltStringHex[129];
+    char keyStringHex[129];
 };
 
 struct PACKET_LOGIN {
@@ -79,7 +79,7 @@ struct PACKET_LOGIN {
     int sessionId;
     char account[30];
     // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char keyStringHex[129]; 
+    char keyStringHex[129];
 };
 
 struct PACKET_LISTCHARACTERS {
@@ -231,7 +231,7 @@ struct PACKET_SENDSERVERACTION {
 
 // TODO: Make a send message packet?
 // This packet will be used for both sending and receiving messages
-// If messageNumber is empty, it is a message being sena from the client 
+// If messageNumber is empty, it is a message being sent from the client
 // If messageNumber is not empty, it is a message lookup
 struct PACKET_MESSAGE {
     PTYPE packetType = MESSAGE;
