@@ -10,7 +10,6 @@
 #define OLDENTIDE_GAMESTATE_H
 
 #include "Npc.h"
-#include "GameObject.h"
 #include "Player.h"
 #include "SQLConnector.h"
 #include <set>
@@ -39,7 +38,6 @@ class GameState{
         SQLConnector * sql;
         std::set<Player> players;
         std::set<Npc> npcs;
-        std::set<GameObject> gameObjects;
         std::set<int> sessions;
         std::set<int> activeSessions;
         // TODO: Make this players instead of accounts?
