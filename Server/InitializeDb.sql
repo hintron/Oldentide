@@ -7,7 +7,6 @@ CREATE TABLE accounts
     account_name text not null unique collate nocase,
     key text not null collate nocase,
     salt text not null collate nocase,
-    salt_iterations numeric not null,
     real_name text
 );
 CREATE TABLE players

@@ -59,8 +59,7 @@ bool GameState::createAccount(char * account, char * keyStringHex, char * saltSt
     cout << "  Key: " << keyStringHex << endl;
     cout << "  Salt: " << saltStringHex << endl;
     bool success = false;
-    // TODO: Remove iterations from insert_account and sql schema
-    if(sql->insert_account(account, keyStringHex, saltStringHex, 1 << 20)){
+    if(sql->insert_account(account, keyStringHex, saltStringHex)){
         success = true;
     }
     else {
@@ -127,9 +126,9 @@ void GameState::selectPlayer(int sessionId){
 }
 
 Player GameState::readPlayer(string name){
-    return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                  0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Newcomers_Guild", 0, 
+    return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Newcomers_Guild", 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
