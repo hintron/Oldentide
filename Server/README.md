@@ -14,7 +14,7 @@ step used during the development process:
 
 Requirements
 ------------
-The *Mangos* server currently supports a Linux development and runtime environment.  
+The *Oldentide Dedicated Server* currently supports a Linux development and runtime environment.  
 
 Operating Systems
 ------------
