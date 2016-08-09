@@ -19,23 +19,23 @@ The *Oldentide Dedicated Server* currently supports a Linux development and runt
 Operating Systems
 ------------
 All development and testing is currently done on a 64-Bit linux environment.
-[Debian 7][3] and [Ubuntu 16.04.1 LTS][4] are recommended. 
+[Ubuntu 16.04.1 LTS][3] are recommended. 
 Other distributions with similar package versions will work, too.
 
 Compilers
 ------------
 Building *Oldentide Dedicated Server* is currently possible with the following compiler:
-* *g++* - Currently all development is done on the [g++][5] compiler in a 64-bit 
+* *g++* - Currently all development is done on the [g++][4] compiler in a 64-bit 
    environment.  A makefile is included to simplify compilation!
 
 *cmake may possibly be supported in future releases...*
 
 Dependencies
 ------------
-* sqlite3 - To store data, the simple, lightweight [sqlite3][6] database is used.
-* libsqlite3-dev - To develop with [sqlite3][6], we need the c++ libraries.  This
+* sqlite3 - To store data, the simple, lightweight [sqlite3][5] database is used.
+* libsqlite3-dev - To develop with [sqlite3][5], we need the c++ libraries.  This
   library is the package name on debian based systems.
-* openssl 1.0.2h or beyond - [Openssl][7] provides encryption algorithms used when 
+* openssl 1.0.2h or beyond - [Openssl][6] provides encryption algorithms used when 
   authenticating clients.
 
 Server and Test Client Usage
@@ -58,8 +58,7 @@ Where <IP> is the address of the server and <Port> is the port of the server.
 
 [1]: http://www.cppreference.com/ "C / C++ reference"
 [2]: http://www.oldentide.com/ "Oldentide, a game where you can be anyone!"
-[3]: http://www.debian.org/ "Debian · The Universal Operating System"
-[4]: http://www.ubuntu.com/ "Ubuntu · The world's most popular free OS"
-[5]: https://gcc.gnu.org/ "Gnu C / C++ Compiler"
-[6]: https://www.sqlite.org/ "SQLite 3"
-[7]: https://www.openssl.org/ "Openssl"
+[3]: http://www.ubuntu.com/ "Ubuntu · The world's most popular free OS"
+[4]: https://gcc.gnu.org/ "Gnu C / C++ Compiler"
+[5]: https://www.sqlite.org/ "SQLite 3"
+[6]: https://www.openssl.org/ "Openssl"
