@@ -19,7 +19,7 @@ The *Oldentide Dedicated Server* currently supports a Linux development and runt
 Operating Systems
 ------------
 All development and testing is currently done on a 64-Bit linux environment.
-[Debian 7][3] and [Ubuntu 12.04 LTS][4] are recommended. 
+[Debian 7][3] and [Ubuntu 16.04.1 LTS][4] are recommended. 
 Other distributions with similar package versions will work, too.
 
 Compilers
