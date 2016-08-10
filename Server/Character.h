@@ -16,6 +16,8 @@ class Character {
     std::string lastname;
     std::string race;
     std::string gender;
+    std::string face;
+    std::string skin;
     std::string zone;
     int level;
     int hp;
@@ -40,9 +42,10 @@ class Character {
 
     // Constructors
     Character(std::string name, std::string lastname, std::string race, std::string gender, 
-              std::string zone, int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, 
-              int ep, int maxEp, int strength, int constitution, int intelligence, int dexterity, 
-              float x, float y, float z, float pitch, float yaw);
+              std::string face, std::string skin, std::string zone, int level, int hp, int maxHp, 
+              int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, 
+              int constitution, int intelligence, int dexterity, float x, float y, float z, 
+              float pitch, float yaw);
 
     //~Character();
     
@@ -51,6 +54,8 @@ class Character {
     std::string getLastname();
     std::string getRace();
     std::string getGender();
+    std::string getFace();
+    std::string getSkin();
     std::string getZone();
     int getLevel();
     int getHp();
@@ -76,6 +81,8 @@ class Character {
     void setLastname(std::string lastname);
     void setRace(std::string race);
     void setGender(std::string gender);
+    void setFace(std::string face);
+    void setSkin(std::string skin);
     void setZone(std::string zone);
     void setLevel(int level);
     void setHp(int hp);

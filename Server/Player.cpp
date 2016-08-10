@@ -21,12 +21,13 @@ Player::Player(string account, string profession, int id, int session, float wei
            int calligraphy, int enchanting, int herbalism, int hunting, int mining, int bargaining,
            int camping, int firstAid, int lore, int pickLocks, int scouting, int search, 
            int stealth, int traps, int aeolandis, int hieroform, int highGundis, int oldPraxic,
-           int praxic, int runic, string name, string lastname, string race, string gender, 
-           string zone, int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, 
-           int maxEp, int strength, int constitution, int intelligence, int dexterity, float x, 
-           float y, float z, float pitch, float yaw)
-       :Character(name, lastname, race, gender, zone, level, hp, maxHp, bp, maxBp, mp, maxMp, ep,
-                  maxEp, strength, constitution, intelligence, dexterity, x, y, z, pitch, yaw){
+           int praxic, int runic, string name, string lastname, string race, string gender,
+           string face, string skin, string zone, int level, int hp, int maxHp, int bp, int maxBp, 
+           int mp, int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence, 
+           int dexterity, float x, float y, float z, float pitch, float yaw)
+       :Character(name, lastname, race, gender, face, skin, zone, level, hp, maxHp, bp, maxBp, mp, 
+                  maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, x, y, z, 
+                  pitch, yaw){
     setAccount(account);
     setProfession(profession);
     setId(id);

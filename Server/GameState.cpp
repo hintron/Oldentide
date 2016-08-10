@@ -128,8 +128,9 @@ void GameState::selectPlayer(int sessionId){
 Player GameState::readPlayer(string name){
     return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Newcomers_Guild", 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                  0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Scarred", "Pale", 
+                  "Newcomers_Guild", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 
+                  0.0);
 }
 
 void GameState::storePlayer(string name){

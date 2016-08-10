@@ -11,14 +11,17 @@ using namespace std;
 //----------                     Class Constructors                   ----------//
 //------------------------------------------------------------------------------//
 
-Character::Character(string name, string lastname, string race, string gender, string zone, 
-                     int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, 
-                     int maxEp, int strength, int constitution, int intelligence, int dexterity, 
-                     float x, float y, float z, float pitch, float yaw) {
+Character::Character(string name, string lastname, string race, string gender, string face, 
+                     string skin, string zone, int level, int hp, int maxHp, int bp, int maxBp, 
+                     int mp, int maxMp, int ep, int maxEp, int strength, int constitution, 
+                     int intelligence, int dexterity, float x, float y, float z, float pitch, 
+                     float yaw) {
     setName(name);
     setLastname(lastname);
     setRace(race);
     setGender(gender);
+    setFace(face);
+    setSkin(skin);
     setZone(zone);
     setLevel(level);
     setHp(hp);
@@ -58,6 +61,14 @@ string Character::getRace(){
 
 string Character::getGender(){
     return gender;
+}
+
+string Character::getFace(){
+    return face;
+}
+
+string Character::getSkin(){
+    return skin;
 }
 
 string Character::getZone(){
@@ -153,6 +164,14 @@ void Character::setRace(string race){
 
 void Character::setGender(string gender){
     this->gender = gender;
+}
+
+void Character::setFace(string face){
+    this->face = face;
+}
+
+void Character::setSkin(string skin){
+    this->skin = skin;
 }
 
 void Character::setZone(string zone){

@@ -19,10 +19,10 @@ class Npc : public Character {
     public:
 
     // Constructors.
-    Npc(int id, std::string name, std::string lastname, std::string race, std::string gender, 
-        std::string zone, int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, 
-        int ep, int maxEp, int strength, int constitution, int intelligence, int dexterity, 
-        float x, float y, float z, float pitch, float yaw);
+    Npc(int id, std::string name, std::string lastname, std::string race, std::string gender,
+        std::string face, std::string skin, std::string zone, int level, int hp, int maxHp, 
+        int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, int constitution, 
+        int intelligence, int dexterity, float x, float y, float z, float pitch, float yaw);
     
     //~Npc();
 

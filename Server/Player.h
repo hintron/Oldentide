@@ -84,9 +84,10 @@ class Player : public Character {
            int camping, int firstAid, int lore, int pickLocks, int scouting, int search, 
            int stealth, int traps, int aeolandis, int hieroform, int highGundis, int oldPraxic,
            int praxic, int runic, std::string name, std::string lastname, std::string race, 
-           std::string gender, std::string zone, int level, int hp, int maxHp, int bp, int maxBp, 
-           int mp, int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence, 
-           int dexterity, float x, float y, float z, float pitch, float yaw);
+           std::string gender, std::string face, std::string skin, std::string zone, int level, 
+           int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, 
+           int constitution, int intelligence, int dexterity, float x, float y, float z, 
+           float pitch, float yaw);
 
     //~Player();
 
