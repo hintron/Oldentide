@@ -85,7 +85,7 @@ bool GameState::loginUser(char * account, char * keyStringHex){
     cout << "  Logging in..." << endl;
     cout << "  Account: " << account << endl;
     cout << "  Key: " << keyStringHex << endl;
-    return AccountManager::authenticate_account(account, keyStringHex);
+    return AccountManager::authenticateAccount(account, keyStringHex);
 }
 
 void GameState::disconnectSession(int sessionId){
@@ -96,7 +96,7 @@ void GameState::disconnectSession(int sessionId){
 
 void GameState::playerCommand(char * command, int sessionId){
     string pCommand(command);
-    vector<string> pCommandTokens = tokenfy(pCommand, ' ');
+    vector<string> pCommandTokens = Utils::tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s"){
         cout << "Detected a say command!" << endl;
         // Save the incoming message and return the assigned message number

@@ -27,15 +27,11 @@ SQLConnector::~SQLConnector(){
     sqlite3_close(database);
 }
 
-/**
-    Executes a static SQL statement
-
-    NOTE: Make sure there is no way for a user to inject arbitrary SQL into the passed statement!
-    Either sanitize the input thoroughly or don't use this command. You might need to use a
-    parameterized query instead, which this command doesn't support.
-
-    @return : The number of rows returned by the query
-**/
+// Executes a static SQL statement
+// NOTE: Make sure there is no way for a user to inject arbitrary SQL into the passed statement!
+// Either sanitize the input thoroughly or don't use this command. You might need to use a
+// parameterized query instead, which this command doesn't support.
+// @return : The number of rows returned by the query
 int SQLConnector::execute(string cmd){
     char *error_message = NULL;
     sqls = sqlite3_exec(database, cmd.c_str(), &execute_callback, 0, &error_message);
@@ -54,27 +50,24 @@ int SQLConnector::execute(string cmd){
     return 0;
 }
 
-/**
-    Insert a new account record.
-
-    @param account_name: IN. A c string that has already been sanitized to make sure it only has characters
-                            a-z,A-Z,0-9,_ If not sanitized, could lead to SQL Injection!
-    @param key: IN. A c string of the key for the account, already generated. Will be a string of hex.
-    @param salt: IN. A c string of the salt used to generate the key. Will be a string of hex.
-    @return : 1 if sql executed successfully; 0 otherwise
-**/
+// Insert a new account record.
+// @param account_name: IN. A c string that has already been sanitized to make sure it only has characters
+//                      a-z,A-Z,0-9,_ If not sanitized, could lead to SQL Injection!
+// @param key: IN. A c string of the key for the account, already generated. Will be a string of hex.
+// @param salt: IN. A c string of the salt used to generate the key. Will be a string of hex.
+// @return : 1 if sql executed successfully; 0 otherwise
 int SQLConnector::insert_account(char *account_name, char *key, char *salt){
     std::stringstream query;
     // Sanitize key, salt, and account name
-    if(!Utils::sanitize_account_name(account_name)){
+    if(!Utils::sanitizeAccountName(account_name)){
         cout << "Account_name is invalid! Cannot insert account record" << endl;
         return 0;
     }
-    if(!Utils::sanitize_hex_string(key)){
+    if(!Utils::sanitizeHexString(key)){
         cout << "Key is invalid! Cannot insert account record" << endl;
         return 0;
     }
-    if(!Utils::sanitize_hex_string(salt)){
+    if(!Utils::sanitizeHexString(salt)){
         cout << "Salt is invalid! Cannot insert account record" << endl;
         return 0;
     }
@@ -94,9 +87,7 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
 }
 
 // TODO: Create a paging mechanism - save a page variable and use LIMIT and OFFSET
-/**
-    Lists all the accounts
-**/
+// Lists all the accounts
 void SQLConnector::list_accounts(){
     std::stringstream query;
     //long long int offset = 0;
@@ -112,17 +103,13 @@ void SQLConnector::list_accounts(){
 // last_page
 // function to determine order (id or account_name)
 
-/**
-    Return the salt for the passed account
-
-    @param account_name: IN. A c string on the account_name to look the salt up.
-    @param salt_string_hex: OUT. An empty c string allocated to 129 bytes.
-
-    @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
-**/
+// Return the salt for the passed account
+// @param account_name: IN. A c string on the account_name to look the salt up.
+// @param salt_string_hex: OUT. An empty c string allocated to 129 bytes.
+// @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
 int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     // Sanitize the account name before preceeding
-    if(!Utils::sanitize_account_name(account_name)){
+    if(!Utils::sanitizeAccountName(account_name)){
         return 0;
     }
     char *error_message = NULL;
@@ -146,7 +133,7 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     }
     // TODO: There should be a better way to do this, but for now...
     // Check to see if the salt was retrieved
-    if(Utils::sanitize_hex_string(salt_string_hex)){
+    if(Utils::sanitizeHexString(salt_string_hex)){
         return 1;
     }
     else {
@@ -155,17 +142,13 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
 
 }
 
-/**
-    Returns the key to the passed account
-
-    @param account_name : IN. The name of the account to authenticate.
-    @param key_string_hex : OUT. The key hex string of the user. Should be allocated to 129 bytes.
-
-    @return : 1 on successful authentication, 0 if authentication failed.
-**/
+// Returns the key to the passed account
+// @param account_name : IN. The name of the account to authenticate.
+// @param key_string_hex : OUT. The key hex string of the user. Should be allocated to 129 bytes.
+// @return : 1 on successful authentication, 0 if authentication failed.
 int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     // Sanitize the account name before preceeding
-    if(!Utils::sanitize_account_name(account_name)){
+    if(!Utils::sanitizeAccountName(account_name)){
         return 0;
     }
     char *error_message = NULL;
@@ -190,11 +173,9 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
 }
 
 
-/**
-    A generic callback function to sqlite3_exec() that copies a c string in the first column
-    of the returned row into string_to_return. This function assumes that only one record will be
-    in the result set, or else the return value will be the value in the last row processed.
-**/
+// A generic callback function to sqlite3_exec() that copies a c string in the first column
+// of the returned row into string_to_return. This function assumes that only one record will be
+// in the result set, or else the return value will be the value in the last row processed.
 static int return_string_callback(void *string_to_return, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){
@@ -208,19 +189,15 @@ static int return_string_callback(void *string_to_return, int argc, char **argv,
     return 0;
 }
 
-/**
-    This is a generic callback that simply prints to screen all the values
-    of the returned row after a query. Callback adapted from https://www.sqlite.org/quickstart.html
-    This callback is invoked for each returned ROW
-    This can't be a method, since it is being passed as a c function pointer
-    Create, update, or delete calls usually don't return rows, so the callback won't be triggered.
-
-    @param NotUsed : A void pointer that can be used as a means of passing a parameter. Not used.
-    @param argc : The number of columns in the row
-    @param argv : Stores the column value strings of the row
-    @param azColName : Stores the column name strings in alphabetical order
-
-**/
+// This is a generic callback that simply prints to screen all the values
+// of the returned row after a query. Callback adapted from https://www.sqlite.org/quickstart.html
+// This callback is invoked for each returned ROW
+// This can't be a method, since it is being passed as a c function pointer
+// Create, update, or delete calls usually don't return rows, so the callback won't be triggered.
+// @param NotUsed : A void pointer that can be used as a means of passing a parameter. Not used.
+// @param argc : The number of columns in the row
+// @param argv : Stores the column value strings of the row
+// @param azColName : Stores the column name strings in alphabetical order.
 static int execute_callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){

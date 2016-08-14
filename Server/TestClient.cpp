@@ -164,7 +164,7 @@ int main(int argc, char * argv[]){
                 packetSalt.sessionId = session;
                 cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
-                if(!Utils::sanitize_account_name(packetSalt.account)){
+                if(!Utils::sanitizeAccountName(packetSalt.account)){
                     cout << "Invalid account name!" << endl;
                     break;
                 }
@@ -188,11 +188,11 @@ int main(int argc, char * argv[]){
                     // TODO: How to make password size match the length of the password?
                     char password[1000];
                     cin.getline(password, sizeof(password));
-                    if(!Utils::check_password_length(password)){
+                    if(!Utils::checkPasswordLength(password)){
                         break;
                     }
                     cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << endl;
-                    LoginManager::generate_key((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
+                    LoginManager::generateKey((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
                     cout << "Generated key used for login: " << packetLogin.keyStringHex << endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
@@ -238,7 +238,7 @@ int main(int argc, char * argv[]){
                                 cout << "Passwords were not the same... Please retype the password" << endl;                                repeat_try = true;
                                 continue;
                             }
-                            if(!Utils::check_password_length(password)){
+                            if(!Utils::checkPasswordLength(password)){
                                 cout << "Password needs to be at least 8 characters... Please choose a different password" << endl;
                                 repeat_try = true;
                                 continue;
@@ -249,7 +249,7 @@ int main(int argc, char * argv[]){
                             packetCreate.packetId = packetNumber;
                             packetCreate.sessionId = session;
                             strcpy(packetCreate.account, packetSalt.account);
-                            LoginManager::generate_salt_and_key(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
+                            LoginManager::generateSaltAndKey(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
                             sendto(sockfd,(void*)&packetCreate,sizeof(packetCreate),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                             // Print success if account was successfully created
                             PACKET_CREATEACCOUNT *returnPacket = (PACKET_CREATEACCOUNT*) malloc(sizeof(PACKET_CREATEACCOUNT));
@@ -288,7 +288,7 @@ int main(int argc, char * argv[]){
                 if (command.empty()){
                     break;
                 }
-                if (tokenfy(command, ' ')[0] != "/s"){
+                if (Utils::tokenfy(command, ' ')[0] != "/s"){
                     cout << "Please use a valid command!" << endl;
                     break;
                 };
