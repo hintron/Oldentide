@@ -5,17 +5,15 @@
 
 #include "Character.h"
 
-using namespace std;
+//------------------------------------------------------------------------------------------------//
+//-------------------                     Class Constructors                   -------------------//
+//------------------------------------------------------------------------------------------------//
 
-//------------------------------------------------------------------------------//
-//----------                     Class Constructors                   ----------//
-//------------------------------------------------------------------------------//
-
-Character::Character(string name, string lastname, string race, string gender, string face, 
-                     string skin, string zone, int level, int hp, int maxHp, int bp, int maxBp, 
-                     int mp, int maxMp, int ep, int maxEp, int strength, int constitution, 
-                     int intelligence, int dexterity, float x, float y, float z, float pitch, 
-                     float yaw) {
+Character::Character(std::string name, std::string lastname, std::string race, std::string gender, 
+                     std::string face, std::string skin, std::string zone, int level, int hp, 
+                     int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, 
+                     int strength, int constitution, int intelligence, int dexterity, float x, 
+                     float y, float z, float pitch, float yaw) {
     setName(name);
     setLastname(lastname);
     setRace(race);
@@ -43,35 +41,35 @@ Character::Character(string name, string lastname, string race, string gender, s
     setYaw(yaw);
 }
 
-//------------------------------------------------------------------------------//
-//----------                      Getter Functions                    ----------//
-//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+//-------------------                      Getter Functions                    -------------------//
+//------------------------------------------------------------------------------------------------//
 
-string Character::getName(){
+std::string Character::getName(){
     return name;
 }
 
-string Character::getLastname(){
+std::string Character::getLastname(){
     return lastname;
 }
 
-string Character::getRace(){
+std::string Character::getRace(){
     return race;
 }
 
-string Character::getGender(){
+std::string Character::getGender(){
     return gender;
 }
 
-string Character::getFace(){
+std::string Character::getFace(){
     return face;
 }
 
-string Character::getSkin(){
+std::string Character::getSkin(){
     return skin;
 }
 
-string Character::getZone(){
+std::string Character::getZone(){
     return zone;
 }
 
@@ -147,34 +145,34 @@ float Character::getYaw(){
     return yaw;
 }
 
-//------------------------------------------------------------------------------//
-//----------                      Setter Functions                    ----------//
-//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+//-------------------                      Setter Functions                    -------------------//
+//------------------------------------------------------------------------------------------------//
 
-void Character::setName(string name){
+void Character::setName(std::string name){
     this->name = name;
 }
 
-void Character::setLastname(string lastname){
+void Character::setLastname(std::string lastname){
     this->lastname = lastname;
 }
-void Character::setRace(string race){
+void Character::setRace(std::string race){
     this->race = race;
 }
 
-void Character::setGender(string gender){
+void Character::setGender(std::string gender){
     this->gender = gender;
 }
 
-void Character::setFace(string face){
+void Character::setFace(std::string face){
     this->face = face;
 }
 
-void Character::setSkin(string skin){
+void Character::setSkin(std::string skin){
     this->skin = skin;
 }
 
-void Character::setZone(string zone){
+void Character::setZone(std::string zone){
     this->zone = zone;
 }
 
@@ -250,7 +248,7 @@ void Character::setYaw(float yaw){
     this->yaw = yaw;
 }
 
-//------------------------------------------------------------------------------//
-//----------                      Class Functions                     ----------//
-//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
+//-------------------                      Class Functions                     -------------------//
+//------------------------------------------------------------------------------------------------//
 

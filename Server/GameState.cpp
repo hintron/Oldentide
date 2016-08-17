@@ -14,8 +14,6 @@
 #include <cstring>
 #include <map>
 
-using namespace std;
-
 #define MAX_MESSAGES 500
 #define MAX_MESSAGE_LENGTH 500
 
@@ -54,10 +52,10 @@ bool GameState::verifyActiveSession(int sessionId){
 }
 
 bool GameState::createAccount(char * account, char * keyStringHex, char * saltStringHex){
-    cout << "  Creating Account..." << endl;
-    cout << "  Account: " << account << endl;
-    cout << "  Key: " << keyStringHex << endl;
-    cout << "  Salt: " << saltStringHex << endl;
+    std::cout << "  Creating Account..." << std::endl;
+    std::cout << "  Account: " << account << std::endl;
+    std::cout << "  Key: " << keyStringHex << std::endl;
+    std::cout << "  Salt: " << saltStringHex << std::endl;
     bool success = false;
     if(sql->insert_account(account, keyStringHex, saltStringHex)){
         success = true;
@@ -82,9 +80,9 @@ bool GameState::createAccount(char * account, char * keyStringHex, char * saltSt
 }
 
 bool GameState::loginUser(char * account, char * keyStringHex){
-    cout << "  Logging in..." << endl;
-    cout << "  Account: " << account << endl;
-    cout << "  Key: " << keyStringHex << endl;
+    std::cout << "  Logging in..." << std::endl;
+    std::cout << "  Account: " << account << std::endl;
+    std::cout << "  Key: " << keyStringHex << std::endl;
     return AccountManager::authenticateAccount(account, keyStringHex);
 }
 
@@ -95,27 +93,27 @@ void GameState::disconnectSession(int sessionId){
 }
 
 void GameState::playerCommand(char * command, int sessionId){
-    string pCommand(command);
-    vector<string> pCommandTokens = Utils::tokenfy(pCommand, ' ');
+    std::string pCommand(command);
+    std::vector<std::string> pCommandTokens = Utils::tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s"){
-        cout << "Detected a say command!" << endl;
+        std::cout << "Detected a say command!" << std::endl;
         // Save the incoming message and return the assigned message number
-        string saying = pCommand.substr(3,string::npos);
+        std::string saying = pCommand.substr(3,std::string::npos);
         storeMessage(saying, sessionId);
     }
     else if (pCommandTokens[0] == "/y"){
-        cout << "Detected a yell command!" << endl;
+        std::cout << "Detected a yell command!" << std::endl;
     }
     else if (pCommandTokens[0] == "/ooc"){
-        cout << "Detected an out of character command!" << endl;
+        std::cout << "Detected an out of character command!" << std::endl;
     }
     else if (pCommandTokens[0] == "/h"){
-        cout << "Detected a help channel command!" << endl;
+        std::cout << "Detected a help channel command!" << std::endl;
     }
     else if (pCommandTokens[0] == "/w"){
-        cout << "Detected a whisper command!" << endl;
+        std::cout << "Detected a whisper command!" << std::endl;
     }
-    cout << "Full player command: " << command << endl;
+    std::cout << "Full player command: " << command << std::endl;
 }
 
 void GameState::selectPlayer(int sessionId){
@@ -125,7 +123,7 @@ void GameState::selectPlayer(int sessionId){
     return;
 }
 
-Player GameState::readPlayer(string name){
+Player GameState::readPlayer(std::string name){
     return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Scarred", "Pale", 
@@ -133,7 +131,7 @@ Player GameState::readPlayer(string name){
                   0.0);
 }
 
-void GameState::storePlayer(string name){
+void GameState::storePlayer(std::string name){
     return;
 }
 
@@ -178,13 +176,13 @@ long long int GameState::getGlobalMessageNumber() {
 long long int GameState::getMessage(long long int messageNumber, char *messageOutput, char *accountNameOutput) {
     // Look up the requested message and return it
     if(messageNumber >= 1 && messageNumber <= MAX_MESSAGES){
-        cout << "Looking up message " << messageNumber << endl;
+        std::cout << "Looking up message " << messageNumber << std::endl;
 
         // Look up the message and account name
         // Remember, index = messageNumber - 1
-        string message = globalMessageArray.at(messageNumber-1);
-        string accountName = sessionAccounts[globalMessageAccountArray.at(messageNumber-1)];
-        // cout << accountName << ": " << message << endl;
+        std::string message = globalMessageArray.at(messageNumber-1);
+        std::string accountName = sessionAccounts[globalMessageAccountArray.at(messageNumber-1)];
+        // std::cout << accountName << ": " << message << std::endl;
 
         std::strcpy(messageOutput, message.c_str());
         std::strcpy(accountNameOutput, accountName.c_str());
@@ -206,15 +204,15 @@ long long int GameState::getMessage(long long int messageNumber, char *messageOu
     @return : the global message number assigned to the message stored.
                 If 0, then failed to store message.
 **/
-long long int GameState::storeMessage(string message, int sessionId) {
+long long int GameState::storeMessage(std::string message, int sessionId) {
     if(globalMessageNumber > MAX_MESSAGES){
-        cout << "Ran out of message space! Reached max number of messages" << endl;
+        std::cout << "Ran out of message space! Reached max number of messages" << std::endl;
         // Ran out of message space
         return 0;
     } else{
         // Increase the global message number (start at 1 - 0 means no messages)
         globalMessageNumber++;
-        // cout << "Saving message with number " << globalMessageNumber << ": " << message << endl;
+        // std::cout << "Saving message with number " << globalMessageNumber << ": " << message << std::endl;
         // TODO: Are things guaranteed to be atomic and reentrant?
         // Atomically assign message a global message number
         // Store the first message at index 0, second message at 1, etc.

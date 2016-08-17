@@ -16,8 +16,6 @@
 #include <unistd.h>
 #include <limits.h>
 
-using namespace std;
-
 Server::Server(int port){
     sql = new SQLConnector();
     gamestate = new GameState(sql);
@@ -31,13 +29,13 @@ Server::Server(int port){
 
     // Create socket for IP, UDP normal protocol.
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0){
-        cout << "Cannot create socket..." << endl;
+        std::cout << "Cannot create socket..." << std::endl;
         exit(EXIT_FAILURE);
     }
 
     // Bind socket to a port.
     if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0){
-        cout << "Cannot bind socket..." << endl;
+        std::cout << "Cannot bind socket..." << std::endl;
         exit(EXIT_FAILURE);
     };
 }
@@ -49,10 +47,10 @@ Server::~Server(){
 }
 
 void Server::run(){
-    thread shell(*adminshell);
+    std::thread shell(*adminshell);
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    cout << "Server Running!\n";
+    std::cout << "Server Running!\n";
 	bool validSession = true;
     bool listen = true;
     while(listen){
@@ -144,7 +142,7 @@ void Server::ackHandler(PACKET_ACK * packet){
 void Server::connectHandler(PACKET_CONNECT * packet, sockaddr_in client){
     PACKET_CONNECT returnPacket;
     returnPacket.sessionId = gamestate->generateSession(packet->sessionId);
-    cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << endl;
+    std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
@@ -158,19 +156,19 @@ void Server::disconnectHandler(PACKET_DISCONNECT * packet){
 // Remove the session for a given user, effectively disconnecting it from the server.
 void Server::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
     PACKET_GETSALT returnPacket;
-    cout << "saltHandler" << endl;
+    std::cout << "saltHandler" << std::endl;
     // Check to make sure account already exists
     // If account doesn't exist, notify user
     // else, return the salt so the user can start key calculation
     int account_exists = sql->get_account_salt(packet->account, returnPacket.saltStringHex);
     if(account_exists){
         strcpy(returnPacket.account, packet->account);
-        cout << "User " << returnPacket.account << " was found on the server." << endl;
-        cout << "Returning salt: " << returnPacket.saltStringHex << endl;
+        std::cout << "User " << returnPacket.account << " was found on the server." << std::endl;
+        std::cout << "Returning salt: " << returnPacket.saltStringHex << std::endl;
     }
     else {
-        cout << "User " << packet->account << " was not found on the server!" << endl;
-        //string failedAccount = "FAILED";
+        std::cout << "User " << packet->account << " was not found on the server!" << std::endl;
+        //std::string failedAccount = "FAILED";
         strcpy(returnPacket.account, "failed");
     }
     // Either return the salt or return the response
@@ -181,11 +179,11 @@ void Server::saltHandler(PACKET_GETSALT *packet, sockaddr_in client){
 void Server::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client){
     PACKET_CREATEACCOUNT returnPacket;
     if(gamestate->createAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
-        cout << "User " << packet->account << " was created successfully!" << endl;
+        std::cout << "User " << packet->account << " was created successfully!" << std::endl;
         strcpy(returnPacket.account, packet->account);
     }
     else {
-        cout << "Failed to create user " << packet->account << endl;
+        std::cout << "Failed to create user " << packet->account << std::endl;
         // Resue the same packet as the return packet
         strcpy(returnPacket.account, "FAILED");
     }
@@ -196,13 +194,13 @@ void Server::createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in clie
 void Server::loginHandler(PACKET_LOGIN * packet, sockaddr_in client){
     PACKET_CREATEACCOUNT returnPacket;
     if(gamestate->loginUser(packet->account, packet->keyStringHex)) {
-        cout << "User " << packet->account << " logged in successfully!" << endl;
+        std::cout << "User " << packet->account << " logged in successfully!" << std::endl;
         strcpy(returnPacket.account, packet->account);
         // Register the accountName to the sessionId
         gamestate->setSessionAccountName(packet->account, packet->sessionId);
     }
     else {
-        cout << "Failed login attempt for user: " << packet->account << endl;
+        std::cout << "Failed login attempt for user: " << packet->account << std::endl;
         // Resue the same packet as the return packet
         strcpy(returnPacket.account, "FAILED");
     }
@@ -244,7 +242,7 @@ void Server::sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
         gamestate->playerCommand(packet->command, packet->sessionId);
     }
     else{
-        cout << "Nonactive session requested to send a player command..." << packet->sessionId << endl;
+        std::cout << "Nonactive session requested to send a player command..." << packet->sessionId << std::endl;
     }
     free(packet);
 }
@@ -258,7 +256,7 @@ void Server::sendServerActionHandler(PACKET_SENDSERVERACTION * packet){
 }
 
 void Server::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
-    //cout << "server messageHandler" << endl;
+    //std::cout << "server messageHandler" << std::endl;
     PACKET_MESSAGE returnPacket;
     if(packet->globalMessageNumber != 0){
         // Look up the requested message and return it
@@ -275,7 +273,7 @@ void Server::messageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
 }
 
 void Server::getLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client){
-    //cout << "server getLatestMessageHandler" << endl;
+    //std::cout << "server getLatestMessageHandler" << std::endl;
     PACKET_GETLATESTMESSAGE returnPacket;
     returnPacket.globalMessageNumber = gamestate->getGlobalMessageNumber();
     sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&client, sizeof(client));

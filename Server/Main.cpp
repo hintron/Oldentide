@@ -7,13 +7,11 @@
 #include <cstdlib>
 #include <iostream>
 
-using namespace std;
-
 int main(int argc, char* argv[]){
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
     if(argc != 2){
-        cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << endl;
+        std::cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << std::endl;
         return 1;
     }
     int port = atoi(argv[1]);

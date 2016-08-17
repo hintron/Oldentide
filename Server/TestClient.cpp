@@ -45,15 +45,15 @@ void messageListener(char *server_address, int port, int session){
         socklen_t len = sizeof(servret);
         int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&servret, &len);
 
-        //cout << "Message number recieved: " << returnPacket->globalMessageNumber << endl;
+        //std::cout << "Message number recieved: " << returnPacket->globalMessageNumber << std::endl;
         if(i == 0 && returnPacket->globalMessageNumber == 0){
-            //cout << "No messages on the server..." << endl;
+            //std::cout << "No messages on the server..." << std::endl;
         }
         else if (i > 0 && returnPacket->globalMessageNumber == 0){
-            cout << "Ran out of messages!" << endl;
+            std::cout << "Ran out of messages!" << std::endl;
         }
         else if (i < returnPacket->globalMessageNumber){
-            //cout << "Pulling down messages from server..." << endl;
+            //std::cout << "Pulling down messages from server..." << std::endl;
             // Print out each message to the client
             bool getAnotherMessage = true;
             do {
@@ -69,7 +69,7 @@ void messageListener(char *server_address, int port, int session){
                 // TODO: If the message wasn't recieved properly, try again
 
                 // Print out the message
-                cout << "\n----> " << returnPacketMsg->accountName << " says: \"" << returnPacketMsg->message << "\"" << endl;
+                std::cout << "\n----> " << returnPacketMsg->accountName << " says: \"" << returnPacketMsg->message << "\"" << std::endl;
 
                 if(i == returnPacket->globalMessageNumber){
                     getAnotherMessage = false;
@@ -78,12 +78,12 @@ void messageListener(char *server_address, int port, int session){
             while(getAnotherMessage);
         }
         else if (i == returnPacket->globalMessageNumber) {
-            //cout << "All caught up!" << endl;
+            //std::cout << "All caught up!" << std::endl;
         }
         else {
-            cout << "Unknown state" << endl;
-            cout << "i: " << i << endl;
-            cout << "retPacket msgNum: " << returnPacket->globalMessageNumber << endl;
+            std::cout << "Unknown state" << std::endl;
+            std::cout << "i: " << i << std::endl;
+            std::cout << "retPacket msgNum: " << returnPacket->globalMessageNumber << std::endl;
         }
 
         // TODO: If the server returns a message count different from what the client thinks,
@@ -110,15 +110,15 @@ int main(int argc, char * argv[]){
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
     if(argc != 3){
-        cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << endl;
+        std::cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << std::endl;
         return 1;
     }
 
     // Read in server address.
     server_address = argv[1];
     int port = atoi(argv[2]);
-    cout << server_address << endl;
-    cout << port << endl;
+    std::cout << server_address << std::endl;
+    std::cout << port << std::endl;
 
     sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -132,7 +132,7 @@ int main(int argc, char * argv[]){
         switch (clientState){
             // Initial State.
             case 0: {
-                cout << "Connect? (Y/N) " << endl;
+                std::cout << "Connect? (Y/N) " << std::endl;
                 string response;
                 getline (cin, response);
                 if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
@@ -145,13 +145,13 @@ int main(int argc, char * argv[]){
                     sockaddr_in servret;
                     socklen_t len = sizeof(servret);
                     int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&servret, &len);
-                    cout << "Connected! Given the session id: " << returnPacket->sessionId << endl;
+                    std::cout << "Connected! Given the session id: " << returnPacket->sessionId << std::endl;
                     session = returnPacket->sessionId;
                     free(returnPacket);
                     clientState = 1;
                 }
                 else {
-                    cout << "Shutting down!" << endl;
+                    std::cout << "Shutting down!" << std::endl;
                     running = false;
                 }
                 break;
@@ -162,10 +162,10 @@ int main(int argc, char * argv[]){
                 PACKET_GETSALT packetSalt;
                 packetSalt.packetId = packetNumber;
                 packetSalt.sessionId = session;
-                cout << "Account: ";
+                std::cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
                 if(!Utils::sanitizeAccountName(packetSalt.account)){
-                    cout << "Invalid account name!" << endl;
+                    std::cout << "Invalid account name!" << std::endl;
                     break;
                 }
                 sendto(sockfd,(void*)&packetSalt,sizeof(packetSalt),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
@@ -173,16 +173,16 @@ int main(int argc, char * argv[]){
                 sockaddr_in servretSalt;
                 socklen_t lenSalt = sizeof(servretSalt);
                 int n = recvfrom(sockfd, (void *)returnPacketSalt, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&servretSalt, &lenSalt);
-                cout << "Account retrieved from get salt:" << returnPacketSalt->account << endl;
-                cout << "Account on hand:" << packetSalt.account << endl;
+                std::cout << "Account retrieved from get salt:" << returnPacketSalt->account << std::endl;
+                std::cout << "Account on hand:" << packetSalt.account << std::endl;
                 if ((strcmp(returnPacketSalt->account, packetSalt.account)) == 0) {
-                    cout << "Account exists! Recieved salt, calculating key..." << endl;
+                    std::cout << "Account exists! Recieved salt, calculating key..." << std::endl;
                     // Second packet - calculate key from salt and send key and account name
                     PACKET_LOGIN packetLogin;
                     packetLogin.packetId = packetNumber;
                     packetLogin.sessionId = session;
                     strcpy(packetLogin.account, packetSalt.account);
-                    cout << "Password: ";
+                    std::cout << "Password: ";
                     // TODO: Get a system-wide define for max password length
                     // TODO: Is there any way to allocate only what is needed?
                     // TODO: How to make password size match the length of the password?
@@ -191,31 +191,31 @@ int main(int argc, char * argv[]){
                     if(!Utils::checkPasswordLength(password)){
                         break;
                     }
-                    cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << endl;
+                    std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
                     LoginManager::generateKey((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
-                    cout << "Generated key used for login: " << packetLogin.keyStringHex << endl;
+                    std::cout << "Generated key used for login: " << packetLogin.keyStringHex << std::endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
                     sockaddr_in servret;
                     socklen_t len = sizeof(servret);
                     int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
                     if ((strcmp(returnPacket->account, packetLogin.account)) == 0) {
-                        cout << "Logged in as " << returnPacket->account << "!" << endl;
+                        std::cout << "Logged in as " << returnPacket->account << "!" << std::endl;
                         userAccount = returnPacket->account;
-                        cout << "(" << packetLogin.account << ")" << endl;
+                        std::cout << "(" << packetLogin.account << ")" << std::endl;
                         // Spawn thread to start listening to server broadcasts
                         shell = thread(messageListener, server_address, port, session);
                         // Now that user is logged in, start up client console
                         clientState = 2;
                     }
                     else {
-                        cout << "Login Failed! Please try again." << endl;
+                        std::cout << "Login Failed! Please try again." << std::endl;
                     }
                     free(returnPacket);
                 }
                 else {
-                    cout << "Account doesn't exist..." << endl;
-                    cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/N) " << endl;
+                    std::cout << "Account doesn't exist..." << std::endl;
+                    std::cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/N) " << std::endl;
                     string response;
                     getline(cin, response);
                     if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
@@ -224,7 +224,7 @@ int main(int argc, char * argv[]){
                         bool repeat_try;
                         do {
                             repeat_try = false;
-                            cout << "Enter password, or press c to cancel: ";
+                            std::cout << "Enter password, or press c to cancel: ";
                             // TODO: Get a system-wide define for max password length
                             // TODO: Is there any way to allocate only what is needed?
                             // TODO: How to make password size match the length of the password?
@@ -232,14 +232,15 @@ int main(int argc, char * argv[]){
                             if(strcmp(password, "c") == 0){
                                 continue;
                             }
-                            cout << "Repeat password: ";
+                            std::cout << "Repeat password: ";
                             cin.getline(password2, sizeof(password2));
                             if(strcmp(password, password2) != 0){
-                                cout << "Passwords were not the same... Please retype the password" << endl;                                repeat_try = true;
+                                std::cout << "Passwords were not the same... Please retype the password" << std::endl;                                
+                                repeat_try = true;
                                 continue;
                             }
                             if(!Utils::checkPasswordLength(password)){
-                                cout << "Password needs to be at least 8 characters... Please choose a different password" << endl;
+                                std::cout << "Password needs to be at least 8 characters... Please choose a different password" << std::endl;
                                 repeat_try = true;
                                 continue;
                             }
@@ -257,10 +258,10 @@ int main(int argc, char * argv[]){
                             socklen_t len = sizeof(servret);
                             int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_LOGIN), 0, (struct sockaddr *)&servret, &len);
                             if ((strcmp(returnPacket->account, packetCreate.account)) == 0) {
-                                cout << "New account \"" << returnPacket->account << "\" successfully created!" << endl;
+                                std::cout << "New account \"" << returnPacket->account << "\" successfully created!" << std::endl;
                             }
                             else {
-                                cout << "New account \"" << packetCreate.account << "\" failed to create..." << endl;
+                                std::cout << "New account \"" << packetCreate.account << "\" failed to create..." << std::endl;
                             }
                             free(returnPacket);
                         }
@@ -272,7 +273,7 @@ int main(int argc, char * argv[]){
             }
             // Logged In.
             case 2: {
-                cout << "Selecting a character would happen here..." << endl;
+                std::cout << "Selecting a character would happen here..." << std::endl;
                 PACKET_SELECTCHARACTER selectCharacter;
                 selectCharacter.sessionId = session;
                 strcpy(selectCharacter.character, "Poopymouth");
@@ -282,14 +283,14 @@ int main(int argc, char * argv[]){
             }
             // In game...
             case 3: {
-                cout << userAccount << ": ";
+                std::cout << userAccount << ": ";
                 string command;
                 getline(cin, command);
                 if (command.empty()){
                     break;
                 }
                 if (Utils::tokenfy(command, ' ')[0] != "/s"){
-                    cout << "Please use a valid command!" << endl;
+                    std::cout << "Please use a valid command!" << std::endl;
                     break;
                 };
                 PACKET_SENDPLAYERCOMMAND playerCommand;

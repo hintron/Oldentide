@@ -9,17 +9,15 @@
 #include <string.h>
 #include <sstream>
 
-using namespace std;
-
 SQLConnector::SQLConnector(){
     sqls = sqlite3_open("db/Oldentide.db", &database);
     if(sqls){
-        cout << "Can't open database!" << endl;
+        std::cout << "Can't open database!" << std::endl;
         // Is this needed?
         sqlite3_close(database);
     }
     else{
-        cout << "Oldentide database opened successfully." << endl;
+        std::cout << "Oldentide database opened successfully." << std::endl;
     }
 }
 
@@ -32,18 +30,18 @@ SQLConnector::~SQLConnector(){
 // Either sanitize the input thoroughly or don't use this command. You might need to use a
 // parameterized query instead, which this command doesn't support.
 // @return : The number of rows returned by the query
-int SQLConnector::execute(string cmd){
+int SQLConnector::execute(std::string cmd){
     char *error_message = NULL;
     sqls = sqlite3_exec(database, cmd.c_str(), &execute_callback, 0, &error_message);
     if (sqls != SQLITE_OK){
-        cout << "Could not execute SQL query! Return Code:" << sqls << endl;
+        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
-        cout << "Executed Successfully. Return Code:" << sqls << endl;
+        std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
     }
     if(error_message){
         // Print out the error message if any
-        cout << "SQL ERROR MESSAGE: " << error_message << endl;
+        std::cout << "SQL ERROR MESSAGE: " << error_message << std::endl;
         // Free the error message, since it was alloced in exec()
         sqlite3_free(error_message);
     }
@@ -60,15 +58,15 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
     std::stringstream query;
     // Sanitize key, salt, and account name
     if(!Utils::sanitizeAccountName(account_name)){
-        cout << "Account_name is invalid! Cannot insert account record" << endl;
+        std::cout << "Account_name is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
     if(!Utils::sanitizeHexString(key)){
-        cout << "Key is invalid! Cannot insert account record" << endl;
+        std::cout << "Key is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
     if(!Utils::sanitizeHexString(salt)){
-        cout << "Salt is invalid! Cannot insert account record" << endl;
+        std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
     query << "insert into accounts (account_name, key, salt) values (";
@@ -115,18 +113,18 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     char *error_message = NULL;
     std::stringstream query;
     query << "select salt from accounts where account_name = \"" << account_name << "\"";
-    cout << query.str() << endl;
+    std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
     sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, salt_string_hex, &error_message);
     if (sqls != SQLITE_OK){
-        cout << "Could not execute SQL query! Return Code:" << sqls << endl;
+        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
-        cout << "Executed Successfully. Return Code:" << sqls << endl;
+        std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
     }
     if(error_message){
         // Print out the error message if any
-        cout << "SQL ERROR MESSAGE: " << error_message << endl;
+        std::cout << "SQL ERROR MESSAGE: " << error_message << std::endl;
         // Free the error message, since it was alloced in exec()
         sqlite3_free(error_message);
         return 0;
@@ -154,18 +152,18 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     char *error_message = NULL;
     std::stringstream query;
     query << "select key from accounts where account_name = \"" << account_name << "\"";
-    cout << query.str() << endl;
+    std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
     sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, key_string_hex, &error_message);
     if (sqls != SQLITE_OK){
-        cout << "Could not execute SQL query! Return Code:" << sqls << endl;
+        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
-        cout << "Executed Successfully. Return Code:" << sqls << endl;
+        std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
     }
     if(error_message){
         // Print out the error message if any
-        cout << "SQL ERROR MESSAGE: " << error_message << endl;
+        std::cout << "SQL ERROR MESSAGE: " << error_message << std::endl;
         // Free the error message, since it was alloced in exec()
         sqlite3_free(error_message);
     }
@@ -179,10 +177,10 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
 static int return_string_callback(void *string_to_return, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){
-        cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
-        cout << " | ";
+        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
+        std::cout << " | ";
     }
-    cout << endl;
+    std::cout << std::endl;
     // The value will auto-destroy soon. So, we need to copy it to a place
     // that won't get destroyed after returning from this function
     strcpy((char *)string_to_return, argv[0]);
@@ -201,10 +199,10 @@ static int return_string_callback(void *string_to_return, int argc, char **argv,
 static int execute_callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){
-        cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
-        cout << " | ";
+        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
+        std::cout << " | ";
     }
-    cout << endl;
+    std::cout << std::endl;
     return 0;
 }
 
@@ -238,21 +236,21 @@ static int execute_callback(void *NotUsed, int argc, char **argv, char **azColNa
 //    if(rc == SQLITE_ROW){
 //        // Process just the first row, since there should only be one record
 //        //int salt_bytes = sqlite3_column_bytes(statement, column_salt);
-//        //cout << "Account found! The salt is " << salt_bytes << "+1 bytes!" << endl;
+//        //std::cout << "Account found! The salt is " << salt_bytes << "+1 bytes!" << std::endl;
 //        // Get the salt text
 //        char *salt_string_hex_temp = (char *)sqlite3_column_text(statement, column_salt);
 //        // sqlite3_column_text returns a string pointer that sqlite will autodeestroy soon
 //        // So, we need to copy it to a place that won't get destroyed after returning from this function
 //        strcpy(salt_string_hex, salt_string_hex_temp);
-//        cout << "Salt hex from db: " <<  salt_string_hex << endl;
+//        std::cout << "Salt hex from db: " <<  salt_string_hex << std::endl;
 //        return_value = 1;
 //    }
 //    else if(rc == SQLITE_DONE){
 //        // User account wasn't found
-//        cout << "Account wasn't found..." << endl;
+//        std::cout << "Account wasn't found..." << std::endl;
 //    }
 //    else{
-//        cout << "An SQL error occurred. Return code: " << rc << endl;
+//        std::cout << "An SQL error occurred. Return code: " << rc << std::endl;
 //    }
 //    sqlite3_finalize(statement);
 //    return return_value;
