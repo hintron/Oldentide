@@ -69,7 +69,7 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
         std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
-    query << "insert into accounts (account_name, key, salt) values (";
+    query << "insert into accounts (accountname, key, salt) values (";
     query << "\"" << account_name << "\",";
     query << "\"" << key << "\",";
     query << "\"" << salt << "\")";
@@ -89,7 +89,7 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
 void SQLConnector::list_accounts(){
     std::stringstream query;
     //long long int offset = 0;
-    query << "select * from accounts ORDER BY account_name";// LIMIT 5 OFFSET " << offset;
+    query << "select * from accounts ORDER BY accountname";// LIMIT 5 OFFSET " << offset;
     execute(query.str());
 }
 
@@ -112,7 +112,7 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     }
     char *error_message = NULL;
     std::stringstream query;
-    query << "select salt from accounts where account_name = \"" << account_name << "\"";
+    query << "select salt from accounts where accountname = \"" << account_name << "\"";
     std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
     sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, salt_string_hex, &error_message);
@@ -151,7 +151,7 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     }
     char *error_message = NULL;
     std::stringstream query;
-    query << "select key from accounts where account_name = \"" << account_name << "\"";
+    query << "select key from accounts where accountname = \"" << account_name << "\"";
     std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
     sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, key_string_hex, &error_message);
