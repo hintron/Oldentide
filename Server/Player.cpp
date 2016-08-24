@@ -5,6 +5,7 @@
 //        :  Inherits from "Character" class.
 
 #include "Player.h"
+#include "Utils.h"
 
 //------------------------------------------------------------------------------------------------//
 //-------------------                     Class Constructors                   -------------------//
@@ -83,6 +84,70 @@ Player::Player(std::string account, std::string profession, int id, int session,
     setOldPraxic(oldPraxic);
     setPraxic(praxic);
     setRunic(runic);
+}
+
+// Deserialization Constuctor.
+Player::Player(std::string serial)
+       :Character(serial){
+    std::vector<std::string> tokens = tokenfy(serial);
+    if tokens[0] != "PLAYER_OBJECT"
+        break;
+    setAccount(tokens[1]);
+    setProfession(tokens[2]);
+    setId(std::stoi(tokens[3]));
+    setSession(std::stoi(tokens[4]));
+    setWeight(std::stoi(tokens[5]));
+    setAxe(std::stoi(tokens[6]));
+    setDagger(std::stoi(tokens[7]));
+    setUnarmed(std::stoi(tokens[8]));
+    setHammer(std::stoi(tokens[9]));
+    setPolearm(std::stoi(tokens[10]));
+    setSpear(std::stoi(tokens[11]));
+    setStaff(std::stoi(tokens[12]));
+    setSword(std::stoi(tokens[13]));
+    setArchery(std::stoi(tokens[14]));
+    setCrossbow(std::stoi(tokens[15]));
+    setSling(std::stoi(tokens[16]));
+    setThrown(std::stoi(tokens[17]));
+    setArmor(std::stoi(tokens[18]));
+    setDualWeapon(std::stoi(tokens[19]));
+    setShield(std::stoi(tokens[20]));
+    setBardic(std::stoi(tokens[21]));
+    setConjuring(std::stoi(tokens[22]));
+    setDruidic(std::stoi(tokens[23]));
+    setIllusion(std::stoi(tokens[24]));
+    setNecromancy(std::stoi(tokens[25]));
+    setSorcery(std::stoi(tokens[26]));
+    setShamanic(std::stoi(tokens[27]));
+    setSummoning(std::stoi(tokens[28]));
+    setSpellcraft(std::stoi(tokens[29]));
+    setFocus(std::stoi(tokens[30]));
+    setArmorsmithing(std::stoi(tokens[31]));
+    setTailoring(std::stoi(tokens[32]));
+    setFletching(std::stoi(tokens[33]));
+    setWeaponsmith(std::stoi(tokens[34]));
+    setAlchemy(std::stoi(tokens[35]));
+    setLapidary(std::stoi(tokens[36]));
+    setCalligraphy(std::stoi(tokens[37]));
+    setEnchanting(std::stoi(tokens[38]));
+    setHerbalism(std::stoi(tokens[39]));
+    setHunting(std::stoi(tokens[40]));
+    setMining(std::stoi(tokens[41]));
+    setBargaining(std::stoi(tokens[42]));
+    setCamping(std::stoi(tokens[43]));
+    setFirstAid(std::stoi(tokens[44]));
+    setLore(std::stoi(tokens[45]));
+    setPickLocks(std::stoi(tokens[46]));
+    setScouting(std::stoi(tokens[47]));
+    setSearch(std::stoi(tokens[48]));
+    setStealth(std::stoi(tokens[49]));
+    setTraps(std::stoi(tokens[50]));
+    setAeolandis(std::stoi(tokens[51]));
+    setHieroform(std::stoi(tokens[52]));
+    setHighGundis(std::stoi(tokens[53]));
+    setOldPraxic(std::stoi(tokens[54]));
+    setPraxic(std::stoi(tokens[55]));
+    setRunic(std::stoi(tokens[56]));
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -546,3 +611,169 @@ void Player::setRunic(int runic){
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
 
+std::string Player::serialize(){
+    std::string serial;
+    serial.append("PLAYER_OBJECT|");
+    serial.append(account);
+    serial.append('|');
+    serial.append(profession);
+    serial.append('|');
+    serial.append(std::to_str(id));
+    serial.append('|');
+    serial.append(std::to_str(session));
+    serial.append('|');
+    serial.append(std::to_str(weight));
+    serial.append('|');
+    serial.append(std::to_str(axe));
+    serial.append('|');
+    serial.append(std::to_str(dagger)); 
+    serial.append('|');
+    serial.append(std::to_str(unarmed));
+    serial.append('|');
+    serial.append(std::to_str(hammer));
+    serial.append('|');
+    serial.append(std::to_str(polearm));
+    serial.append('|');
+    serial.append(std::to_str(spear));
+    serial.append('|');
+    serial.append(std::to_str(staff));
+    serial.append('|');
+    serial.append(std::to_str(sword));
+    serial.append('|');
+    serial.append(std::to_str(archery));
+    serial.append('|');
+    serial.append(std::to_str(crossbow));
+    serial.append('|');
+    serial.append(std::to_str(sling));
+    serial.append('|');
+    serial.append(std::to_str(thrown));
+    serial.append('|');
+    serial.append(std::to_str(armor));
+    serial.append('|');
+    serial.append(std::to_str(dualWeapon));
+    serial.append('|');
+    serial.append(std::to_str(shield));
+    serial.append('|');
+    serial.append(std::to_str(bardic));
+    serial.append('|');
+    serial.append(std::to_str(conjuring));
+    serial.append('|');
+    serial.append(std::to_str(druidic));
+    serial.append('|');
+    serial.append(std::to_str(illusion));
+    serial.append('|');
+    serial.append(std::to_str(necromancy));
+    serial.append('|');
+    serial.append(std::to_str(sorcery));
+    serial.append('|');
+    serial.append(std::to_str(shamanic));
+    serial.append('|');
+    serial.append(std::to_str(spellcraft));
+    serial.append('|');
+    serial.append(std::to_str(summoning));
+    serial.append('|');
+    serial.append(std::to_str(focus));
+    serial.append('|');
+    serial.append(std::to_str(armorsmithing));
+    serial.append('|');
+    serial.append(std::to_str(tailoring));
+    serial.append('|');
+    serial.append(std::to_str(fletching));
+    serial.append('|');
+    serial.append(std::to_str(weaponsmithing));
+    serial.append('|');
+    serial.append(std::to_str(alchemy));
+    serial.append('|');
+    serial.append(std::to_str(lapidary));
+    serial.append('|');
+    serial.append(std::to_str(calligraphy));
+    serial.append('|');
+    serial.append(std::to_str(enchanting));
+    serial.append('|');
+    serial.append(std::to_str(herbalism));
+    serial.append('|');
+    serial.append(std::to_str(hunting));
+    serial.append('|');
+    serial.append(std::to_str(mining));
+    serial.append('|');
+    serial.append(std::to_str(bargaining));
+    serial.append('|');
+    serial.append(std::to_str(camping));
+    serial.append('|');
+    serial.append(std::to_str(firstAid));
+    serial.append('|');
+    serial.append(std::to_str(lore));
+    serial.append('|');
+    serial.append(std::to_str(pickLocks));
+    serial.append('|');
+    serial.append(std::to_str(scouting));
+    serial.append('|');
+    serial.append(std::to_str(search));
+    serial.append('|');
+    serial.append(std::to_str(stealth));
+    serial.append('|');
+    serial.append(std::to_str(traps));
+    serial.append('|');
+    serial.append(std::to_str(aeolandis));
+    serial.append('|');
+    serial.append(std::to_str(hieroform));
+    serial.append('|');
+    serial.append(std::to_str(highGundis));
+    serial.append('|');
+    serial.append(std::to_str(oldPraxic));
+    serial.append('|');
+    serial.append(std::to_str(praxic));
+    serial.append('|');
+    serial.append(std::to_str(runic));
+    serial.append('|');
+    serial.append(name);
+    serial.append('|');
+    serial.append(lastname);
+    serial.append('|');
+    serial.append(race);
+    serial.append('|');
+    serial.append(gender);
+    serial.append('|');
+    serial.append(face);
+    serial.append('|');
+    serial.append(skin);
+    serial.append('|');
+    serial.append(zone);
+    serial.append('|');
+    serial.append(std::to_str(level));
+    serial.append('|');
+    serial.append(std::to_str(hp));
+    serial.append('|');
+    serial.append(std::to_str(maxHp));
+    serial.append('|');
+    serial.append(std::to_str(bp));
+    serial.append('|');
+    serial.append(std::to_str(maxBp));
+    serial.append('|');
+    serial.append(std::to_str(mp));
+    serial.append('|');
+    serial.append(std::to_str(maxMp));
+    serial.append('|');
+    serial.append(std::to_str(ep));
+    serial.append('|');
+    serial.append(std::to_str(maxEp));
+    serial.append('|');
+    serial.append(std::to_str(strength));
+    serial.append('|');
+    serial.append(std::to_str(constitution));
+    serial.append('|');
+    serial.append(std::to_str(intelligence));
+    serial.append('|');
+    serial.append(std::to_str(dexterity));
+    serial.append('|');
+    serial.append(std::to_str(x));
+    serial.append('|');
+    serial.append(std::to_str(y));
+    serial.append('|');
+    serial.append(std::to_str(z));
+    serial.append('|');
+    serial.append(std::to_str(pitch));
+    serial.append('|');
+    serial.appoend(std::to_str(yaw));
+    return serial;
+}
