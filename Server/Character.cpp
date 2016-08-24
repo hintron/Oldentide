@@ -4,6 +4,7 @@
 // Purpose:  Child class representing any living object in Oldentide.
 
 #include "Character.h"
+#include "Utils.h"
 
 //------------------------------------------------------------------------------------------------//
 //-------------------                     Class Constructors                   -------------------//
@@ -39,6 +40,40 @@ Character::Character(std::string name, std::string lastname, std::string race, s
     setZ(z);
     setPitch(pitch);
     setYaw(yaw);
+}
+
+Character::Character(std::string serial){
+    std::vector<std::string> tokens = tokenfy(serial);
+    if (tokens[0] == "PLAYER_OBJECT"){
+        setName(tokens[57]);
+        setLastname(tokens[58]);
+        setRace(tokens[59]);
+        setGender(tokens[60]);
+        setFace(tokens[61]);
+        setSkin(tokens[62]);
+        setZone(tokens[63]);
+        setLevel(std::stoi(tokens[64]));
+        setHp(std::stoi(tokens[65]));
+        setMaxHp(std::stoi(tokens[66]));
+        setBp(std::stoi(tokens[67]));
+        setMaxBp(std::stoi(tokens[68]));
+        setMp(std::stoi(tokens[69]));
+        setMaxMp(std::stoi(tokens[70]));
+        setEp(std::stoi(tokens[71]));
+        setMaxEp(std::stoi(tokens[72]));
+        setStrength(std::stoi(tokens[73]));
+        setConstitution(std::stoi(tokens[74]));
+        setIntelligence(std::stoi(tokens[75]));
+        setDexterity(std::stoi(tokens[76]));
+        setX(std::stof(tokens[77]));
+        setY(std::stof(tokens[78]));
+        setZ(std::stof(tokens[79]));
+        setPitch(std::stof(tokens[80]));
+        setYaw(std::stof(tokens[81]));
+    }
+    // if (tokens[0] == "NPC_OBJECT"){
+    //    
+    // }
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -251,4 +286,3 @@ void Character::setYaw(float yaw){
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
-
