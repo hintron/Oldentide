@@ -23,8 +23,8 @@ namespace Utils{
 
     // Simple function that separates a string (s) into tokens based on a delimiter (delim).
     std::vector<std::string> tokenfy(std::string s, char delim) {
-        int start=0;
-        int end=s.find_first_of(delim);
+        size_t start=0;
+        size_t end=s.find_first_of(delim);
         std::vector<std::string> tokens;
         while (end <= std::string::npos){
 	        output.emplace_back(s.substr(start, end-start));
