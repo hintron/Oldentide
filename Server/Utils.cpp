@@ -4,9 +4,13 @@
 // Purpose:     Miscellaneous functions.
 
 #include "Utils.h"
-#include <sstream>
+#include <algorithm>
 #include <regex>
+#include <iostream>
+#include <iterator>
 #include <string.h>
+
+
 
 #define MIN_ACCOUNT_NAME_LENGTH 3
 #define MIN_ACCOUNT_NAME_LENGTH_STRING "3"
@@ -19,11 +23,15 @@ namespace Utils{
 
     // Simple function that separates a string (s) into tokens based on a delimiter (delim).
     std::vector<std::string> tokenfy(std::string s, char delim) {
-        std::string token;
+        int start=0;
+        int end=s.find_first_of(delim);
         std::vector<std::string> tokens;
-        std::istringstream ss(s);
-        while(getline(ss, token, delim)){
-            tokens.push_back(token);
+        while (end <= std::string::npos){
+	        output.emplace_back(s.substr(start, end-start));
+	        if (end == std::string::npos)
+	    	    break;
+    	    start=end+1;
+    	    end = s.find_first_of(delim, start);
         }
         return tokens;
     }
