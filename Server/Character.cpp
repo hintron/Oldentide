@@ -43,7 +43,7 @@ Character::Character(std::string name, std::string lastname, std::string race, s
 }
 
 Character::Character(std::string serial){
-    std::vector<std::string> tokens = tokenfy(serial);
+    std::vector<std::string> tokens = Utils::tokenfy(serial, '|');
     if (tokens[0] == "PLAYER_OBJECT"){
         setName(tokens[57]);
         setLastname(tokens[58]);

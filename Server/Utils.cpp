@@ -27,7 +27,7 @@ namespace Utils{
         size_t end=s.find_first_of(delim);
         std::vector<std::string> tokens;
         while (end <= std::string::npos){
-	        output.emplace_back(s.substr(start, end-start));
+	        tokens.emplace_back(s.substr(start, end-start));
 	        if (end == std::string::npos)
 	    	    break;
     	    start=end+1;

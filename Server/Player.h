@@ -212,7 +212,7 @@ class Player : public Character {
     void setRunic(int runic);
 
     // Class Functions.
-    std:string serialize();
+    std::string serialize();
 };
 
 #endif //OLDENTIDE_PLAYER_H_
