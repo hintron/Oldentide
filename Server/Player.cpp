@@ -87,9 +87,9 @@ Player::Player(std::string account, std::string profession, int id, int session,
 }
 
 // Deserialization Constuctor.
-Player::Player(std::string serial)
-       :Character(serial){
-    std::vector<std::string> tokens = Utils::tokenfy(serial, '|');
+Player::Player(std::string fromString)
+       :Character(fromString){
+    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
     if (tokens[0] != "PLAYER_OBJECT")
         return;
     setAccount(tokens[1]);
@@ -611,7 +611,7 @@ void Player::setRunic(int runic){
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Player::serialize(){
+std::string Player::toString(){
     std::string serial;
     serial.append("PLAYER_OBJECT|");
     serial.append(account);

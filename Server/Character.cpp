@@ -42,8 +42,8 @@ Character::Character(std::string name, std::string lastname, std::string race, s
     setYaw(yaw);
 }
 
-Character::Character(std::string serial){
-    std::vector<std::string> tokens = Utils::tokenfy(serial, '|');
+Character::Character(std::string fromString){
+    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
     if (tokens[0] == "PLAYER_OBJECT"){
         setName(tokens[57]);
         setLastname(tokens[58]);

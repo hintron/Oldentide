@@ -21,9 +21,9 @@ Npc::Npc(int id, std::string name, std::string lastname, std::string race, std::
     setId(id);
 }
 
-Npc::Npc(std::string serial)
-    :Character(serial){
-    std::vector<std::string> tokens = Utils::tokenfy(serial, '|');
+Npc::Npc(std::string fromString)
+    :Character(fromString){
+    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
     if (tokens[0] != "NPC_OBJECT")
         return;
     Npc::setId(stoi(tokens[1]));
@@ -49,7 +49,7 @@ void Npc::setId(int id){
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Npc::serialize(){
+std::string Npc::toString(){
     std::string serial;
     serial.append("NPC_OBJECT|");
     serial.append(std::to_string(id));

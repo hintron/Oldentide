@@ -89,7 +89,7 @@ class Player : public Character {
            int constitution, int intelligence, int dexterity, float x, float y, float z, 
            float pitch, float yaw);
            
-    Player(std::string serial);
+    Player(std::string fromString);
 
     //~Player();
 
@@ -212,7 +212,7 @@ class Player : public Character {
     void setRunic(int runic);
 
     // Class Functions.
-    std::string serialize();
+    std::string toString();
 };
 
 #endif //OLDENTIDE_PLAYER_H_

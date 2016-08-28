@@ -56,6 +56,7 @@ void Server::run(){
     while(listen){
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
+        std::cout << ((PACKET_GENERIC*)packet)->packetType << std::endl;
 		if (packet->packetType != CONNECT){
 			validSession = gamestate->verifySession(packet->sessionId);
 		}

@@ -47,7 +47,7 @@ class Character {
               int constitution, int intelligence, int dexterity, float x, float y, float z, 
               float pitch, float yaw);
               
-    Character(std::string serial);
+    Character(std::string fromString);
 
     //~Character();
     
