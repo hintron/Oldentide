@@ -54,10 +54,33 @@ void Server::run(){
 	bool validSession = true;
     bool listen = true;
     while(listen){
-        PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
-        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        std::cout << ((PACKET_GENERIC*)packet)->packetType << std::endl;
-		if (packet->packetType != CONNECT){
+        //PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
+        PACKET_UNITY * packet = (PACKET_UNITY*) malloc(sizeof(PACKET_UNITY));
+        //int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
+        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, &len);
+        std::cout << "0x" << std::hex << packet->data1 << std::endl;
+        std::cout << "0x" << std::hex << packet->data2 << std::endl;
+        std::cout << "0x" << std::hex << packet->data3 << std::endl;
+        std::cout << "0x" << std::hex << packet->data4 << std::endl;
+        std::cout << "0x" << std::hex << packet->data5 << std::endl;
+        std::cout << "------------------------" << std::endl;
+        PACKET_UNITY retPacket;
+        retPacket.data1 = packet->data1;
+        retPacket.data2 = packet->data2;
+        retPacket.data3 = packet->data3;
+        retPacket.data4 = packet->data4;
+        retPacket.data5 = packet->data5;
+        std::cout << "retPacket: " << std::endl;
+        std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
+        std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
+        std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
+        std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
+        std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
+        std::cout << "----------------------------------------------" << std::endl;
+        sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
+        free(packet);
+        /*
+        if (packet->packetType != CONNECT){
 			validSession = gamestate->verifySession(packet->sessionId);
 		}
         if (validSession){
@@ -124,6 +147,7 @@ void Server::run(){
         else {
             free(packet);
         }
+        */
     }
     shell.join();
     return;

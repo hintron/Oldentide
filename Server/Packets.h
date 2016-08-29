@@ -26,7 +26,7 @@ enum PTYPE{
     SENDPLAYERACTION,
     SENDSERVERACTION,
     MESSAGE,
-    GETLATESTMESSAGE,
+    GETLATESTMESSAGE
 };
 
 struct PACKET_GENERIC {
@@ -251,6 +251,14 @@ struct PACKET_GETLATESTMESSAGE {
     int sessionId;
     // The message number of the most recent message on the server
     long long int globalMessageNumber;
+};
+
+struct PACKET_UNITY {
+    int data1;
+    int data2;
+    int data3;
+    int data4;
+    int data5;
 };
 
 #endif //PACKETS_H
