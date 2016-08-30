@@ -26,7 +26,7 @@ namespace Utils{
         size_t start=0;
         size_t end=s.find_first_of(delim);
         std::vector<std::string> tokens;
-        while (end <= std::string::npos){
+        while (end <= std::string::npos) {
 	        tokens.emplace_back(s.substr(start, end-start));
 	        if (end == std::string::npos)
 	    	    break;
@@ -39,11 +39,11 @@ namespace Utils{
     // CLIENT.
     bool CheckPasswordLength(char *password) {
         // Check to make sure password is reasonable
-        if(strlen(password) > MAX_PASSWORD_LENGTH){
+        if (strlen(password) > MAX_PASSWORD_LENGTH) {
             printf("Password is too large!\n");
             return 0;
         }
-        else if(strlen(password) < MIN_PASSWORD_LENGTH){
+        else if (strlen(password) < MIN_PASSWORD_LENGTH) {
             printf("Password is too small!\n" );
             return 0;
         }
@@ -54,13 +54,13 @@ namespace Utils{
     }
 
     // CLIENT/SERVER.
-    bool CheckAccountNameLength(char *account_name){
+    bool CheckAccountNameLength(char *account_name) {
         // Check to make sure account_name is reasonable
-        if(strlen(account_name) > MAX_ACCOUNT_NAME_LENGTH){
+        if (strlen(account_name) > MAX_ACCOUNT_NAME_LENGTH) {
             printf("Account name is too large!\n");
             return 0;
         }
-        else if(strlen(account_name) < MIN_ACCOUNT_NAME_LENGTH){
+        else if (strlen(account_name) < MIN_ACCOUNT_NAME_LENGTH) {
             printf("Account name is too small!\n" );
             return 0;
         }
@@ -73,10 +73,10 @@ namespace Utils{
     // CLIENT/SERVER. Checks to make sure the passed string looks like a valid account name
     // Checks the length of the string, and then makes sure it is alphanumeric and underscore only.
     bool SanitizeAccountName(char *account_name) {
-        if(!Utils::CheckAccountNameLength(account_name)){
+        if (!Utils::CheckAccountNameLength(account_name)) {
             return false;
         }
-        if(!Utils::SanitizeAlphanumeric(account_name)){
+        if (!Utils::SanitizeAlphanumeric(account_name)) {
             printf("Invalid account name! Account name must be only contain characters a-z, A-Z, 0-9, _\n");
             return false;
         }
@@ -94,7 +94,7 @@ namespace Utils{
     // TODO: Wow. Adding regex stuff adds a full three seconds to the compile time... What's the deal?
     bool SanitizeAlphanumeric(char *string) {
         std::regex check_alpha_regex("^\\w{" MIN_ACCOUNT_NAME_LENGTH_STRING "," MAX_ACCOUNT_NAME_LENGTH_STRING "}$");
-        if(!regex_match(string, check_alpha_regex)){
+        if (!regex_match(string, check_alpha_regex)) {
             return false;
         }
         else {
@@ -107,7 +107,7 @@ namespace Utils{
     bool SanitizeHexString(char *string) {
         // Check to see if the passed string is at least one character (+) of only hex characters 
         std::regex check_hex_regex("^[a-fA-F0-9]+$");
-        if(!regex_match(string, check_hex_regex)){
+        if (!regex_match(string, check_hex_regex)) {
             return false;
         }
         else {

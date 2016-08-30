@@ -20,7 +20,7 @@
 
 using namespace std;
 
-void MessageListener(char *server_address, int port, int session){
+void MessageListener(char *server_address, int port, int session) {
     // This will keep track of the latest message the client received
     long long int i = 0;
     int sockfd;
@@ -30,7 +30,7 @@ void MessageListener(char *server_address, int port, int session){
     servaddr.sin_addr.s_addr = inet_addr(server_address);
     servaddr.sin_port = htons(port);
 
-    while(1){
+    while(1) {
         // Wait for a reasonable amount of time before querying the server
         // ping the server every 500ms or so to see if other players have chatted
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
@@ -46,13 +46,13 @@ void MessageListener(char *server_address, int port, int session){
         int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&servret, &len);
 
         //std::cout << "Message number recieved: " << returnPacket->globalMessageNumber << std::endl;
-        if(i == 0 && returnPacket->globalMessageNumber == 0){
+        if (i == 0 && returnPacket->globalMessageNumber == 0) {
             //std::cout << "No messages on the server..." << std::endl;
         }
-        else if (i > 0 && returnPacket->globalMessageNumber == 0){
+        else if (i > 0 && returnPacket->globalMessageNumber == 0) {
             std::cout << "Ran out of messages!" << std::endl;
         }
-        else if (i < returnPacket->globalMessageNumber){
+        else if (i < returnPacket->globalMessageNumber) {
             //std::cout << "Pulling down messages from server..." << std::endl;
             // Print out each message to the client
             bool getAnotherMessage = true;
@@ -71,7 +71,7 @@ void MessageListener(char *server_address, int port, int session){
                 // Print out the message
                 std::cout << "\n----> " << returnPacketMsg->accountName << " says: \"" << returnPacketMsg->message << "\"" << std::endl;
 
-                if(i == returnPacket->globalMessageNumber){
+                if (i == returnPacket->globalMessageNumber) {
                     getAnotherMessage = false;
                 }
             }
@@ -94,7 +94,7 @@ void MessageListener(char *server_address, int port, int session){
 }
 
 
-int main(int argc, char * argv[]){
+int main(int argc, char * argv[]) {
 
     int sockfd;
     struct sockaddr_in servaddr,cliaddr;
@@ -109,7 +109,7 @@ int main(int argc, char * argv[]){
 
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
-    if(argc != 3){
+    if (argc != 3) {
         std::cout << "Invalid number of arguments passed to " << argv[0] << "; Exiting..." << std::endl;
         return 1;
     }
@@ -128,14 +128,14 @@ int main(int argc, char * argv[]){
 
     int clientState = 0;
 
-    while (running){
-        switch (clientState){
+    while (running) {
+        switch (clientState) {
             // Initial State.
             case 0: {
                 std::cout << "Connect? (Y/N) " << std::endl;
                 string response;
                 getline (cin, response);
-                if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
+                if ((response.compare("y") == 0) || (response.compare("Y") == 0)) {
                     PACKET_CONNECT packet;
                     packet.packetId = packetNumber;
                     packetNumber++;
@@ -164,7 +164,7 @@ int main(int argc, char * argv[]){
                 packetSalt.sessionId = session;
                 std::cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
-                if(!Utils::SanitizeAccountName(packetSalt.account)){
+                if (!Utils::SanitizeAccountName(packetSalt.account)) {
                     std::cout << "Invalid account name!" << std::endl;
                     break;
                 }
@@ -188,7 +188,7 @@ int main(int argc, char * argv[]){
                     // TODO: How to make password size match the length of the password?
                     char password[1000];
                     cin.getline(password, sizeof(password));
-                    if(!Utils::CheckPasswordLength(password)){
+                    if (!Utils::CheckPasswordLength(password)) {
                         break;
                     }
                     std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
@@ -218,7 +218,7 @@ int main(int argc, char * argv[]){
                     std::cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/N) " << std::endl;
                     string response;
                     getline(cin, response);
-                    if ((response.compare("y") == 0) || (response.compare("Y") == 0)){
+                    if ((response.compare("y") == 0) || (response.compare("Y") == 0)) {
                         char password[1000];
                         char password2[1000];
                         bool repeat_try;
@@ -229,17 +229,17 @@ int main(int argc, char * argv[]){
                             // TODO: Is there any way to allocate only what is needed?
                             // TODO: How to make password size match the length of the password?
                             cin.getline(password, sizeof(password));
-                            if(strcmp(password, "c") == 0){
+                            if (strcmp(password, "c") == 0) {
                                 continue;
                             }
                             std::cout << "Repeat password: ";
                             cin.getline(password2, sizeof(password2));
-                            if(strcmp(password, password2) != 0){
+                            if (strcmp(password, password2) != 0) {
                                 std::cout << "Passwords were not the same... Please retype the password" << std::endl;                                
                                 repeat_try = true;
                                 continue;
                             }
-                            if(!Utils::CheckPasswordLength(password)){
+                            if (!Utils::CheckPasswordLength(password)) {
                                 std::cout << "Password needs to be at least 8 characters... Please choose a different password" << std::endl;
                                 repeat_try = true;
                                 continue;
@@ -286,10 +286,10 @@ int main(int argc, char * argv[]){
                 std::cout << userAccount << ": ";
                 string command;
                 getline(cin, command);
-                if (command.empty()){
+                if (command.empty()) {
                     break;
                 }
-                if (Utils::Tokenfy(command, ' ')[0] != "/s"){
+                if (Utils::Tokenfy(command, ' ')[0] != "/s") {
                     std::cout << "Please use a valid command!" << std::endl;
                     break;
                 };

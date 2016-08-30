@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-Server::Server(int port){
+Server::Server(int port) {
     sql = new SQLConnector();
     gamestate = new GameState(sql);
     adminshell = new AdminShell(sql);
@@ -28,32 +28,32 @@ Server::Server(int port){
     server.sin_port = htons(port);
 
     // Create socket for IP, UDP normal protocol.
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0){
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
         std::cout << "Cannot create socket..." << std::endl;
         exit(EXIT_FAILURE);
     }
 
     // Bind socket to a port.
-    if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0){
+    if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0) {
         std::cout << "Cannot bind socket..." << std::endl;
         exit(EXIT_FAILURE);
     };
 }
 
-Server::~Server(){
+Server::~Server() {
     delete sql;
     delete gamestate;
     delete adminshell;
 }
 
-void Server::Run(){
+void Server::Run() {
     std::thread shell(*adminshell);
     sockaddr_in client;
     socklen_t len = sizeof(client);
     std::cout << "Server Running!\n";
 	bool validSession = true;
     bool listen = true;
-    while(listen){
+    while(listen) {
         //PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         PACKET_UNITY * packet = (PACKET_UNITY*) malloc(sizeof(PACKET_UNITY));
         //int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
@@ -80,11 +80,11 @@ void Server::Run(){
         sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
         free(packet);
         /*
-        if (packet->packetType != CONNECT){
+        if (packet->packetType != CONNECT) {
 			validSession = gamestate->VerifySession(packet->sessionId);
 		}
-        if (validSession){
-            switch (packet->packetType){
+        if (validSession) {
+            switch (packet->packetType) {
                 case GENERIC:
                     GenericHandler((PACKET_GENERIC*)packet);
                     break;
@@ -154,17 +154,17 @@ void Server::Run(){
 }
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
-void Server::GenericHandler(PACKET_GENERIC * packet){
+void Server::GenericHandler(PACKET_GENERIC * packet) {
     free(packet);
 }
 
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
-void Server::AckHandler(PACKET_ACK * packet){
+void Server::AckHandler(PACKET_ACK * packet) {
     free(packet);
 }
 
 // Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.  Do not generate new sessions.
-void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client){
+void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client) {
     PACKET_CONNECT returnPacket;
     returnPacket.sessionId = gamestate->GenerateSession(packet->sessionId);
     std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
@@ -173,20 +173,20 @@ void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client){
 }
 
 // Remove the session for a given user, effectively disconnecting it from the server.
-void Server::DisConnectHandler(PACKET_DISCONNECT * packet){
+void Server::DisConnectHandler(PACKET_DISCONNECT * packet) {
     gamestate->DisconnectSession(packet->sessionId);
     free(packet);
 }
 
 // Remove the session for a given user, effectively disconnecting it from the server.
-void Server::SaltHandler(PACKET_GETSALT *packet, sockaddr_in client){
+void Server::SaltHandler(PACKET_GETSALT *packet, sockaddr_in client) {
     PACKET_GETSALT returnPacket;
     std::cout << "SaltHandler" << std::endl;
     // Check to make sure account already exists
     // If account doesn't exist, notify user
     // else, return the salt so the user can start key calculation
     int account_exists = sql->GetAccountSalt(packet->account, returnPacket.saltStringHex);
-    if(account_exists){
+    if (account_exists) {
         strcpy(returnPacket.account, packet->account);
         std::cout << "User " << returnPacket.account << " was found on the server." << std::endl;
         std::cout << "Returning salt: " << returnPacket.saltStringHex << std::endl;
@@ -201,9 +201,9 @@ void Server::SaltHandler(PACKET_GETSALT *packet, sockaddr_in client){
     free(packet);
 }
 
-void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client){
+void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client) {
     PACKET_CREATEACCOUNT returnPacket;
-    if(gamestate->CreateAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
+    if (gamestate->CreateAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
         std::cout << "User " << packet->account << " was created successfully!" << std::endl;
         strcpy(returnPacket.account, packet->account);
     }
@@ -216,9 +216,9 @@ void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in clie
     free(packet);
 }
 
-void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client){
+void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
     PACKET_CREATEACCOUNT returnPacket;
-    if(gamestate->LoginUser(packet->account, packet->keyStringHex)) {
+    if (gamestate->LoginUser(packet->account, packet->keyStringHex)) {
         std::cout << "User " << packet->account << " logged in successfully!" << std::endl;
         strcpy(returnPacket.account, packet->account);
         // Register the accountName to the sessionId
@@ -233,57 +233,57 @@ void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client){
     free(packet);
 }
 
-void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet){
+void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet) {
     free(packet);
 }
 
-void Server::SelectCharacterHandler(PACKET_SELECTCHARACTER * packet){
+void Server::SelectCharacterHandler(PACKET_SELECTCHARACTER * packet) {
     gamestate->SelectPlayer(packet->sessionId);
     free(packet);
 }
 
-void Server::DeleteCharacterHandler(PACKET_DELETECHARACTER * packet){
+void Server::DeleteCharacterHandler(PACKET_DELETECHARACTER * packet) {
     free(packet);
 }
 
-void Server::CreateCharacterHandler(PACKET_CREATECHARACTER * packet){
+void Server::CreateCharacterHandler(PACKET_CREATECHARACTER * packet) {
     free(packet);
 }
 
-void Server::InitializeGameHandler(PACKET_INITIALIZEGAME * packet){
+void Server::InitializeGameHandler(PACKET_INITIALIZEGAME * packet) {
     free(packet);
 }
 
-void Server::UpdatePcHandler(PACKET_UPDATEPC * packet){
+void Server::UpdatePcHandler(PACKET_UPDATEPC * packet) {
     free(packet);
 }
 
-void Server::UpdateNpcHandler(PACKET_UPDATENPC * packet){
+void Server::UpdateNpcHandler(PACKET_UPDATENPC * packet) {
     free(packet);
 }
 
-void Server::SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet){
-    if (gamestate->VerifyActiveSession(packet->sessionId)){
+void Server::SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet) {
+    if (gamestate->VerifyActiveSession(packet->sessionId)) {
         gamestate->PlayerCommand(packet->command, packet->sessionId);
     }
-    else{
+    else {
         std::cout << "Nonactive session requested to send a player command..." << packet->sessionId << std::endl;
     }
     free(packet);
 }
 
-void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet){
+void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet) {
     free(packet);
 }
 
-void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet){
+void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet) {
     free(packet);
 }
 
-void Server::MessageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
+void Server::MessageHandler(PACKET_MESSAGE *packet, sockaddr_in client) {
     //std::cout << "server MessageHandler" << std::endl;
     PACKET_MESSAGE returnPacket;
-    if(packet->globalMessageNumber != 0){
+    if (packet->globalMessageNumber != 0) {
         // Look up the requested message and return it
         returnPacket.globalMessageNumber = gamestate->GetMessage(packet->globalMessageNumber, (char *)returnPacket.message, (char *)returnPacket.accountName);
     }
@@ -297,7 +297,7 @@ void Server::MessageHandler(PACKET_MESSAGE *packet, sockaddr_in client){
     free(packet);
 }
 
-void Server::GetLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client){
+void Server::GetLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client) {
     //std::cout << "server GetLatestMessageHandler" << std::endl;
     PACKET_GETLATESTMESSAGE returnPacket;
     returnPacket.globalMessageNumber = gamestate->GetGlobalMessageNumber();

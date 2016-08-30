@@ -14,7 +14,7 @@
 // @param account_name : The account to authenticate with.
 // @param candidate_key_string_hex : The user-supplied key to autheticate with.
 // @return : 1 if account successfully authenticated; 0 if not.
-int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_string_hex){
+int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_string_hex) {
     // Authenticate - perform a key lookup and check
     int success = 0;
     SQLConnector *sql = new SQLConnector();
@@ -36,7 +36,7 @@ int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_
     // Compare both BIGNUMs to each other.
     // If the same, then return 1 (success)
     // If not, return 0.
-    if(BN_cmp(canonized_key, candidate_key) == 0){
+    if (BN_cmp(canonized_key, candidate_key) == 0) {
         printf("Authentication is a success!!\n");
         success = 1;
     }
@@ -48,10 +48,10 @@ int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_
     delete sql;
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
-    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i) {
     //    generated_key[i] = 0;
     //}
-    //for(int i = strlen(); i > 0); --i){
+    //for(int i = strlen(); i > 0); --i) {
     //    password[i] = 0;
     //}
     // NOTE: clear_free variants are for sensitive info, opposed to just free.

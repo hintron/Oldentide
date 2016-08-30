@@ -22,7 +22,7 @@ const long long int LoginManager::ITERATIONS = 1 << 20;
 // @param password : IN. A c string containing the password of the user.
 // @param salt : IN. The salt to use to generate the key.
 // @param generated_ke_sring_hex : OUT. A pointer to where the key hex string should be copied to.
-void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
+void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *generated_key_string_hex) {
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
     unsigned int md_len, i;
@@ -49,14 +49,14 @@ void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *gene
     int salt_length = BN_bn2bin(salt, salt_string_bin);
 
     printf("Salt (hex):\n");
-    for(int i = 0; i < salt_length; i++){
+    for(int i = 0; i < salt_length; i++) {
         printf("%02x", salt_string_bin[i]);
     }
     printf("\n");
     printf("Salt length : bytes : bits\n%d : %d : %d\n", salt_length, salt_bytes, salt_bits);
 
     // md_value needs to be initialized to all zeros, since it's on the stack
-    for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+    for(int i = 0; i < EVP_MAX_MD_SIZE; ++i) {
         md_value[i] = 0;
     }
 
@@ -78,7 +78,7 @@ void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *gene
     // End loop
 
     printf("Final salted and stretched password/key is: \n");
-    for(int i = 0; i < md_len; i++){
+    for(int i = 0; i < md_len; i++) {
         printf("%02x", md_value[i]);
     }
     printf("\n");
@@ -106,7 +106,7 @@ void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *gene
 //                   for the new account. It will NOT be stored.
 // @param salt_string_hex : OUT. The newly-generated random salt that was used to generate the new key.
 // @param generated_key_string_hex : OUT. The newly-generated key.
-void LoginManager::GenerateSaltAndKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
+void LoginManager::GenerateSaltAndKey(char *password, char *salt_string_hex, char *generated_key_string_hex) {
     // Initialize salt and generated key BIGNUMs
     BIGNUM *salt = BN_new();
 
@@ -125,44 +125,4 @@ void LoginManager::GenerateSaltAndKey(char *password, char *salt_string_hex, cha
 
     OPENSSL_free(salt_string_hex_temp);
     BN_clear_free(salt);
-    // TODO: Use clear_free() version - might need crypto.h though
-    // TODO: Overwrite stack sensitive variables with with 0's,
-    // since it doesn't get zeroed out once it's off the stack
-    // NOTE: clear_free variants are for sensitive info, opposed to just free.
-    // The salts aren't sensitive, but the password and key are.
-    // So just use clear_free for everything I can
 }
-
-//
-//// Terminology:
-//
-// message = plaintext
-// message digest function = hash function
-// message digest (MD) = digest = fingerprint = output of a hash function
-
-//
-//// Task:
-//
-// Create a program that will take an input password,
-// generate a random salt, stretch the password for n iterations,
-// save the salted password and salt in the sqlite db, and
-// time the process to see how long it took, sending an error if too quick (< 200ms)
-
-/*
-// Pseudocode for salting and stretching a password
-// See pg 304 of Cryptography Engineering (21.2.1 - Salting and Stretching)
-
-x = 0
-// The salt is simply a random number that is stored alongside the key. Use at least a 256bit salt.
-// Each user needs a different salt, so an attacker would always have to recalculate the key per user,
-// even if the attacker guesses the same password (e.g. "password") for each user.
-salt = rand256()
-
-for (i = 0; i < ITERATIONS; ++i) {
-    // (note: || means append)
-    x = hash512(x || password || salt)
-}
-
-key = x
-// Store the salt and the key in the db. The salt can be public.
-*/

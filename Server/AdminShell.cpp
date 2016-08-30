@@ -10,67 +10,67 @@
 #include <sstream>
 #include <string>
 
-AdminShell::AdminShell(SQLConnector * input){
+AdminShell::AdminShell(SQLConnector * input) {
     sql = input;
     gethostname(serverHostname, HOST_NAME_MAX);
 }
 
-AdminShell::~AdminShell(){
+AdminShell::~AdminShell() {
     return;
 }
 
-void AdminShell::operator()(){
+void AdminShell::operator()() {
     Run();
 }
 
-void AdminShell::Run(){
+void AdminShell::Run() {
     std::string adminCommand; 
     std::cout << "Starting Server Administrator Shell.\n";
     PrintLogo();
-    while(true){
+    while(true) {
 	    do
 	    {
             std::cout << "OldentideAdmin@" << serverHostname << ": ";
             getline(std::cin,adminCommand);
 	    }while(adminCommand.empty());
         std::vector<std::string> adminTokens = Utils::Tokenfy(adminCommand, ' ');
-        if (adminTokens[0] == "/shutdown"){
+        if (adminTokens[0] == "/shutdown") {
             std::cout << "Oldentide Dedicated Server is shutting down..." << std::endl;
             exit(EXIT_SUCCESS);
             return;
         }
-        else if (adminTokens[0] == "/list"){
-            if (adminTokens.size() == 2){
+        else if (adminTokens[0] == "/list") {
+            if (adminTokens.size() == 2) {
                 std::cout << adminTokens[1];
-                if (adminTokens[1] == "players"){
+                if (adminTokens[1] == "players") {
                     std::cout << "PCSSSSSS" << std::endl;          
                 }
-                if (adminTokens[1] == "npcs"){
+                if (adminTokens[1] == "npcs") {
                     std::cout << "NPCSSSSS" << std::endl;    
                 }
             }
-            else{
+            else {
                 PrintUsage();
             }
         }
-        else if (adminTokens[0] == "/db"){
+        else if (adminTokens[0] == "/db") {
             std::string cmd = adminCommand.erase(0,4);
             sql->Execute(cmd);
         }
-        else{
+        else {
             PrintUsage();
         }
     }
 }
 
-void AdminShell::PrintUsage(){
+void AdminShell::PrintUsage() {
     std::cout << "Dedicated Server Admin Usage:" << std::endl;
     std::cout << "/shutdown    = Shuts down the server." << std::endl;
     std::cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << std::endl;
     std::cout << "/db <query>  = Runs a given sql query on the sqlite3 database." << std::endl;
 }
 
-void AdminShell::PrintLogo(){
+void AdminShell::PrintLogo() {
     std::cout << "  ____           ___   _____         _____  _____  ___   _____" << std::endl;
     std::cout << " /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << std::endl;
     std::cout << "/      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << std::endl;

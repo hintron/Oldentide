@@ -18,7 +18,7 @@
 #define MAX_MESSAGE_LENGTH 500
 
 
-GameState::GameState(SQLConnector * input){
+GameState::GameState(SQLConnector * input) {
     sql = input;
     curSession = 1;
 
@@ -27,37 +27,37 @@ GameState::GameState(SQLConnector * input){
 
 }
 
-GameState::~GameState(){
+GameState::~GameState() {
     return;
 }
 
 // Checks if the session id given by the user is valid before allowing further interaction.
-bool GameState::VerifySession(int sessionId){
-    if (sessions.find(sessionId) != sessions.end()){
+bool GameState::VerifySession(int sessionId) {
+    if (sessions.find(sessionId) != sessions.end()) {
         return true;
     }
-    else{
+    else {
         return false;
     }
 }
 
 // Active sessions refer to users that have already authenticated and may or may not be already using a character.
-bool GameState::VerifyActiveSession(int sessionId){
-    if (activeSessions.find(sessionId) != activeSessions.end()){
+bool GameState::VerifyActiveSession(int sessionId) {
+    if (activeSessions.find(sessionId) != activeSessions.end()) {
         return true;
     }
-    else{
+    else {
         return false;
     }
 }
 
-bool GameState::CreateAccount(char * account, char * keyStringHex, char * saltStringHex){
+bool GameState::CreateAccount(char * account, char * keyStringHex, char * saltStringHex) {
     std::cout << "  Creating Account..." << std::endl;
     std::cout << "  Account: " << account << std::endl;
     std::cout << "  Key: " << keyStringHex << std::endl;
     std::cout << "  Salt: " << saltStringHex << std::endl;
     bool success = false;
-    if(sql->InsertAccount(account, keyStringHex, saltStringHex)){
+    if (sql->InsertAccount(account, keyStringHex, saltStringHex)) {
         success = true;
     }
     else {
@@ -67,10 +67,10 @@ bool GameState::CreateAccount(char * account, char * keyStringHex, char * saltSt
     sql->ListAccounts();
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
-    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i){
+    //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i) {
     //    generated_key[i] = 0;
     //}
-    //for(int i = strlen(); i > 0); --i){
+    //for(int i = strlen(); i > 0); --i) {
     //    password[i] = 0;
     //}
     // NOTE: clear_free variants are for sensitive info, opposed to just free.
@@ -79,51 +79,51 @@ bool GameState::CreateAccount(char * account, char * keyStringHex, char * saltSt
     return success;
 }
 
-bool GameState::LoginUser(char * account, char * keyStringHex){
+bool GameState::LoginUser(char * account, char * keyStringHex) {
     std::cout << "  Logging in..." << std::endl;
     std::cout << "  Account: " << account << std::endl;
     std::cout << "  Key: " << keyStringHex << std::endl;
     return AccountManager::AuthenticateAccount(account, keyStringHex);
 }
 
-void GameState::DisconnectSession(int sessionId){
+void GameState::DisconnectSession(int sessionId) {
     activeSessions.erase(sessionId);
     sessions.erase(sessionId);
     return;
 }
 
-void GameState::PlayerCommand(char * command, int sessionId){
+void GameState::PlayerCommand(char * command, int sessionId) {
     std::string pCommand(command);
     std::vector<std::string> pCommandTokens = Utils::Tokenfy(pCommand, ' ');
-    if (pCommandTokens[0] == "/s"){
+    if (pCommandTokens[0] == "/s") {
         std::cout << "Detected a say command!" << std::endl;
         // Save the incoming message and return the assigned message number
         std::string saying = pCommand.substr(3,std::string::npos);
         StoreMessage(saying, sessionId);
     }
-    else if (pCommandTokens[0] == "/y"){
+    else if (pCommandTokens[0] == "/y") {
         std::cout << "Detected a yell command!" << std::endl;
     }
-    else if (pCommandTokens[0] == "/ooc"){
+    else if (pCommandTokens[0] == "/ooc") {
         std::cout << "Detected an out of character command!" << std::endl;
     }
-    else if (pCommandTokens[0] == "/h"){
+    else if (pCommandTokens[0] == "/h") {
         std::cout << "Detected a help channel command!" << std::endl;
     }
-    else if (pCommandTokens[0] == "/w"){
+    else if (pCommandTokens[0] == "/w") {
         std::cout << "Detected a whisper command!" << std::endl;
     }
     std::cout << "Full player command: " << command << std::endl;
 }
 
-void GameState::SelectPlayer(int sessionId){
-    if (sessions.find(sessionId) != sessions.end()){
+void GameState::SelectPlayer(int sessionId) {
+    if (sessions.find(sessionId) != sessions.end()) {
         activeSessions.insert(sessionId);
     }
     return;
 }
 
-Player GameState::ReadPlayer(std::string name){
+Player GameState::ReadPlayer(std::string name) {
     return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Scarred", "Pale", 
@@ -131,27 +131,24 @@ Player GameState::ReadPlayer(std::string name){
                   0.0);
 }
 
-void GameState::StorePlayer(std::string name){
+void GameState::StorePlayer(std::string name) {
     return;
 }
 
-int GameState::GenerateSession(int sessionId){
-    if (sessions.find(sessionId) != sessions.end()){
+int GameState::GenerateSession(int sessionId) {
+    if (sessions.find(sessionId) != sessions.end()) {
         return sessionId;
     }
-    else{
+    else {
         sessions.insert(curSession);
         curSession++;
         return (curSession - 1);
     }
 }
 
-
-/**
-    @return : The number of the most recent message received by the server
-**/
+// @return : The number of the most recent message received by the server
 long long int GameState::GetGlobalMessageNumber() {
-    if(globalMessageNumber > MAX_MESSAGES){
+    if (globalMessageNumber > MAX_MESSAGES) {
         // 0 means either no messages or
         // Ran out of message space
         return 0;
@@ -162,20 +159,15 @@ long long int GameState::GetGlobalMessageNumber() {
     }
 }
 
-/**
-    Returns a message and the account that spoke it
-
-    // TODO: Change this to be player-based
-    // TODO: Broadcast all messages in realtime instead of storing them
-
-    @param messageNumber : IN. The message number of the message to get
-    @param message : OUT. The message to output
-
-    @return : 0 if failed to retrieve message, else the message number of the returned message
-**/
+// Returns a message and the account that spoke it
+// TODO: Change this to be player-based
+// TODO: Broadcast all messages in realtime instead of storing them
+// @param messageNumber : IN. The message number of the message to get
+// @param message : OUT. The message to output
+// @return : 0 if failed to retrieve message, else the message number of the returned message
 long long int GameState::GetMessage(long long int messageNumber, char *messageOutput, char *accountNameOutput) {
     // Look up the requested message and return it
-    if(messageNumber >= 1 && messageNumber <= MAX_MESSAGES){
+    if (messageNumber >= 1 && messageNumber <= MAX_MESSAGES) {
         std::cout << "Looking up message " << messageNumber << std::endl;
 
         // Look up the message and account name
@@ -194,22 +186,17 @@ long long int GameState::GetMessage(long long int messageNumber, char *messageOu
     }
 }
 
-
-/**
-    @param message : The message to store
-    @param accountName : The name of the account that spoke
-
-    // TODO: Change to players instead of accounts
-
-    @return : the global message number assigned to the message stored.
-                If 0, then failed to store message.
-**/
+// @param message : The message to store
+// @param accountName : The name of the account that spoke
+// TODO: Change to players instead of accounts
+// @return : the global message number assigned to the message stored.
+//               If 0, then failed to store message.
 long long int GameState::StoreMessage(std::string message, int sessionId) {
-    if(globalMessageNumber > MAX_MESSAGES){
+    if (globalMessageNumber > MAX_MESSAGES) {
         std::cout << "Ran out of message space! Reached max number of messages" << std::endl;
         // Ran out of message space
         return 0;
-    } else{
+    } else {
         // Increase the global message number (start at 1 - 0 means no messages)
         globalMessageNumber++;
         // std::cout << "Saving message with number " << globalMessageNumber << ": " << message << std::endl;
@@ -225,8 +212,7 @@ long long int GameState::StoreMessage(std::string message, int sessionId) {
 
 
 // TODO: Make this player name instead of account name
-void GameState::SetSessionAccountName(char *accountName, int sessionId){
+void GameState::SetSessionAccountName(char *accountName, int sessionId) {
     std::string accountNameString = accountName;
     sessionAccounts[sessionId] = accountNameString;
-    // TODO: Return something if session account was already registered
 }
