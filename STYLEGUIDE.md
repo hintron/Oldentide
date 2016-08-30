@@ -31,6 +31,7 @@
         int bar;    // This is a description for the bar variable.
         byte baz;   // This is a description for the baz variable.
     }
+```
 * **Classes** should be named using UpperCamelCase notation, and use descriptive names.
   They should have private or protected variables.
   They should use public getter and setter methods for any data member that you would need to edit.
