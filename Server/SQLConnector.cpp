@@ -32,7 +32,7 @@ SQLConnector::~SQLConnector(){
 // @return : The number of rows returned by the query
 int SQLConnector::Execute(std::string cmd){
     char *error_message = NULL;
-    sqls = sqlite3_exec(database, cmd.c_str(), &Execute_callback, 0, &error_message);
+    sqls = sqlite3_exec(database, cmd.c_str(), &ExecuteCallback, 0, &error_message);
     if (sqls != SQLITE_OK){
         std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
     }

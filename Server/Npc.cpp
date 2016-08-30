@@ -26,7 +26,7 @@ Npc::Npc(std::string fromString)
     std::vector<std::string> tokens = Utils::Tokenfy(fromString, '|');
     if (tokens[0] != "NPC_OBJECT")
         return;
-    Npc::GetId(stoi(tokens[1]));
+    Npc::SetId(stoi(tokens[1]));
 }
 
 //------------------------------------------------------------------------------------------------//
