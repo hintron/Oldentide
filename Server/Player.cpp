@@ -28,353 +28,353 @@ Player::Player(std::string account, std::string profession, int id, int session,
        :Character(name, lastname, race, gender, face, skin, zone, level, hp, maxHp, bp, maxBp, mp, 
                   maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, x, y, z, 
                   pitch, yaw){
-    setAccount(account);
-    setProfession(profession);
-    setId(id);
-    setSession(session);
-    setWeight(weight);
-    setAxe(axe);
-    setDagger(dagger);
-    setUnarmed(unarmed);
-    setHammer(hammer);
-    setPolearm(polearm);
-    setSpear(spear);
-    setStaff(staff);
-    setSword(sword);
-    setArchery(archery);
-    setCrossbow(crossbow);
-    setSling(sling);
-    setThrown(thrown);
-    setArmor(armor);
-    setDualWeapon(dualWeapon);
-    setShield(shield);
-    setBardic(bardic);
-    setConjuring(conjuring);
-    setDruidic(druidic);
-    setIllusion(illusion);
-    setNecromancy(necromancy);
-    setSorcery(sorcery);
-    setShamanic(shamanic);
-    setSummoning(summoning);
-    setSpellcraft(spellcraft);
-    setFocus(focus);
-    setArmorsmithing(armorsmithing);
-    setTailoring(tailoring);
-    setFletching(fletching);
-    setWeaponsmith(weaponsmithing);
-    setAlchemy(alchemy);
-    setLapidary(lapidary);
-    setCalligraphy(calligraphy);
-    setEnchanting(enchanting);
-    setHerbalism(herbalism);
-    setHunting(hunting);
-    setMining(mining);
-    setBargaining(bargaining);
-    setCamping(camping);
-    setFirstAid(firstAid);
-    setLore(lore);
-    setPickLocks(pickLocks);
-    setScouting(scouting);
-    setSearch(search);
-    setStealth(stealth);
-    setTraps(traps);
-    setAeolandis(aeolandis);
-    setHieroform(hieroform);
-    setHighGundis(highGundis);
-    setOldPraxic(oldPraxic);
-    setPraxic(praxic);
-    setRunic(runic);
+    SetAccount(account);
+    SetProfession(profession);
+    SetId(id);
+    SetSession(session);
+    SetWeight(weight);
+    SetAxe(axe);
+    SetDagger(dagger);
+    SetUnarmed(unarmed);
+    SetHammer(hammer);
+    SetPolearm(polearm);
+    SetSpear(spear);
+    SetStaff(staff);
+    SetSword(sword);
+    SetArchery(archery);
+    SetCrossbow(crossbow);
+    SetSling(sling);
+    SetThrown(thrown);
+    SetArmor(armor);
+    SetDualWeapon(dualWeapon);
+    SetShield(shield);
+    SetBardic(bardic);
+    SetConjuring(conjuring);
+    SetDruidic(druidic);
+    SetIllusion(illusion);
+    SetNecromancy(necromancy);
+    SetSorcery(sorcery);
+    SetShamanic(shamanic);
+    SetSummoning(summoning);
+    SetSpellcraft(spellcraft);
+    SetFocus(focus);
+    SetArmorsmithing(armorsmithing);
+    SetTailoring(tailoring);
+    SetFletching(fletching);
+    SetWeaponsmith(weaponsmithing);
+    SetAlchemy(alchemy);
+    SetLapidary(lapidary);
+    SetCalligraphy(calligraphy);
+    SetEnchanting(enchanting);
+    SetHerbalism(herbalism);
+    SetHunting(hunting);
+    SetMining(mining);
+    SetBargaining(bargaining);
+    SetCamping(camping);
+    SetFirstAid(firstAid);
+    SetLore(lore);
+    SetPickLocks(pickLocks);
+    SetScouting(scouting);
+    SetSearch(search);
+    SetStealth(stealth);
+    SetTraps(traps);
+    SetAeolandis(aeolandis);
+    SetHieroform(hieroform);
+    SetHighGundis(highGundis);
+    SetOldPraxic(oldPraxic);
+    SetPraxic(praxic);
+    SetRunic(runic);
 }
 
 // Deserialization Constuctor.
 Player::Player(std::string fromString)
        :Character(fromString){
-    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
+    std::vector<std::string> tokens = Utils::Tokenfy(fromString, '|');
     if (tokens[0] != "PLAYER_OBJECT")
         return;
-    setAccount(tokens[1]);
-    setProfession(tokens[2]);
-    setId(std::stoi(tokens[3]));
-    setSession(std::stoi(tokens[4]));
-    setWeight(std::stoi(tokens[5]));
-    setAxe(std::stoi(tokens[6]));
-    setDagger(std::stoi(tokens[7]));
-    setUnarmed(std::stoi(tokens[8]));
-    setHammer(std::stoi(tokens[9]));
-    setPolearm(std::stoi(tokens[10]));
-    setSpear(std::stoi(tokens[11]));
-    setStaff(std::stoi(tokens[12]));
-    setSword(std::stoi(tokens[13]));
-    setArchery(std::stoi(tokens[14]));
-    setCrossbow(std::stoi(tokens[15]));
-    setSling(std::stoi(tokens[16]));
-    setThrown(std::stoi(tokens[17]));
-    setArmor(std::stoi(tokens[18]));
-    setDualWeapon(std::stoi(tokens[19]));
-    setShield(std::stoi(tokens[20]));
-    setBardic(std::stoi(tokens[21]));
-    setConjuring(std::stoi(tokens[22]));
-    setDruidic(std::stoi(tokens[23]));
-    setIllusion(std::stoi(tokens[24]));
-    setNecromancy(std::stoi(tokens[25]));
-    setSorcery(std::stoi(tokens[26]));
-    setShamanic(std::stoi(tokens[27]));
-    setSummoning(std::stoi(tokens[28]));
-    setSpellcraft(std::stoi(tokens[29]));
-    setFocus(std::stoi(tokens[30]));
-    setArmorsmithing(std::stoi(tokens[31]));
-    setTailoring(std::stoi(tokens[32]));
-    setFletching(std::stoi(tokens[33]));
-    setWeaponsmith(std::stoi(tokens[34]));
-    setAlchemy(std::stoi(tokens[35]));
-    setLapidary(std::stoi(tokens[36]));
-    setCalligraphy(std::stoi(tokens[37]));
-    setEnchanting(std::stoi(tokens[38]));
-    setHerbalism(std::stoi(tokens[39]));
-    setHunting(std::stoi(tokens[40]));
-    setMining(std::stoi(tokens[41]));
-    setBargaining(std::stoi(tokens[42]));
-    setCamping(std::stoi(tokens[43]));
-    setFirstAid(std::stoi(tokens[44]));
-    setLore(std::stoi(tokens[45]));
-    setPickLocks(std::stoi(tokens[46]));
-    setScouting(std::stoi(tokens[47]));
-    setSearch(std::stoi(tokens[48]));
-    setStealth(std::stoi(tokens[49]));
-    setTraps(std::stoi(tokens[50]));
-    setAeolandis(std::stoi(tokens[51]));
-    setHieroform(std::stoi(tokens[52]));
-    setHighGundis(std::stoi(tokens[53]));
-    setOldPraxic(std::stoi(tokens[54]));
-    setPraxic(std::stoi(tokens[55]));
-    setRunic(std::stoi(tokens[56]));
+    SetAccount(tokens[1]);
+    SetProfession(tokens[2]);
+    SetId(std::stoi(tokens[3]));
+    SetSession(std::stoi(tokens[4]));
+    SetWeight(std::stoi(tokens[5]));
+    SetAxe(std::stoi(tokens[6]));
+    SetDagger(std::stoi(tokens[7]));
+    SetUnarmed(std::stoi(tokens[8]));
+    SetHammer(std::stoi(tokens[9]));
+    SetPolearm(std::stoi(tokens[10]));
+    SetSpear(std::stoi(tokens[11]));
+    SetStaff(std::stoi(tokens[12]));
+    SetSword(std::stoi(tokens[13]));
+    SetArchery(std::stoi(tokens[14]));
+    SetCrossbow(std::stoi(tokens[15]));
+    SetSling(std::stoi(tokens[16]));
+    SetThrown(std::stoi(tokens[17]));
+    SetArmor(std::stoi(tokens[18]));
+    SetDualWeapon(std::stoi(tokens[19]));
+    SetShield(std::stoi(tokens[20]));
+    SetBardic(std::stoi(tokens[21]));
+    SetConjuring(std::stoi(tokens[22]));
+    SetDruidic(std::stoi(tokens[23]));
+    SetIllusion(std::stoi(tokens[24]));
+    SetNecromancy(std::stoi(tokens[25]));
+    SetSorcery(std::stoi(tokens[26]));
+    SetShamanic(std::stoi(tokens[27]));
+    SetSummoning(std::stoi(tokens[28]));
+    SetSpellcraft(std::stoi(tokens[29]));
+    SetFocus(std::stoi(tokens[30]));
+    SetArmorsmithing(std::stoi(tokens[31]));
+    SetTailoring(std::stoi(tokens[32]));
+    SetFletching(std::stoi(tokens[33]));
+    SetWeaponsmith(std::stoi(tokens[34]));
+    SetAlchemy(std::stoi(tokens[35]));
+    SetLapidary(std::stoi(tokens[36]));
+    SetCalligraphy(std::stoi(tokens[37]));
+    SetEnchanting(std::stoi(tokens[38]));
+    SetHerbalism(std::stoi(tokens[39]));
+    SetHunting(std::stoi(tokens[40]));
+    SetMining(std::stoi(tokens[41]));
+    SetBargaining(std::stoi(tokens[42]));
+    SetCamping(std::stoi(tokens[43]));
+    SetFirstAid(std::stoi(tokens[44]));
+    SetLore(std::stoi(tokens[45]));
+    SetPickLocks(std::stoi(tokens[46]));
+    SetScouting(std::stoi(tokens[47]));
+    SetSearch(std::stoi(tokens[48]));
+    SetStealth(std::stoi(tokens[49]));
+    SetTraps(std::stoi(tokens[50]));
+    SetAeolandis(std::stoi(tokens[51]));
+    SetHieroform(std::stoi(tokens[52]));
+    SetHighGundis(std::stoi(tokens[53]));
+    SetOldPraxic(std::stoi(tokens[54]));
+    SetPraxic(std::stoi(tokens[55]));
+    SetRunic(std::stoi(tokens[56]));
 }
 
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Player::getAccount(){
+std::string Player::GetAccount(){
     return account;
 }
 
-std::string Player::getProfession(){
+std::string Player::GetProfession(){
     return profession;
 }
 
-int Player::getId(){
+int Player::GetId(){
     return id;
 }
 
-int Player::getSession(){
+int Player::GetSession(){
     return session;
 }
 
-float Player::getWeight(){
+float Player::GetWeight(){
     return weight;
 }
 
-int Player::getAxe(){
+int Player::GetAxe(){
     return axe;
 }
 
-int Player::getDagger(){
+int Player::GetDagger(){
     return dagger;
 }
 
-int Player::getUnarmed(){
+int Player::GetUnarmed(){
     return unarmed;
 }
 
-int Player::getHammer(){
+int Player::GetHammer(){
     return hammer;
 }
 
-int Player::getPolearm(){
+int Player::GetPolearm(){
     return polearm;
 }
 
-int Player::getSpear(){
+int Player::GetSpear(){
     return spear;
 }
 
-int Player::getStaff(){
+int Player::GetStaff(){
     return staff;
 }
 
-int Player::getSword(){
+int Player::GetSword(){
     return sword;
 }
 
-int Player::getArchery(){
+int Player::GetArchery(){
     return archery;
 }
 
-int Player::getCrossbow(){
+int Player::GetCrossbow(){
     return crossbow;
 }
 
-int Player::getSling(){
+int Player::GetSling(){
     return sling;
 }
 
-int Player::getThrown(){
+int Player::GetThrown(){
     return thrown;
 }
 
-int Player::getArmor(){
+int Player::GetArmor(){
     return armor;
 }
 
-int Player::getDualWeapon(){
+int Player::GetDualWeapon(){
     return dualWeapon;
 }
 
-int Player::getShield(){
+int Player::GetShield(){
     return shield;
 }
 
-int Player::getBardic(){
+int Player::GetBardic(){
     return bardic;
 }
 
-int Player::getConjuring(){
+int Player::GetConjuring(){
     return conjuring;
 }
 
-int Player::getDruidic(){
+int Player::GetDruidic(){
     return druidic;
 }
 
-int Player::getIllusion(){
+int Player::GetIllusion(){
     return illusion;
 }
 
-int Player::getNecromancy(){
+int Player::GetNecromancy(){
     return necromancy;
 }
 
-int Player::getSorcery(){
+int Player::GetSorcery(){
     return sorcery;
 }
 
-int Player::getShamanic(){
+int Player::GetShamanic(){
     return shamanic;
 }
 
-int Player::getSummoning(){
+int Player::GetSummoning(){
     return summoning;
 }
 
-int Player::getSpellcraft(){
+int Player::GetSpellcraft(){
     return spellcraft;
 }
 
-int Player::getFocus(){
+int Player::GetFocus(){
     return focus;
 }
 
-int Player::getArmorsmithing(){
+int Player::GetArmorsmithing(){
     return armorsmithing;
 }
 
-int Player::getTailoring(){
+int Player::GetTailoring(){
     return tailoring;
 }
 
-int Player::getFletching(){
+int Player::GetFletching(){
     return fletching;
 }
 
-int Player::getWeaponsmith(){
+int Player::GetWeaponsmith(){
     return weaponsmithing;
 }
 
-int Player::getAlchemy(){
+int Player::GetAlchemy(){
     return alchemy;
 }
 
-int Player::getLapidary(){
+int Player::GetLapidary(){
     return lapidary;
 }
 
-int Player::getCalligraphy(){
+int Player::GetCalligraphy(){
     return calligraphy;
 }
 
-int Player::getEnchanting(){
+int Player::GetEnchanting(){
     return enchanting;
 }
 
-int Player::getHerbalism(){
+int Player::GetHerbalism(){
     return herbalism;
 }
 
-int Player::getHunting(){
+int Player::GetHunting(){
     return hunting;
 }
 
-int Player::getMining(){
+int Player::GetMining(){
     return mining;
 }
 
-int Player::getBargaining(){
+int Player::GetBargaining(){
     return bargaining;
 }
 
-int Player::getCamping(){
+int Player::GetCamping(){
     return camping;
 }
 
-int Player::getFirstAid(){
+int Player::GetFirstAid(){
     return firstAid;
 }
 
-int Player::getLore(){
+int Player::GetLore(){
     return lore;
 }
 
-int Player::getPickLocks(){
+int Player::GetPickLocks(){
     return pickLocks;
 }
 
-int Player::getScouting(){
+int Player::GetScouting(){
     return scouting;
 }
 
-int Player::getSearch(){
+int Player::GetSearch(){
     return search;
 }
 
-int Player::getStealth(){
+int Player::GetStealth(){
     return stealth;
 }
 
-int Player::getTraps(){
+int Player::GetTraps(){
     return traps;
 }
 
-int Player::getAeolandis(){
+int Player::GetAeolandis(){
     return aeolandis;
 }
 
-int Player::getHieroform(){
+int Player::GetHieroform(){
     return hieroform;
 }
 
-int Player::getHighGundis(){
+int Player::GetHighGundis(){
     return highGundis;
 }
 
-int Player::getOldPraxic(){
+int Player::GetOldPraxic(){
     return oldPraxic;
 }
 
-int Player::getPraxic(){
+int Player::GetPraxic(){
     return praxic;
 }
 
-int Player::getRunic(){
+int Player::GetRunic(){
     return runic;
 }
 
@@ -382,227 +382,227 @@ int Player::getRunic(){
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-void Player::setAccount(std::string account){
+void Player::SetAccount(std::string account){
     this->account = account;
 }
 
-void Player::setProfession(std::string profession){
+void Player::SetProfession(std::string profession){
     this->profession = profession;
 }
 
-void Player::setId(int id){
+void Player::SetId(int id){
     this->id = id;
 }
 
-void Player::setSession(int session){
+void Player::SetSession(int session){
     this->session = session;
 }
 
-void Player::setWeight(float weight){
+void Player::SetWeight(float weight){
     this->weight = weight;
 }
 
-void Player::setAxe(int axe){
+void Player::SetAxe(int axe){
     this->axe = axe;
 }
 
-void Player::setDagger(int dagger){
+void Player::SetDagger(int dagger){
     this->dagger = dagger;
 }
 
-void Player::setUnarmed(int unarmed){
+void Player::SetUnarmed(int unarmed){
     this->unarmed = unarmed;
 }
 
-void Player::setHammer(int hammer){
+void Player::SetHammer(int hammer){
     this->hammer = hammer;
 }
 
-void Player::setPolearm(int polearm){
+void Player::SetPolearm(int polearm){
     this->polearm = polearm;
 }
 
-void Player::setSpear(int spear){
+void Player::SetSpear(int spear){
     this->spear = spear;
 }
 
-void Player::setStaff(int staff){
+void Player::SetStaff(int staff){
     this->staff = staff;
 }
 
-void Player::setSword(int sword){
+void Player::SetSword(int sword){
     this->sword = sword;
 }
 
-void Player::setArchery(int archery){
+void Player::SetArchery(int archery){
     this->archery = archery;
 }
 
-void Player::setCrossbow(int crossbow){
+void Player::SetCrossbow(int crossbow){
     this->crossbow = crossbow;
 }
 
-void Player::setSling(int sling){
+void Player::SetSling(int sling){
     this->sling = sling;
 }
 
-void Player::setThrown(int thrown){
+void Player::SetThrown(int thrown){
     this->thrown = thrown;
 }
 
-void Player::setArmor(int armor){
+void Player::SetArmor(int armor){
     this->armor = armor;
 }
 
-void Player::setDualWeapon(int dualWeapon){
+void Player::SetDualWeapon(int dualWeapon){
     this->dualWeapon = dualWeapon;
 }
 
-void Player::setShield(int shield){
+void Player::SetShield(int shield){
     this->shield = shield;
 }
 
-void Player::setBardic(int bardic){
+void Player::SetBardic(int bardic){
     this->bardic = bardic;
 }
 
-void Player::setConjuring(int conjuring){
+void Player::SetConjuring(int conjuring){
     this->conjuring = conjuring;
 }
 
-void Player::setDruidic(int druidic){
+void Player::SetDruidic(int druidic){
     this->druidic = druidic;
 }
 
-void Player::setIllusion(int illusion){
+void Player::SetIllusion(int illusion){
     this->illusion = illusion;
 }
 
-void Player::setNecromancy(int necromancy){
+void Player::SetNecromancy(int necromancy){
     this->necromancy = necromancy;
 }
 
-void Player::setSorcery(int sorcery){
+void Player::SetSorcery(int sorcery){
     this->sorcery = sorcery;
 }
 
-void Player::setShamanic(int shamanic){
+void Player::SetShamanic(int shamanic){
     this->shamanic = shamanic;
 }
 
-void Player::setSummoning(int summoning){
+void Player::SetSummoning(int summoning){
     this->summoning = summoning;
 }
 
-void Player::setSpellcraft(int spellcraft){
+void Player::SetSpellcraft(int spellcraft){
     this->spellcraft = spellcraft;
 }
 
-void Player::setFocus(int focus){
+void Player::SetFocus(int focus){
     this->focus = focus;
 }
 
-void Player::setArmorsmithing(int armorsmithing){
+void Player::SetArmorsmithing(int armorsmithing){
     this->armorsmithing = armorsmithing;
 }
 
-void Player::setTailoring(int tailoring){
+void Player::SetTailoring(int tailoring){
     this->tailoring = tailoring;
 }
 
-void Player::setFletching(int fletching){
+void Player::SetFletching(int fletching){
     this->fletching = fletching;
 }
 
-void Player::setWeaponsmith(int weaponsmithing){
+void Player::SetWeaponsmith(int weaponsmithing){
     this->weaponsmithing = weaponsmithing;
 }
 
-void Player::setAlchemy(int alchemy){
+void Player::SetAlchemy(int alchemy){
     this->alchemy = alchemy;
 }
 
-void Player::setLapidary(int lapidary){
+void Player::SetLapidary(int lapidary){
     this->lapidary = lapidary;
 }
 
-void Player::setCalligraphy(int calligraphy){
+void Player::SetCalligraphy(int calligraphy){
     this->calligraphy = calligraphy;
 }
 
-void Player::setEnchanting(int enchanting){
+void Player::SetEnchanting(int enchanting){
     this->enchanting = enchanting;
 }
 
-void Player::setHerbalism(int herbalism){
+void Player::SetHerbalism(int herbalism){
     this->herbalism = herbalism;
 }
 
-void Player::setHunting(int hunting){
+void Player::SetHunting(int hunting){
     this->hunting = hunting;
 }
 
-void Player::setMining(int mining){
+void Player::SetMining(int mining){
     this->mining = mining;
 }
 
-void Player::setBargaining(int bargaining){
+void Player::SetBargaining(int bargaining){
     this->bargaining = bargaining;
 }
 
-void Player::setCamping(int camping){
+void Player::SetCamping(int camping){
     this->camping = camping;
 }
 
-void Player::setFirstAid(int firstAid){
+void Player::SetFirstAid(int firstAid){
     this->firstAid = firstAid;
 }
 
-void Player::setLore(int lore){
+void Player::SetLore(int lore){
     this->lore = lore;
 }
 
-void Player::setPickLocks(int pickLocks){
+void Player::SetPickLocks(int pickLocks){
     this->pickLocks = pickLocks;
 }
 
-void Player::setScouting(int scouting){
+void Player::SetScouting(int scouting){
     this->scouting = scouting;
 }
 
-void Player::setSearch(int search){
+void Player::SetSearch(int search){
     this->search = search;
 }
 
-void Player::setStealth(int stealth){
+void Player::SetStealth(int stealth){
     this->stealth = stealth;
 }
 
-void Player::setTraps(int traps){
+void Player::SetTraps(int traps){
     this->traps = traps;
 }
 
-void Player::setAeolandis(int aeolandis){
+void Player::SetAeolandis(int aeolandis){
     this->aeolandis = aeolandis;
 }
 
-void Player::setHieroform(int hieroform){
+void Player::SetHieroform(int hieroform){
     this->hieroform = hieroform;
 }
 
-void Player::setHighGundis(int highGundis){
+void Player::SetHighGundis(int highGundis){
     this->highGundis = highGundis;
 }
 
-void Player::setOldPraxic(int oldPraxic){
+void Player::SetOldPraxic(int oldPraxic){
     this->oldPraxic = oldPraxic;
 }
 
-void Player::setPraxic(int praxic){
+void Player::SetPraxic(int praxic){
     this->praxic = praxic;
 }
 
-void Player::setRunic(int runic){
+void Player::SetRunic(int runic){
     this->runic = runic;
 }
 
@@ -611,7 +611,7 @@ void Player::setRunic(int runic){
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Player::toString(){
+std::string Player::ToString(){
     std::string serial;
     serial.append("PLAYER_OBJECT|");
     serial.append(account);

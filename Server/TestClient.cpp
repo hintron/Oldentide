@@ -20,7 +20,7 @@
 
 using namespace std;
 
-void messageListener(char *server_address, int port, int session){
+void MessageListener(char *server_address, int port, int session){
     // This will keep track of the latest message the client received
     long long int i = 0;
     int sockfd;
@@ -164,7 +164,7 @@ int main(int argc, char * argv[]){
                 packetSalt.sessionId = session;
                 std::cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
-                if(!Utils::sanitizeAccountName(packetSalt.account)){
+                if(!Utils::SanitizeAccountName(packetSalt.account)){
                     std::cout << "Invalid account name!" << std::endl;
                     break;
                 }
@@ -188,11 +188,11 @@ int main(int argc, char * argv[]){
                     // TODO: How to make password size match the length of the password?
                     char password[1000];
                     cin.getline(password, sizeof(password));
-                    if(!Utils::checkPasswordLength(password)){
+                    if(!Utils::CheckPasswordLength(password)){
                         break;
                     }
                     std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
-                    LoginManager::generateKey((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
+                    LoginManager::GenerateKey((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
                     std::cout << "Generated key used for login: " << packetLogin.keyStringHex << std::endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
@@ -204,7 +204,7 @@ int main(int argc, char * argv[]){
                         userAccount = returnPacket->account;
                         std::cout << "(" << packetLogin.account << ")" << std::endl;
                         // Spawn thread to start listening to server broadcasts
-                        shell = thread(messageListener, server_address, port, session);
+                        shell = thread(MessageListener, server_address, port, session);
                         // Now that user is logged in, start up client console
                         clientState = 2;
                     }
@@ -239,7 +239,7 @@ int main(int argc, char * argv[]){
                                 repeat_try = true;
                                 continue;
                             }
-                            if(!Utils::checkPasswordLength(password)){
+                            if(!Utils::CheckPasswordLength(password)){
                                 std::cout << "Password needs to be at least 8 characters... Please choose a different password" << std::endl;
                                 repeat_try = true;
                                 continue;
@@ -250,7 +250,7 @@ int main(int argc, char * argv[]){
                             packetCreate.packetId = packetNumber;
                             packetCreate.sessionId = session;
                             strcpy(packetCreate.account, packetSalt.account);
-                            LoginManager::generateSaltAndKey(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
+                            LoginManager::GenerateSaltAndKey(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
                             sendto(sockfd,(void*)&packetCreate,sizeof(packetCreate),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                             // Print success if account was successfully created
                             PACKET_CREATEACCOUNT *returnPacket = (PACKET_CREATEACCOUNT*) malloc(sizeof(PACKET_CREATEACCOUNT));
@@ -289,14 +289,14 @@ int main(int argc, char * argv[]){
                 if (command.empty()){
                     break;
                 }
-                if (Utils::tokenfy(command, ' ')[0] != "/s"){
+                if (Utils::Tokenfy(command, ' ')[0] != "/s"){
                     std::cout << "Please use a valid command!" << std::endl;
                     break;
                 };
-                PACKET_SENDPLAYERCOMMAND playerCommand;
-                playerCommand.sessionId = session;
-                strcpy(playerCommand.command, command.c_str());
-                sendto(sockfd,(void*)&playerCommand,sizeof(playerCommand),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                PACKET_SENDPLAYERCOMMAND PlayerCommand;
+                PlayerCommand.sessionId = session;
+                strcpy(PlayerCommand.command, command.c_str());
+                sendto(sockfd,(void*)&PlayerCommand,sizeof(PlayerCommand),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 break;
             }
         }

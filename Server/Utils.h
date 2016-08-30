@@ -10,12 +10,12 @@
 #include <vector>
 
 namespace Utils{
-    std::vector<std::string> tokenfy(std::string s, char delim);
-    bool checkPasswordLength(char *);
-    bool checkAccountNameLength(char *);
-    bool sanitizeAccountName(char *);
-    bool sanitizeAlphanumeric(char *);
-    bool sanitizeHexString(char *);
+    std::vector<std::string> Tokenfy(std::string s, char delim);
+    bool CheckPasswordLength(char *);
+    bool CheckAccountNameLength(char *);
+    bool SanitizeAccountName(char *);
+    bool SanitizeAlphanumeric(char *);
+    bool SanitizeHexString(char *);
 };
 
 

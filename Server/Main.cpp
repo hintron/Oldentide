@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     }
     int port = atoi(argv[1]);
     Server * server = new Server(port);
-    server->run();
+    server->Run();
     delete server;
     return 0;
 }

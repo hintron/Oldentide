@@ -20,20 +20,20 @@ AdminShell::~AdminShell(){
 }
 
 void AdminShell::operator()(){
-    run();
+    Run();
 }
 
-void AdminShell::run(){
+void AdminShell::Run(){
     std::string adminCommand; 
     std::cout << "Starting Server Administrator Shell.\n";
-    printLogo();
+    PrintLogo();
     while(true){
 	    do
 	    {
             std::cout << "OldentideAdmin@" << serverHostname << ": ";
             getline(std::cin,adminCommand);
 	    }while(adminCommand.empty());
-        std::vector<std::string> adminTokens = Utils::tokenfy(adminCommand, ' ');
+        std::vector<std::string> adminTokens = Utils::Tokenfy(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown"){
             std::cout << "Oldentide Dedicated Server is shutting down..." << std::endl;
             exit(EXIT_SUCCESS);
@@ -50,27 +50,27 @@ void AdminShell::run(){
                 }
             }
             else{
-                printUsage();
+                PrintUsage();
             }
         }
         else if (adminTokens[0] == "/db"){
             std::string cmd = adminCommand.erase(0,4);
-            sql->execute(cmd);
+            sql->Execute(cmd);
         }
         else{
-            printUsage();
+            PrintUsage();
         }
     }
 }
 
-void AdminShell::printUsage(){
+void AdminShell::PrintUsage(){
     std::cout << "Dedicated Server Admin Usage:" << std::endl;
     std::cout << "/shutdown    = Shuts down the server." << std::endl;
     std::cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << std::endl;
     std::cout << "/db <query>  = Runs a given sql query on the sqlite3 database." << std::endl;
 }
 
-void AdminShell::printLogo(){
+void AdminShell::PrintLogo(){
     std::cout << "  ____           ___   _____         _____  _____  ___   _____" << std::endl;
     std::cout << " /    \\  |      |   \\  |      |   |    |      |    |  \\  |" << std::endl;
     std::cout << "/      \\ |      |    \\ |      |\\  |    |      |    |   \\ |" << std::endl;

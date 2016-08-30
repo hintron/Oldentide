@@ -15,61 +15,61 @@ Character::Character(std::string name, std::string lastname, std::string race, s
                      int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, 
                      int strength, int constitution, int intelligence, int dexterity, float x, 
                      float y, float z, float pitch, float yaw) {
-    setName(name);
-    setLastname(lastname);
-    setRace(race);
-    setGender(gender);
-    setFace(face);
-    setSkin(skin);
-    setZone(zone);
-    setLevel(level);
-    setHp(hp);
-    setMaxHp(maxHp);
-    setBp(bp);
-    setMaxBp(maxBp);
-    setMp(mp);
-    setMaxMp(maxMp);
-    setEp(ep);
-    setMaxEp(maxEp);
-    setStrength(strength);
-    setConstitution(constitution);
-    setIntelligence(intelligence);
-    setDexterity(dexterity);
-    setX(x);
-    setY(y);
-    setZ(z);
-    setPitch(pitch);
-    setYaw(yaw);
+    SetName(name);
+    SetLastname(lastname);
+    SetRace(race);
+    SetGender(gender);
+    SetFace(face);
+    SetSkin(skin);
+    SetZone(zone);
+    SetLevel(level);
+    SetHp(hp);
+    SetMaxHp(maxHp);
+    SetBp(bp);
+    SetMaxBp(maxBp);
+    SetMp(mp);
+    SetMaxMp(maxMp);
+    SetEp(ep);
+    SetMaxEp(maxEp);
+    SetStrength(strength);
+    SetConstitution(constitution);
+    SetIntelligence(intelligence);
+    SetDexterity(dexterity);
+    SetX(x);
+    SetY(y);
+    SetZ(z);
+    SetPitch(pitch);
+    SetYaw(yaw);
 }
 
 Character::Character(std::string fromString){
-    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
+    std::vector<std::string> tokens = Utils::Tokenfy(fromString, '|');
     if (tokens[0] == "PLAYER_OBJECT"){
-        setName(tokens[57]);
-        setLastname(tokens[58]);
-        setRace(tokens[59]);
-        setGender(tokens[60]);
-        setFace(tokens[61]);
-        setSkin(tokens[62]);
-        setZone(tokens[63]);
-        setLevel(std::stoi(tokens[64]));
-        setHp(std::stoi(tokens[65]));
-        setMaxHp(std::stoi(tokens[66]));
-        setBp(std::stoi(tokens[67]));
-        setMaxBp(std::stoi(tokens[68]));
-        setMp(std::stoi(tokens[69]));
-        setMaxMp(std::stoi(tokens[70]));
-        setEp(std::stoi(tokens[71]));
-        setMaxEp(std::stoi(tokens[72]));
-        setStrength(std::stoi(tokens[73]));
-        setConstitution(std::stoi(tokens[74]));
-        setIntelligence(std::stoi(tokens[75]));
-        setDexterity(std::stoi(tokens[76]));
-        setX(std::stof(tokens[77]));
-        setY(std::stof(tokens[78]));
-        setZ(std::stof(tokens[79]));
-        setPitch(std::stof(tokens[80]));
-        setYaw(std::stof(tokens[81]));
+        SetName(tokens[57]);
+        SetLastname(tokens[58]);
+        SetRace(tokens[59]);
+        SetGender(tokens[60]);
+        SetFace(tokens[61]);
+        SetSkin(tokens[62]);
+        SetZone(tokens[63]);
+        SetLevel(std::stoi(tokens[64]));
+        SetHp(std::stoi(tokens[65]));
+        SetMaxHp(std::stoi(tokens[66]));
+        SetBp(std::stoi(tokens[67]));
+        SetMaxBp(std::stoi(tokens[68]));
+        SetMp(std::stoi(tokens[69]));
+        SetMaxMp(std::stoi(tokens[70]));
+        SetEp(std::stoi(tokens[71]));
+        SetMaxEp(std::stoi(tokens[72]));
+        SetStrength(std::stoi(tokens[73]));
+        SetConstitution(std::stoi(tokens[74]));
+        SetIntelligence(std::stoi(tokens[75]));
+        SetDexterity(std::stoi(tokens[76]));
+        SetX(std::stof(tokens[77]));
+        SetY(std::stof(tokens[78]));
+        SetZ(std::stof(tokens[79]));
+        SetPitch(std::stof(tokens[80]));
+        SetYaw(std::stof(tokens[81]));
     }
     // if (tokens[0] == "NPC_OBJECT"){
     //    
@@ -80,103 +80,103 @@ Character::Character(std::string fromString){
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Character::getName(){
+std::string Character::GetName(){
     return name;
 }
 
-std::string Character::getLastname(){
+std::string Character::GetLastname(){
     return lastname;
 }
 
-std::string Character::getRace(){
+std::string Character::GetRace(){
     return race;
 }
 
-std::string Character::getGender(){
+std::string Character::GetGender(){
     return gender;
 }
 
-std::string Character::getFace(){
+std::string Character::GetFace(){
     return face;
 }
 
-std::string Character::getSkin(){
+std::string Character::GetSkin(){
     return skin;
 }
 
-std::string Character::getZone(){
+std::string Character::GetZone(){
     return zone;
 }
 
-int Character::getLevel(){
+int Character::GetLevel(){
     return level;
 }
 
-int Character::getHp(){
+int Character::GetHp(){
     return hp;
 }
 
-int Character::getMaxHp(){
+int Character::GetMaxHp(){
     return maxHp;
 }
 
-int Character::getBp(){
+int Character::GetBp(){
     return bp;
 }
 
-int Character::getMaxBp(){
+int Character::GetMaxBp(){
     return maxBp;
 }
 
-int Character::getMp(){
+int Character::GetMp(){
     return mp;
 }
 
-int Character::getMaxMp(){
+int Character::GetMaxMp(){
     return maxMp;
 }
 
-int Character::getEp(){
+int Character::GetEp(){
     return ep;
 }
 
-int Character::getMaxEp(){
+int Character::GetMaxEp(){
     return maxEp;
 }
 
-int Character::getStrength(){
+int Character::GetStrength(){
     return strength;
 }
 
-int Character::getConstitution(){
+int Character::GetConstitution(){
     return constitution;
 }
 
-int Character::getIntelligence(){
+int Character::GetIntelligence(){
     return intelligence;
 }
 
-int Character::getDexterity(){
+int Character::GetDexterity(){
     return dexterity;
 }
 
-float Character::getX(){
+float Character::GetX(){
     return x;
 }
 
-float Character::getY(){
+float Character::GetY(){
     return y;
 }
 
-float Character::getZ(){
+float Character::GetZ(){
     return z;
 }
 
-float Character::getPitch(){
+float Character::GetPitch(){
     return pitch;
 }
 
-float Character::getYaw(){
+float Character::GetYaw(){
     return yaw;
 }
 
@@ -184,102 +184,102 @@ float Character::getYaw(){
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-void Character::setName(std::string name){
+void Character::SetName(std::string name){
     this->name = name;
 }
 
-void Character::setLastname(std::string lastname){
+void Character::SetLastname(std::string lastname){
     this->lastname = lastname;
 }
-void Character::setRace(std::string race){
+void Character::SetRace(std::string race){
     this->race = race;
 }
 
-void Character::setGender(std::string gender){
+void Character::SetGender(std::string gender){
     this->gender = gender;
 }
 
-void Character::setFace(std::string face){
+void Character::SetFace(std::string face){
     this->face = face;
 }
 
-void Character::setSkin(std::string skin){
+void Character::SetSkin(std::string skin){
     this->skin = skin;
 }
 
-void Character::setZone(std::string zone){
+void Character::SetZone(std::string zone){
     this->zone = zone;
 }
 
-void Character::setLevel(int level){
+void Character::SetLevel(int level){
     this->level = level;
 }
 
-void Character::setHp(int hp){
+void Character::SetHp(int hp){
     this->hp = hp;
 }
 
-void Character::setMaxHp(int maxHp){
+void Character::SetMaxHp(int maxHp){
     this->maxHp = maxHp;
 }
 
-void Character::setBp(int bp){
+void Character::SetBp(int bp){
     this->bp = bp;
 }
 
-void Character::setMaxBp(int maxBp){
+void Character::SetMaxBp(int maxBp){
     this->maxBp = maxBp;
 }
 
-void Character::setMp(int mp){
+void Character::SetMp(int mp){
     this->mp = mp;
 }
 
-void Character::setMaxMp(int maxMp){
+void Character::SetMaxMp(int maxMp){
     this->maxMp = maxMp;
 }
 
-void Character::setEp(int ep){
+void Character::SetEp(int ep){
     this->ep = ep;
 }
 
-void Character::setMaxEp(int maxEp){
+void Character::SetMaxEp(int maxEp){
     this->maxEp = maxEp;
 }
 
-void Character::setStrength(int strength){
+void Character::SetStrength(int strength){
     this->strength = strength;
 }
 
-void Character::setConstitution(int constitution){
+void Character::SetConstitution(int constitution){
     this->constitution = constitution;
 }
 
-void Character::setIntelligence(int intelligence){
+void Character::SetIntelligence(int intelligence){
     this->intelligence = intelligence;
 }
 
-void Character::setDexterity(int dexterity){
+void Character::SetDexterity(int dexterity){
     this->dexterity = dexterity;
 }
 
-void Character::setX(float x){
+void Character::SetX(float x){
     this->x = x;
 }
 
-void Character::setY(float y){
+void Character::SetY(float y){
     this->y = y;
 }
 
-void Character::setZ(float z){
+void Character::SetZ(float z){
     this->z = z;
 }
 
-void Character::setPitch(float pitch){
+void Character::SetPitch(float pitch){
     this->pitch = pitch;
 }
 
-void Character::setYaw(float yaw){
+void Character::SetYaw(float yaw){
     this->yaw = yaw;
 }
 

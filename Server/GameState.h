@@ -21,18 +21,18 @@ class GameState{
     public:
         GameState(SQLConnector * sql);
         ~GameState();
-        bool verifySession(int sessionId);
-        bool verifyActiveSession(int sessionId);
-        bool createAccount(char * account, char * keyStringHex, char * saltStringHex);
-        bool loginUser(char * account, char * keyStringHex);
-        void disconnectSession(int sessionId);
-        void playerCommand(char * command, int);
-        void selectPlayer(int sessionId);
-        int generateSession(int sessionId);
-        long long int getGlobalMessageNumber();
-        long long int getMessage(long long int, char *, char *);
-        long long int storeMessage(std::string, int);
-        void setSessionAccountName(char *, int);
+        bool VerifySession(int sessionId);
+        bool VerifyActiveSession(int sessionId);
+        bool CreateAccount(char * account, char * keyStringHex, char * saltStringHex);
+        bool LoginUser(char * account, char * keyStringHex);
+        void DisconnectSession(int sessionId);
+        void PlayerCommand(char * command, int);
+        void SelectPlayer(int sessionId);
+        int GenerateSession(int sessionId);
+        long long int GetGlobalMessageNumber();
+        long long int GetMessage(long long int, char *, char *);
+        long long int StoreMessage(std::string, int);
+        void SetSessionAccountName(char *, int);
 
     private:
         SQLConnector * sql;
@@ -49,8 +49,8 @@ class GameState{
         // Malloc space for each new message
         std::vector<std::string> globalMessageArray;
         std::vector<int> globalMessageAccountArray;
-        Player readPlayer(std::string name);
-        void storePlayer(std::string name);
+        Player ReadPlayer(std::string name);
+        void StorePlayer(std::string name);
 };
 
 #endif // OLDENTIDE_GAMESTATE_H

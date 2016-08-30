@@ -14,13 +14,13 @@
 // @param account_name : The account to authenticate with.
 // @param candidate_key_string_hex : The user-supplied key to autheticate with.
 // @return : 1 if account successfully authenticated; 0 if not.
-int AccountManager::authenticateAccount(char *account_name, char *candidate_key_string_hex){
+int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_string_hex){
     // Authenticate - perform a key lookup and check
     int success = 0;
     SQLConnector *sql = new SQLConnector();
     // Create a container to hold the canonized key string hex
     char canonized_key_string_hex[129];
-    sql->get_account_key(account_name, canonized_key_string_hex);
+    sql->GetAccountKey(account_name, canonized_key_string_hex);
 
     // Initialize salt and generated key BIGNUMs
     BIGNUM *candidate_key = BN_new();

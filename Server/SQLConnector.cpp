@@ -30,11 +30,11 @@ SQLConnector::~SQLConnector(){
 // Either sanitize the input thoroughly or don't use this command. You might need to use a
 // parameterized query instead, which this command doesn't support.
 // @return : The number of rows returned by the query
-int SQLConnector::execute(std::string cmd){
+int SQLConnector::Execute(std::string cmd){
     char *error_message = NULL;
-    sqls = sqlite3_exec(database, cmd.c_str(), &execute_callback, 0, &error_message);
+    sqls = sqlite3_exec(database, cmd.c_str(), &Execute_callback, 0, &error_message);
     if (sqls != SQLITE_OK){
-        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
+        std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
         std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
@@ -53,19 +53,19 @@ int SQLConnector::execute(std::string cmd){
 //                      a-z,A-Z,0-9,_ If not sanitized, could lead to SQL Injection!
 // @param key: IN. A c string of the key for the account, already generated. Will be a string of hex.
 // @param salt: IN. A c string of the salt used to generate the key. Will be a string of hex.
-// @return : 1 if sql executed successfully; 0 otherwise
-int SQLConnector::insert_account(char *account_name, char *key, char *salt){
+// @return : 1 if sql Executed successfully; 0 otherwise
+int SQLConnector::InsertAccount(char *account_name, char *key, char *salt){
     std::stringstream query;
     // Sanitize key, salt, and account name
-    if(!Utils::sanitizeAccountName(account_name)){
+    if(!Utils::SanitizeAccountName(account_name)){
         std::cout << "Account_name is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
-    if(!Utils::sanitizeHexString(key)){
+    if(!Utils::SanitizeHexString(key)){
         std::cout << "Key is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
-    if(!Utils::sanitizeHexString(salt)){
+    if(!Utils::SanitizeHexString(salt)){
         std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
@@ -73,7 +73,7 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
     query << "\"" << account_name << "\",";
     query << "\"" << key << "\",";
     query << "\"" << salt << "\")";
-    execute(query.str());
+    Execute(query.str());
     // TODO: Let user know that it is a constraint fail - i.e. the username is already taken
     // TODO: Do a client-side check first before trying to insert for convenience
     if(sqls == SQLITE_OK){
@@ -86,11 +86,11 @@ int SQLConnector::insert_account(char *account_name, char *key, char *salt){
 
 // TODO: Create a paging mechanism - save a page variable and use LIMIT and OFFSET
 // Lists all the accounts
-void SQLConnector::list_accounts(){
+void SQLConnector::ListAccounts(){
     std::stringstream query;
     //long long int offset = 0;
     query << "select * from accounts ORDER BY accountname";// LIMIT 5 OFFSET " << offset;
-    execute(query.str());
+    Execute(query.str());
 }
 
 // TODO: Create paging functions to determine the limit offset
@@ -105,9 +105,9 @@ void SQLConnector::list_accounts(){
 // @param account_name: IN. A c string on the account_name to look the salt up.
 // @param salt_string_hex: OUT. An empty c string allocated to 129 bytes.
 // @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
-int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
+int SQLConnector::GetAccountSalt(char *account_name, char *salt_string_hex){
     // Sanitize the account name before preceeding
-    if(!Utils::sanitizeAccountName(account_name)){
+    if(!Utils::SanitizeAccountName(account_name)){
         return 0;
     }
     char *error_message = NULL;
@@ -115,9 +115,9 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     query << "select salt from accounts where accountname = \"" << account_name << "\"";
     std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
-    sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, salt_string_hex, &error_message);
+    sqls = sqlite3_exec(database, query.str().c_str(), &ReturnStringCallback, salt_string_hex, &error_message);
     if (sqls != SQLITE_OK){
-        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
+        std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
         std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
@@ -131,7 +131,7 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
     }
     // TODO: There should be a better way to do this, but for now...
     // Check to see if the salt was retrieved
-    if(Utils::sanitizeHexString(salt_string_hex)){
+    if(Utils::SanitizeHexString(salt_string_hex)){
         return 1;
     }
     else {
@@ -144,9 +144,9 @@ int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
 // @param account_name : IN. The name of the account to authenticate.
 // @param key_string_hex : OUT. The key hex string of the user. Should be allocated to 129 bytes.
 // @return : 1 on successful authentication, 0 if authentication failed.
-int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
+int SQLConnector::GetAccountKey(char *account_name, char *key_string_hex){
     // Sanitize the account name before preceeding
-    if(!Utils::sanitizeAccountName(account_name)){
+    if(!Utils::SanitizeAccountName(account_name)){
         return 0;
     }
     char *error_message = NULL;
@@ -154,9 +154,9 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
     query << "select key from accounts where accountname = \"" << account_name << "\"";
     std::cout << query.str() << std::endl;
     // The fourth param is passed to the callback function as a void pointer to the first param
-    sqls = sqlite3_exec(database, query.str().c_str(), &return_string_callback, key_string_hex, &error_message);
+    sqls = sqlite3_exec(database, query.str().c_str(), &ReturnStringCallback, key_string_hex, &error_message);
     if (sqls != SQLITE_OK){
-        std::cout << "Could not execute SQL query! Return Code:" << sqls << std::endl;
+        std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
     }
     else {
         std::cout << "Executed Successfully. Return Code:" << sqls << std::endl;
@@ -174,7 +174,7 @@ int SQLConnector::get_account_key(char *account_name, char *key_string_hex){
 // A generic callback function to sqlite3_exec() that copies a c string in the first column
 // of the returned row into string_to_return. This function assumes that only one record will be
 // in the result set, or else the return value will be the value in the last row processed.
-static int return_string_callback(void *string_to_return, int argc, char **argv, char **azColName){
+static int ReturnStringCallback(void *string_to_return, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){
         std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
@@ -196,7 +196,7 @@ static int return_string_callback(void *string_to_return, int argc, char **argv,
 // @param argc : The number of columns in the row
 // @param argv : Stores the column value strings of the row
 // @param azColName : Stores the column name strings in alphabetical order.
-static int execute_callback(void *NotUsed, int argc, char **argv, char **azColName){
+static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i = 0; i < argc; i++){
         std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
@@ -216,7 +216,7 @@ static int execute_callback(void *NotUsed, int argc, char **argv, char **azColNa
 //                             be stored.
 //    @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
 //**/
-//int SQLConnector::get_account_salt(char *account_name, char *salt_string_hex){
+//int SQLConnector::GetAccountSalt(char *account_name, char *salt_string_hex){
 //    std::stringstream query;
 //    // TODO: Use sanitize account name instead of parameterization
 //    // Trim whitespace from account name with trim function

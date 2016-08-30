@@ -18,22 +18,22 @@ Npc::Npc(int id, std::string name, std::string lastname, std::string race, std::
     :Character(name, lastname, race, gender, face, skin, zone, level, hp, maxHp, bp, maxBp, mp, 
                maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, x, y, z, pitch, 
                yaw){ 
-    setId(id);
+    SetId(id);
 }
 
 Npc::Npc(std::string fromString)
     :Character(fromString){
-    std::vector<std::string> tokens = Utils::tokenfy(fromString, '|');
+    std::vector<std::string> tokens = Utils::Tokenfy(fromString, '|');
     if (tokens[0] != "NPC_OBJECT")
         return;
-    Npc::setId(stoi(tokens[1]));
+    Npc::GetId(stoi(tokens[1]));
 }
 
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-int Npc::getId(){
+int Npc::GetId(){
     return id;
 }
 
@@ -41,7 +41,7 @@ int Npc::getId(){
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-void Npc::setId(int id){
+void Npc::SetId(int id){
     this->id = id;
 }
 
@@ -49,7 +49,7 @@ void Npc::setId(int id){
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Npc::toString(){
+std::string Npc::ToString(){
     std::string serial;
     serial.append("NPC_OBJECT|");
     serial.append(std::to_string(id));

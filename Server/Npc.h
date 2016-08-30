@@ -28,16 +28,13 @@ class Npc : public Character {
     //~Npc();
 
     // Getter Functions.
-    
-    int getId();
+    int GetId();
 
     // Setter Functions.
-    
-    void setId(int id);
+    void SetId(int id);
     
     // Class Functions.
-    
-    std::string toString();
+    std::string ToString();
     
 };
 

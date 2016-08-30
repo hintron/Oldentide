@@ -11,7 +11,7 @@ class AccountManager{
     public:
         AccountManager();
         ~AccountManager();
-        static int authenticateAccount(char *, char *);
+        static int AuthenticateAccount(char *, char *);
 };
 
 #endif // OLDENTIDE_ACCOUNTMANAGER_H

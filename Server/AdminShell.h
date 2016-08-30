@@ -17,9 +17,9 @@ class AdminShell {
         AdminShell(SQLConnector * input);
         ~AdminShell();
         void operator()();
-        void run();
-        void printUsage();
-        void printLogo();
+        void Run();
+        void PrintUsage();
+        void PrintLogo();
     private:
         SQLConnector * sql;
         char serverHostname[HOST_NAME_MAX];

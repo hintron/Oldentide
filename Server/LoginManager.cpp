@@ -22,7 +22,7 @@ const long long int LoginManager::ITERATIONS = 1 << 20;
 // @param password : IN. A c string containing the password of the user.
 // @param salt : IN. The salt to use to generate the key.
 // @param generated_ke_sring_hex : OUT. A pointer to where the key hex string should be copied to.
-void LoginManager::generateKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
+void LoginManager::GenerateKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
     EVP_MD_CTX *md_context;
     const EVP_MD *md_function;
     unsigned int md_len, i;
@@ -106,7 +106,7 @@ void LoginManager::generateKey(char *password, char *salt_string_hex, char *gene
 //                   for the new account. It will NOT be stored.
 // @param salt_string_hex : OUT. The newly-generated random salt that was used to generate the new key.
 // @param generated_key_string_hex : OUT. The newly-generated key.
-void LoginManager::generateSaltAndKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
+void LoginManager::GenerateSaltAndKey(char *password, char *salt_string_hex, char *generated_key_string_hex){
     // Initialize salt and generated key BIGNUMs
     BIGNUM *salt = BN_new();
 
@@ -118,7 +118,7 @@ void LoginManager::generateSaltAndKey(char *password, char *salt_string_hex, cha
     // Store the key as hex, so it is easy to read out
     // Note: This needs to be freed later
     char *salt_string_hex_temp = BN_bn2hex(salt);
-    LoginManager::generateKey(password, salt_string_hex_temp, generated_key_string_hex);
+    LoginManager::GenerateKey(password, salt_string_hex_temp, generated_key_string_hex);
 
     // Instead of making the caller free it, copy the contents to the passed pointers, and then free it
     strcpy(salt_string_hex, salt_string_hex_temp); 

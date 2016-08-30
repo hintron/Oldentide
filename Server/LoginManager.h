@@ -11,8 +11,8 @@ class LoginManager{
     public:
         LoginManager();
         ~LoginManager();
-        static void generateSaltAndKey(char *, char *, char *);
-        static void generateKey(char *, char *, char *);
+        static void GenerateSaltAndKey(char *, char *, char *);
+        static void GenerateKey(char *, char *, char *);
     private:
         static const long long int ITERATIONS;
 };

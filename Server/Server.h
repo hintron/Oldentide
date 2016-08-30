@@ -23,31 +23,31 @@ class Server{
     public:
         Server(int port);
         ~Server();
-        void run();
+        void Run();
     private:
         int sockfd;
         SQLConnector * sql;
         GameState * gamestate;
         AdminShell * adminshell;
-        void genericHandler(PACKET_GENERIC * packet);
-        void ackHandler(PACKET_ACK * packet);
-        void connectHandler(PACKET_CONNECT * packet, sockaddr_in client);
-        void disconnectHandler(PACKET_DISCONNECT * packet);
-        void saltHandler(PACKET_GETSALT *packet, sockaddr_in client);
-        void createAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client);
-        void loginHandler(PACKET_LOGIN * packet, sockaddr_in client);
-        void listCharactersHandler(PACKET_LISTCHARACTERS * packet);
-        void selectCharacterHandler(PACKET_SELECTCHARACTER * packet);
-        void deleteCharacterHandler(PACKET_DELETECHARACTER * packet);
-        void createCharacterHandler(PACKET_CREATECHARACTER * packet);
-        void initializeGameHandler(PACKET_INITIALIZEGAME * packet);
-        void updatePcHandler(PACKET_UPDATEPC * packet);
-        void updateNpcHandler(PACKET_UPDATENPC * packet);
-        void sendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
-        void sendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
-        void sendServerActionHandler(PACKET_SENDSERVERACTION * packet);
-        void getLatestMessageHandler(PACKET_GETLATESTMESSAGE * packet, sockaddr_in client);
-        void messageHandler(PACKET_MESSAGE * packet, sockaddr_in client);
+        void GenericHandler(PACKET_GENERIC * packet);
+        void AckHandler(PACKET_ACK * packet);
+        void ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client);
+        void DisConnectHandler(PACKET_DISCONNECT * packet);
+        void SaltHandler(PACKET_GETSALT *packet, sockaddr_in client);
+        void CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client);
+        void LoginHandler(PACKET_LOGIN * packet, sockaddr_in client);
+        void ListCharactersHandler(PACKET_LISTCHARACTERS * packet);
+        void SelectCharacterHandler(PACKET_SELECTCHARACTER * packet);
+        void DeleteCharacterHandler(PACKET_DELETECHARACTER * packet);
+        void CreateCharacterHandler(PACKET_CREATECHARACTER * packet);
+        void InitializeGameHandler(PACKET_INITIALIZEGAME * packet);
+        void UpdatePcHandler(PACKET_UPDATEPC * packet);
+        void UpdateNpcHandler(PACKET_UPDATENPC * packet);
+        void SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
+        void SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
+        void SendServerActionHandler(PACKET_SENDSERVERACTION * packet);
+        void GetLatestMessageHandler(PACKET_GETLATESTMESSAGE * packet, sockaddr_in client);
+        void MessageHandler(PACKET_MESSAGE * packet, sockaddr_in client);
 };
 
 #endif //OLDENTIDE_SERVER_H
