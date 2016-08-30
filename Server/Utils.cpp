@@ -1,4 +1,4 @@
-// Filename:    Utils.cpp
+// Filename:    utils.cpp
 // Author:      Joseph DeVictoria
 // Date:        Mar_10_2016
 // Purpose:     Miscellaneous functions.
@@ -19,7 +19,7 @@
 #define MIN_PASSWORD_LENGTH 8
 #define MAX_PASSWORD_LENGTH 30
 
-namespace Utils{
+namespace utils{
 
     // Simple function that separates a string (s) into tokens based on a delimiter (delim).
     std::vector<std::string> Tokenfy(std::string s, char delim) {
@@ -73,10 +73,10 @@ namespace Utils{
     // CLIENT/SERVER. Checks to make sure the passed string looks like a valid account name
     // Checks the length of the string, and then makes sure it is alphanumeric and underscore only.
     bool SanitizeAccountName(char *account_name) {
-        if (!Utils::CheckAccountNameLength(account_name)) {
+        if (!utils::CheckAccountNameLength(account_name)) {
             return false;
         }
-        if (!Utils::SanitizeAlphanumeric(account_name)) {
+        if (!utils::SanitizeAlphanumeric(account_name)) {
             printf("Invalid account name! Account name must be only contain characters a-z, A-Z, 0-9, _\n");
             return false;
         }

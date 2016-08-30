@@ -57,15 +57,15 @@ int SQLConnector::Execute(std::string cmd) {
 int SQLConnector::InsertAccount(char *account_name, char *key, char *salt) {
     std::stringstream query;
     // Sanitize key, salt, and account name
-    if (!Utils::SanitizeAccountName(account_name)) {
+    if (!utils::SanitizeAccountName(account_name)) {
         std::cout << "Account_name is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
-    if (!Utils::SanitizeHexString(key)) {
+    if (!utils::SanitizeHexString(key)) {
         std::cout << "Key is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
-    if (!Utils::SanitizeHexString(salt)) {
+    if (!utils::SanitizeHexString(salt)) {
         std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return 0;
     }
@@ -106,7 +106,7 @@ void SQLConnector::ListAccounts() {
 // @return : Returns 1 if salt was found, 0 otherwise (not found, failure, etc)
 int SQLConnector::GetAccountSalt(char *account_name, char *salt_string_hex) {
     // Sanitize the account name before preceeding
-    if (!Utils::SanitizeAccountName(account_name)) {
+    if (!utils::SanitizeAccountName(account_name)) {
         return 0;
     }
     char *error_message = NULL;
@@ -130,7 +130,7 @@ int SQLConnector::GetAccountSalt(char *account_name, char *salt_string_hex) {
     }
     // TODO: There should be a better way to do this, but for now...
     // Check to see if the salt was retrieved
-    if (Utils::SanitizeHexString(salt_string_hex)) {
+    if (utils::SanitizeHexString(salt_string_hex)) {
         return 1;
     }
     else {
@@ -145,7 +145,7 @@ int SQLConnector::GetAccountSalt(char *account_name, char *salt_string_hex) {
 // @return : 1 on successful authentication, 0 if authentication failed.
 int SQLConnector::GetAccountKey(char *account_name, char *key_string_hex) {
     // Sanitize the account name before preceeding
-    if (!Utils::SanitizeAccountName(account_name)) {
+    if (!utils::SanitizeAccountName(account_name)) {
         return 0;
     }
     char *error_message = NULL;

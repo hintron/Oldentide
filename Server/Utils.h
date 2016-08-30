@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace Utils{
+namespace utils{
     std::vector<std::string> Tokenfy(std::string s, char delim);
     bool CheckPasswordLength(char *);
     bool CheckAccountNameLength(char *);

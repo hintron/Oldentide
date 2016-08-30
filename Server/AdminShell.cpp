@@ -33,7 +33,7 @@ void AdminShell::Run() {
             std::cout << "OldentideAdmin@" << serverHostname << ": ";
             getline(std::cin,adminCommand);
 	    }while(adminCommand.empty());
-        std::vector<std::string> adminTokens = Utils::Tokenfy(adminCommand, ' ');
+        std::vector<std::string> adminTokens = utils::Tokenfy(adminCommand, ' ');
         if (adminTokens[0] == "/shutdown") {
             std::cout << "Oldentide Dedicated Server is shutting down..." << std::endl;
             exit(EXIT_SUCCESS);

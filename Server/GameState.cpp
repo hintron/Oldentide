@@ -94,7 +94,7 @@ void GameState::DisconnectSession(int sessionId) {
 
 void GameState::PlayerCommand(char * command, int sessionId) {
     std::string pCommand(command);
-    std::vector<std::string> pCommandTokens = Utils::Tokenfy(pCommand, ' ');
+    std::vector<std::string> pCommandTokens = utils::Tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s") {
         std::cout << "Detected a say command!" << std::endl;
         // Save the incoming message and return the assigned message number

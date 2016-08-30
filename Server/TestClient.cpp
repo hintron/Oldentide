@@ -164,7 +164,7 @@ int main(int argc, char * argv[]) {
                 packetSalt.sessionId = session;
                 std::cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
-                if (!Utils::SanitizeAccountName(packetSalt.account)) {
+                if (!utils::SanitizeAccountName(packetSalt.account)) {
                     std::cout << "Invalid account name!" << std::endl;
                     break;
                 }
@@ -188,7 +188,7 @@ int main(int argc, char * argv[]) {
                     // TODO: How to make password size match the length of the password?
                     char password[1000];
                     cin.getline(password, sizeof(password));
-                    if (!Utils::CheckPasswordLength(password)) {
+                    if (!utils::CheckPasswordLength(password)) {
                         break;
                     }
                     std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
@@ -239,7 +239,7 @@ int main(int argc, char * argv[]) {
                                 repeat_try = true;
                                 continue;
                             }
-                            if (!Utils::CheckPasswordLength(password)) {
+                            if (!utils::CheckPasswordLength(password)) {
                                 std::cout << "Password needs to be at least 8 characters... Please choose a different password" << std::endl;
                                 repeat_try = true;
                                 continue;
@@ -289,7 +289,7 @@ int main(int argc, char * argv[]) {
                 if (command.empty()) {
                     break;
                 }
-                if (Utils::Tokenfy(command, ' ')[0] != "/s") {
+                if (utils::Tokenfy(command, ' ')[0] != "/s") {
                     std::cout << "Please use a valid command!" << std::endl;
                     break;
                 };

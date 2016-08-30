@@ -89,7 +89,7 @@ Player::Player(std::string account, std::string profession, int id, int session,
 // Deserialization Constuctor.
 Player::Player(std::string fromString)
        :Character(fromString) {
-    std::vector<std::string> tokens = Utils::Tokenfy(fromString, '|');
+    std::vector<std::string> tokens = utils::Tokenfy(fromString, '|');
     if (tokens[0] != "PLAYER_OBJECT")
         return;
     SetAccount(tokens[1]);
