@@ -132,7 +132,6 @@ Referencial:
         return baz;
     }
 ```
-* **
 
 ## C# 
 
