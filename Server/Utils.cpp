@@ -10,8 +10,6 @@
 #include <iterator>
 #include <string.h>
 
-
-
 #define MIN_ACCOUNT_NAME_LENGTH 3
 #define MIN_ACCOUNT_NAME_LENGTH_STRING "3"
 #define MAX_ACCOUNT_NAME_LENGTH 30
