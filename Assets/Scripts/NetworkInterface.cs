@@ -52,6 +52,7 @@ public class NetworkInterface : MonoBehaviour {
 		int i = 0;
 		foreach (byte next in toReceive) {
 			Debug.Log("Data received @[" + i + "]: " + next);
+			i++;
 		}
 	}
 
