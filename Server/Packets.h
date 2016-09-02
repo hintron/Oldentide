@@ -33,7 +33,7 @@ struct PACKET_GENERIC {
     PTYPE packetType = GENERIC;
     int packetId;
     int sessionId;
-    char dummy[2000];
+    char dummy[600];
 };
 
 struct PACKET_ACK {

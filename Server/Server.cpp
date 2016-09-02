@@ -51,6 +51,26 @@ void Server::Run() {
     sockaddr_in client;
     socklen_t len = sizeof(client);
     std::cout << "Server Running!\n";
+    std::cout << "Packet Sizes:\n";
+    std::cout << "GENERIC: " << sizeof(PACKET_GENERIC) << std::endl;
+    std::cout << "ACK: " << sizeof(PACKET_ACK) << std::endl;
+    std::cout << "CONNECT: " << sizeof(PACKET_CONNECT) << std::endl;
+    std::cout << "DISCONNECT: " << sizeof(PACKET_DISCONNECT) << std::endl;
+    std::cout << "GETSALT: " << sizeof(PACKET_GETSALT) << std::endl;
+    std::cout << "CREATEACCOUNT: " << sizeof(PACKET_CREATEACCOUNT) << std::endl;
+    std::cout << "LOGIN: " << sizeof(PACKET_LOGIN) << std::endl;
+    std::cout << "LISTCHARACTERS: " << sizeof(PACKET_LISTCHARACTERS) << std::endl;
+    std::cout << "SELECTCHARACTER: " << sizeof(PACKET_SELECTCHARACTER) << std::endl;
+    std::cout << "DELETECHARACTER: " << sizeof(PACKET_DELETECHARACTER) << std::endl;
+    std::cout << "CREATECHARACTER: " << sizeof(PACKET_CREATECHARACTER) << std::endl;
+    std::cout << "INITIALIZEGAME: " << sizeof(PACKET_INITIALIZEGAME) << std::endl;
+    std::cout << "UPDATEPC: " << sizeof(PACKET_UPDATEPC) << std::endl;
+    std::cout << "UPDATENPC: " << sizeof(PACKET_UPDATENPC) << std::endl;
+    std::cout << "SENDPLAYERCOMMAND: " << sizeof(PACKET_SENDPLAYERCOMMAND) << std::endl;
+    std::cout << "SENDPLAYERACTION: " << sizeof(PACKET_SENDPLAYERACTION) << std::endl;
+    std::cout << "SENDSERVERACTION: " << sizeof(PACKET_SENDSERVERACTION) << std::endl;
+    std::cout << "MESSAGE: " << sizeof(PACKET_MESSAGE) << std::endl;
+    std::cout << "GETLATESTMESSAGE: " << sizeof(PACKET_GETLATESTMESSAGE) << std::endl;
 	bool validSession = true;
     bool listen = true;
     while(listen) {
