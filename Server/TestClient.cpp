@@ -8,6 +8,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <string>
@@ -24,8 +25,10 @@ void MessageListener(char *server_address, int port, int session) {
     // This will keep track of the latest message the client received
     long long int i = 0;
     int sockfd;
-    struct sockaddr_in servaddr,cliaddr;
+    struct sockaddr_in servaddr;
+    struct sockaddr_in cliaddr;
     sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr(server_address);
     servaddr.sin_port = htons(port);
@@ -97,7 +100,8 @@ void MessageListener(char *server_address, int port, int session) {
 int main(int argc, char * argv[]) {
 
     int sockfd;
-    struct sockaddr_in servaddr,cliaddr;
+    struct sockaddr_in servaddr;
+    struct sockaddr_in cliaddr;
     char * server_address;
     char * names[10];
     int session = 0;
@@ -116,6 +120,14 @@ int main(int argc, char * argv[]) {
 
     // Read in server address.
     server_address = argv[1];
+    std::cout << "Trying to connect to: " << server_address << std::endl;
+
+    // For debug....
+    struct hostent * he = gethostbyname(server_address);
+    struct in_addr ** addr_list;
+    addr_list = (struct in_addr **)he->h_addr_list;
+    server_address = inet_ntoa(*addr_list[0]);
+
     int port = atoi(argv[2]);
     std::cout << server_address << std::endl;
     std::cout << port << std::endl;

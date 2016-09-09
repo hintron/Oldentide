@@ -37,6 +37,7 @@ Dependencies
   library is the package name on debian based systems.
 * openssl 1.0.2h or beyond - [Openssl][6] provides encryption algorithms used when 
   authenticating clients.
+* libssl-dev - The C++ libraries needed to interface with openssl.
 
 Server and Test Client Usage
 ------------
