@@ -17,7 +17,6 @@
 #include "LoginManager.h"
 #include "Utils.h"
 #include <thread>
-#include <chrono>
 
 using namespace std;
 
@@ -107,8 +106,8 @@ int main(int argc, char * argv[]) {
                 sockaddr_in servretSalt;
                 socklen_t lenSalt = sizeof(servretSalt);
                 int n = recvfrom(sockfd, (void *)returnPacketSalt, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&servretSalt, &lenSalt);
-                std::cout << "Account retrieved from get salt:" << returnPacketSalt->account << std::endl;
-                std::cout << "Account on hand:" << packetSalt.account << std::endl;
+                //std::cout << "Account retrieved from get salt:" << returnPacketSalt->account << std::endl;
+                //std::cout << "Account on hand:" << packetSalt.account << std::endl;
                 if ((strcmp(returnPacketSalt->account, packetSalt.account)) == 0) {
                     std::cout << "Account exists! Recieved salt, calculating key..." << std::endl;
                     // Second packet - calculate key from salt and send key and account name
@@ -125,9 +124,9 @@ int main(int argc, char * argv[]) {
                     if (!utils::CheckPasswordLength(password)) {
                         break;
                     }
-                    std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
+                    //std::cout << "Salt used in login generating key: " << returnPacketSalt->saltStringHex << std::endl;
                     LoginManager::GenerateKey((char *)password, (char *)returnPacketSalt->saltStringHex, (char *) packetLogin.keyStringHex);
-                    std::cout << "Generated key used for login: " << packetLogin.keyStringHex << std::endl;
+                    //std::cout << "Generated key used for login: " << packetLogin.keyStringHex << std::endl;
                     sendto(sockfd,(void*)&packetLogin,sizeof(packetLogin),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LOGIN * returnPacket = (PACKET_LOGIN*) malloc(sizeof(PACKET_LOGIN));
                     sockaddr_in servret;
@@ -136,7 +135,6 @@ int main(int argc, char * argv[]) {
                     if ((strcmp(returnPacket->account, packetLogin.account)) == 0) {
                         std::cout << "Logged in as " << returnPacket->account << "!" << std::endl;
                         userAccount = returnPacket->account;
-                        std::cout << "(" << packetLogin.account << ")" << std::endl;
                         // Now that user is logged in, start up client console
                         clientState = 2;
                     }

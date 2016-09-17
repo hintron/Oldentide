@@ -6,12 +6,14 @@
 
 #include "AdminShell.h"
 #include "Utils.h"
+#include "Packets.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 
-AdminShell::AdminShell(SQLConnector * input) {
-    sql = input;
+AdminShell::AdminShell(SQLConnector * sql, GameState * gameState) {
+    this->sql = sql;
+    this->gameState = gameState; 
     gethostname(serverHostname, HOST_NAME_MAX);
 }
 
@@ -42,11 +44,39 @@ void AdminShell::Run() {
         else if (adminTokens[0] == "/list") {
             if (adminTokens.size() == 2) {
                 std::cout << adminTokens[1];
+                if (adminTokens[1] == "accounts") {
+                    sql->ListAccounts();
+                }
                 if (adminTokens[1] == "players") {
-                    std::cout << "PCSSSSSS" << std::endl;          
+                    std::set<Player> players = gameState->getPlayers();
+                    for (std::set<Player>::iterator it = players.begin(); it != players.end(); ++it) {
+                        Player temp = *it;
+                        std::cout << temp.GetName() << " " << temp.GetLastname() << std::endl;
+                    }
                 }
                 if (adminTokens[1] == "npcs") {
                     std::cout << "NPCSSSSS" << std::endl;    
+                }
+                if (adminTokens[1] == "packets") {
+                    std::cout << "Server Running!\n";
+                    std::cout << "Packet Sizes:\n";
+                    std::cout << "GENERIC: " << sizeof(PACKET_GENERIC) << std::endl;
+                    std::cout << "ACK: " << sizeof(PACKET_ACK) << std::endl;
+                    std::cout << "CONNECT: " << sizeof(PACKET_CONNECT) << std::endl;
+                    std::cout << "DISCONNECT: " << sizeof(PACKET_DISCONNECT) << std::endl;
+                    std::cout << "GETSALT: " << sizeof(PACKET_GETSALT) << std::endl;
+                    std::cout << "CREATEACCOUNT: " << sizeof(PACKET_CREATEACCOUNT) << std::endl;
+                    std::cout << "LOGIN: " << sizeof(PACKET_LOGIN) << std::endl;
+                    std::cout << "LISTCHARACTERS: " << sizeof(PACKET_LISTCHARACTERS) << std::endl;
+                    std::cout << "SELECTCHARACTER: " << sizeof(PACKET_SELECTCHARACTER) << std::endl;
+                    std::cout << "DELETECHARACTER: " << sizeof(PACKET_DELETECHARACTER) << std::endl;
+                    std::cout << "CREATECHARACTER: " << sizeof(PACKET_CREATECHARACTER) << std::endl;
+                    std::cout << "INITIALIZEGAME: " << sizeof(PACKET_INITIALIZEGAME) << std::endl;
+                    std::cout << "UPDATEPC: " << sizeof(PACKET_UPDATEPC) << std::endl;
+                    std::cout << "UPDATENPC: " << sizeof(PACKET_UPDATENPC) << std::endl;
+                    std::cout << "SENDPLAYERCOMMAND: " << sizeof(PACKET_SENDPLAYERCOMMAND) << std::endl;
+                    std::cout << "SENDPLAYERACTION: " << sizeof(PACKET_SENDPLAYERACTION) << std::endl;
+                    std::cout << "SENDSERVERACTION: " << sizeof(PACKET_SENDSERVERACTION) << std::endl;
                 }
             }
             else {

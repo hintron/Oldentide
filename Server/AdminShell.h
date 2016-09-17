@@ -8,13 +8,14 @@
 #define OLDENTIDE_ADMINSHELL_H
 
 #include "SQLConnector.h"
+#include "GameState.h"
 #include <limits.h>
 #include <unistd.h>
 #include <vector>
 
 class AdminShell {
     public:
-        AdminShell(SQLConnector * input);
+        AdminShell(SQLConnector * sql, GameState * gameState);
         ~AdminShell();
         void operator()();
         void Run();
@@ -22,6 +23,7 @@ class AdminShell {
         void PrintLogo();
     private:
         SQLConnector * sql;
+        GameState * gameState;
         char serverHostname[HOST_NAME_MAX];
 };
 

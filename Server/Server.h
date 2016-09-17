@@ -27,13 +27,13 @@ class Server{
     private:
         int sockfd;
         SQLConnector * sql;
-        GameState * gamestate;
+        GameState * gameState;
         AdminShell * adminshell;
         void GenericHandler(PACKET_GENERIC * packet);
         void AckHandler(PACKET_ACK * packet);
         void ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client);
         void DisConnectHandler(PACKET_DISCONNECT * packet);
-        void SaltHandler(PACKET_GETSALT *packet, sockaddr_in client);
+        void GetSaltHandler(PACKET_GETSALT *packet, sockaddr_in client);
         void CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client);
         void LoginHandler(PACKET_LOGIN * packet, sockaddr_in client);
         void ListCharactersHandler(PACKET_LISTCHARACTERS * packet);

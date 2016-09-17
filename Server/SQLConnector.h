@@ -14,9 +14,9 @@ class SQLConnector{
         SQLConnector();
         ~SQLConnector();
         int Execute(std::string cmd);
-        int InsertAccount(char *, char *, char *);
+        bool InsertAccount(char *, char *, char *);
         void ListAccounts();
-        int GetAccountSalt(char *, char *);
+        bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
     private:
         sqlite3 * database;
