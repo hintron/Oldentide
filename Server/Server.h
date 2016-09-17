@@ -46,8 +46,7 @@ class Server{
         void SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
         void SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void SendServerActionHandler(PACKET_SENDSERVERACTION * packet);
-        void GetLatestMessageHandler(PACKET_GETLATESTMESSAGE * packet, sockaddr_in client);
-        void MessageHandler(PACKET_MESSAGE * packet, sockaddr_in client);
+        void UnityHandler(PACKET_UNITY * packet, sockaddr_in client);
 };
 
 #endif //OLDENTIDE_SERVER_H

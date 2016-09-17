@@ -69,37 +69,12 @@ void Server::Run() {
     std::cout << "SENDPLAYERCOMMAND: " << sizeof(PACKET_SENDPLAYERCOMMAND) << std::endl;
     std::cout << "SENDPLAYERACTION: " << sizeof(PACKET_SENDPLAYERACTION) << std::endl;
     std::cout << "SENDSERVERACTION: " << sizeof(PACKET_SENDSERVERACTION) << std::endl;
-    std::cout << "MESSAGE: " << sizeof(PACKET_MESSAGE) << std::endl;
-    std::cout << "GETLATESTMESSAGE: " << sizeof(PACKET_GETLATESTMESSAGE) << std::endl;
 	bool validSession = true;
     bool listen = true;
     while(listen) {
-        //PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
-        PACKET_UNITY * packet = (PACKET_UNITY*) malloc(sizeof(PACKET_UNITY));
-        //int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
-        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, &len);
-        std::cout << "0x" << std::hex << packet->data1 << std::endl;
-        std::cout << "0x" << std::hex << packet->data2 << std::endl;
-        std::cout << "0x" << std::hex << packet->data3 << std::endl;
-        std::cout << "0x" << std::hex << packet->data4 << std::endl;
-        std::cout << "0x" << std::hex << packet->data5 << std::endl;
-        std::cout << "------------------------" << std::endl;
-        PACKET_UNITY retPacket;
-        retPacket.data1 = packet->data1;
-        retPacket.data2 = packet->data2;
-        retPacket.data3 = packet->data3;
-        retPacket.data4 = packet->data4;
-        retPacket.data5 = packet->data5;
-        std::cout << "retPacket: " << std::endl;
-        std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
-        std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
-        std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
-        std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
-        std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
-        std::cout << "----------------------------------------------" << std::endl;
-        sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
-        free(packet);
-        /*
+        PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
+        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
+        
         if (packet->packetType != CONNECT) {
 			validSession = gamestate->VerifySession(packet->sessionId);
 		}
@@ -156,18 +131,14 @@ void Server::Run() {
                 case SENDSERVERACTION:
                     SendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
                     break;
-                case MESSAGE:
-                    MessageHandler((PACKET_MESSAGE*)packet, client);
-                    break;
-                case GETLATESTMESSAGE:
-                    GetLatestMessageHandler((PACKET_GETLATESTMESSAGE*)packet, client);
+                case UNITY:
+                    UnityHandler((PACKET_UNITY*)packet, client);
                     break;
            }
         }
         else {
             free(packet);
         }
-        */
     }
     shell.join();
     return;
@@ -183,7 +154,7 @@ void Server::AckHandler(PACKET_ACK * packet) {
     free(packet);
 }
 
-// Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.  Do not generate new sessions.
+// Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.
 void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client) {
     PACKET_CONNECT returnPacket;
     returnPacket.sessionId = gamestate->GenerateSession(packet->sessionId);
@@ -300,27 +271,26 @@ void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet) {
     free(packet);
 }
 
-void Server::MessageHandler(PACKET_MESSAGE *packet, sockaddr_in client) {
-    //std::cout << "server MessageHandler" << std::endl;
-    PACKET_MESSAGE returnPacket;
-    if (packet->globalMessageNumber != 0) {
-        // Look up the requested message and return it
-        returnPacket.globalMessageNumber = gamestate->GetMessage(packet->globalMessageNumber, (char *)returnPacket.message, (char *)returnPacket.accountName);
-    }
-    // else {
-    //     // Save the incoming message and return the assigned message number
-    //     returnPacket.globalMessageNumber = gamestate->StoreMessage(packet->message, packet->accountName);
-    // }
-    // TODO: This packet only gets messages now. It never sets messages
-    // Return the message number to indicate success, or null on error
-    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_MESSAGE), 0, (struct sockaddr *)&client, sizeof(client));
-    free(packet);
-}
-
-void Server::GetLatestMessageHandler(PACKET_GETLATESTMESSAGE *packet, sockaddr_in client) {
-    //std::cout << "server GetLatestMessageHandler" << std::endl;
-    PACKET_GETLATESTMESSAGE returnPacket;
-    returnPacket.globalMessageNumber = gamestate->GetGlobalMessageNumber();
-    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&client, sizeof(client));
+void Server::UnityHandler(PACKET_UNITY * packet, sockaddr_in client) {
+    std::cout << "0x" << std::hex << packet->data1 << std::endl;
+    std::cout << "0x" << std::hex << packet->data2 << std::endl;
+    std::cout << "0x" << std::hex << packet->data3 << std::endl;
+    std::cout << "0x" << std::hex << packet->data4 << std::endl;
+    std::cout << "0x" << std::hex << packet->data5 << std::endl;
+    std::cout << "------------------------" << std::endl;
+    PACKET_UNITY retPacket;
+    retPacket.data1 = packet->data1;
+    retPacket.data2 = packet->data2;
+    retPacket.data3 = packet->data3;
+    retPacket.data4 = packet->data4;
+    retPacket.data5 = packet->data5;
+    std::cout << "retPacket: " << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+    sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }

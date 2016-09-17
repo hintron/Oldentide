@@ -21,82 +21,6 @@
 
 using namespace std;
 
-void MessageListener(char *server_address, int port, int session) {
-    // This will keep track of the latest message the client received
-    long long int i = 0;
-    int sockfd;
-    struct sockaddr_in servaddr;
-    struct sockaddr_in cliaddr;
-    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr(server_address);
-    servaddr.sin_port = htons(port);
-
-    while(1) {
-        // Wait for a reasonable amount of time before querying the server
-        // ping the server every 500ms or so to see if other players have chatted
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-        // Ping server for chat updates
-        // Send packet to get the latest message from the server
-        PACKET_GETLATESTMESSAGE packet;
-        packet.globalMessageNumber = 0;
-        packet.sessionId = session;
-        sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-        PACKET_GETLATESTMESSAGE *returnPacket = (PACKET_GETLATESTMESSAGE*) malloc(sizeof(PACKET_GETLATESTMESSAGE));
-        sockaddr_in servret;
-        socklen_t len = sizeof(servret);
-        int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_GETLATESTMESSAGE), 0, (struct sockaddr *)&servret, &len);
-
-        //std::cout << "Message number recieved: " << returnPacket->globalMessageNumber << std::endl;
-        if (i == 0 && returnPacket->globalMessageNumber == 0) {
-            //std::cout << "No messages on the server..." << std::endl;
-        }
-        else if (i > 0 && returnPacket->globalMessageNumber == 0) {
-            std::cout << "Ran out of messages!" << std::endl;
-        }
-        else if (i < returnPacket->globalMessageNumber) {
-            //std::cout << "Pulling down messages from server..." << std::endl;
-            // Print out each message to the client
-            bool getAnotherMessage = true;
-            do {
-                PACKET_MESSAGE messagePacket;
-                messagePacket.sessionId = session;
-                messagePacket.globalMessageNumber = (++i);
-                sendto(sockfd,(void*)&messagePacket,sizeof(messagePacket),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-                PACKET_MESSAGE *returnPacketMsg = (PACKET_MESSAGE*) malloc(sizeof(PACKET_MESSAGE));
-                sockaddr_in servret;
-                socklen_t len = sizeof(servret);
-                int n = recvfrom(sockfd, (void *)returnPacketMsg, sizeof(PACKET_MESSAGE), 0, (struct sockaddr *)&servret, &len);
-
-                // TODO: If the message wasn't recieved properly, try again
-
-                // Print out the message
-                std::cout << "\n----> " << returnPacketMsg->accountName << " says: \"" << returnPacketMsg->message << "\"" << std::endl;
-
-                if (i == returnPacket->globalMessageNumber) {
-                    getAnotherMessage = false;
-                }
-            }
-            while(getAnotherMessage);
-        }
-        else if (i == returnPacket->globalMessageNumber) {
-            //std::cout << "All caught up!" << std::endl;
-        }
-        else {
-            std::cout << "Unknown state" << std::endl;
-            std::cout << "i: " << i << std::endl;
-            std::cout << "retPacket msgNum: " << returnPacket->globalMessageNumber << std::endl;
-        }
-
-        // TODO: If the server returns a message count different from what the client thinks,
-        // send another request for the rest of the messages and print them?
-        free(returnPacket);
-    }
-    // Listen until client exits program
-}
-
-
 int main(int argc, char * argv[]) {
 
     int sockfd;
@@ -108,8 +32,6 @@ int main(int argc, char * argv[]) {
     int packetNumber = 1;
     bool running = true;
     string userAccount;
-    // This will be a thread to handle listening to the server
-    thread shell;
 
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
@@ -215,8 +137,6 @@ int main(int argc, char * argv[]) {
                         std::cout << "Logged in as " << returnPacket->account << "!" << std::endl;
                         userAccount = returnPacket->account;
                         std::cout << "(" << packetLogin.account << ")" << std::endl;
-                        // Spawn thread to start listening to server broadcasts
-                        shell = thread(MessageListener, server_address, port, session);
                         // Now that user is logged in, start up client console
                         clientState = 2;
                     }
