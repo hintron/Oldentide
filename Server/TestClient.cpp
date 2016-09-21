@@ -14,9 +14,9 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <thread>
 #include "LoginManager.h"
 #include "Utils.h"
-#include <thread>
 
 using namespace std;
 
@@ -218,6 +218,14 @@ int main(int argc, char * argv[]) {
                 getline(cin, command);
                 if (command.empty()) {
                     break;
+                }
+                if (utils::Tokenfy(command, ' ')[0] == "/stress") {
+                    for (int i = 0; i < 10000; i++) {
+                        PACKET_SENDPLAYERCOMMAND PlayerCommand;
+                        PlayerCommand.sessionId = session;
+                        strcpy(PlayerCommand.command, ("/s " + std::to_string(i)).c_str());
+                        sendto(sockfd,(void*)&PlayerCommand,sizeof(PlayerCommand),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                    }
                 }
                 if (utils::Tokenfy(command, ' ')[0] != "/s") {
                     std::cout << "Please use a valid command!" << std::endl;
