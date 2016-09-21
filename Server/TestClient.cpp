@@ -220,9 +220,9 @@ int main(int argc, char * argv[]) {
                     break;
                 }
                 if (utils::Tokenfy(command, ' ')[0] == "/stress") {
+                    PACKET_SENDPLAYERCOMMAND PlayerCommand;
+                    PlayerCommand.sessionId = session;
                     for (int i = 0; i < 10000; i++) {
-                        PACKET_SENDPLAYERCOMMAND PlayerCommand;
-                        PlayerCommand.sessionId = session;
                         strcpy(PlayerCommand.command, ("/s " + std::to_string(i)).c_str());
                         sendto(sockfd,(void*)&PlayerCommand,sizeof(PlayerCommand),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     }
