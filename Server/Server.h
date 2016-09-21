@@ -43,7 +43,7 @@ class Server{
         void InitializeGameHandler(PACKET_INITIALIZEGAME * packet);
         void UpdatePcHandler(PACKET_UPDATEPC * packet);
         void UpdateNpcHandler(PACKET_UPDATENPC * packet);
-        void SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet);
+        void SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet, sockaddr_in client);
         void SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet);
         void SendServerActionHandler(PACKET_SENDSERVERACTION * packet);
         void UnityHandler(PACKET_UNITY * packet, sockaddr_in client);

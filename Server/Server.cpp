@@ -103,7 +103,7 @@ void Server::Run() {
                     UpdateNpcHandler((PACKET_UPDATENPC*)packet);
                     break;
                 case SENDPLAYERCOMMAND:
-                    SendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet);
+                    SendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet, client);
                     break;
                 case SENDPLAYERACTION:
                     SendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet);
@@ -229,13 +229,18 @@ void Server::UpdateNpcHandler(PACKET_UPDATENPC * packet) {
     free(packet);
 }
 
-void Server::SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet) {
+void Server::SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet, sockaddr_in client) {
     if (gameState->VerifyActiveSession(packet->sessionId)) {
         gameState->PlayerCommand(packet->command, packet->sessionId);
     }
     else {
         std::cout << "Nonactive session requested to send a player command..." << packet->sessionId << std::endl;
     }
+    PACKET_SENDSERVERCOMMAND returnPacket;
+    std::string temp = "Server says " + std::to_string(packet->sessionId) + " session sent message: ";
+    temp.append(packet->command);
+    strcpy(returnPacket.command, temp.c_str());
+    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_SENDSERVERCOMMAND), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 

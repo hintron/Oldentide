@@ -20,6 +20,30 @@
 
 using namespace std;
 
+void Listen(int port) {
+    // Create server address struct.                                                                                                                 
+    int sockfd;
+    sockaddr_in server;                                                                                                                              
+    server.sin_family = AF_INET;                                                                                                                     
+    server.sin_addr.s_addr = htonl(INADDR_ANY);                                                                                                      
+    server.sin_port = htons(port);                                                                                                                   
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {                
+        std::cout << "Cannot create socket..." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if ((bind(sockfd, (struct sockaddr *)&server, sizeof(server))) < 0) {                                                                            
+        std::cout << "Cannot bind socket..." << std::endl;                                                                                           
+        exit(EXIT_FAILURE);
+    }
+    sockaddr_in client;
+    socklen_t len = sizeof(client);
+    while(true) {
+        PACKET_SENDSERVERCOMMAND* packet = (PACKET_SENDSERVERCOMMAND*) malloc(sizeof(PACKET_SENDSERVERCOMMAND*));
+        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_SENDSERVERCOMMAND), 0, (struct sockaddr *)&client, &len);
+        std::cout << packet->command << std::endl; 
+    }
+}
+
 int main(int argc, char * argv[]) {
 
     int sockfd;
@@ -60,6 +84,8 @@ int main(int argc, char * argv[]) {
     servaddr.sin_port = htons(port);
 
     int clientState = 0;
+    
+    std::thread listener = std::thread(Listen, port); 
 
     while (running) {
         switch (clientState) {
@@ -239,4 +265,5 @@ int main(int argc, char * argv[]) {
             }
         }
     }
+    listener.join();
 }

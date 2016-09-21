@@ -23,6 +23,7 @@ enum PTYPE{
     UPDATEPC,
     UPDATENPC,
     SENDPLAYERCOMMAND,
+    SENDSERVERCOMMAND,
     SENDPLAYERACTION,
     SENDSERVERACTION,
     UNITY
@@ -211,6 +212,13 @@ struct PACKET_UPDATENPC {
 
 struct PACKET_SENDPLAYERCOMMAND {
     PTYPE packetType = SENDPLAYERCOMMAND;
+    int packetId;
+    int sessionId;
+    char command[500];
+};
+
+struct PACKET_SENDSERVERCOMMAND {
+    PTYPE packetType = SENDSERVERCOMMAND;
     int packetId;
     int sessionId;
     char command[500];
