@@ -22,6 +22,18 @@ Character::Character(std::string name, std::string lastname, std::string race, s
     SetFace(face);
     SetSkin(skin);
     SetZone(zone);
+    SetHead("head");
+    SetChest("chest");
+    SetArms("arms");
+    SetHands("hands");
+    SetLegs("legs");
+    SetFeet("feet");
+    SetCloak("cloak");
+    SetNecklace("necklace");
+    SetRingOne("ringOne");
+    SetRingTwo("ringTwo");
+    SetRightHand("rightHand");
+    SetLeftHand("leftHand");
     SetLevel(level);
     SetHp(hp);
     SetMaxHp(maxHp);
@@ -106,6 +118,54 @@ std::string Character::GetSkin() {
 
 std::string Character::GetZone() {
     return zone;
+}
+
+std::string Character::GetHead() {
+    return head;
+}
+
+std::string Character::GetChest() {
+    return chest;
+}
+
+std::string Character::GetArms() {
+    return arms;
+}
+
+std::string Character::GetHands() {
+    return hands;
+}
+
+std::string Character::GetLegs() {
+    return legs;
+}
+
+std::string Character::GetFeet() {
+    return feet;
+}
+
+std::string Character::GetCloak() {
+    return cloak;
+}
+
+std::string Character::GetNecklace() {
+    return necklace;
+}
+
+std::string Character::GetRingOne() {
+    return ringOne;
+}
+
+std::string Character::GetRingTwo() {
+    return ringTwo;
+}
+
+std::string Character::GetRightHand() {
+    return rightHand;
+}
+
+std::string Character::GetLeftHand() {
+    return leftHand;
 }
 
 int Character::GetLevel() {
@@ -209,6 +269,54 @@ void Character::SetSkin(std::string skin) {
 
 void Character::SetZone(std::string zone) {
     this->zone = zone;
+}
+
+void Character::SetHead(std::string head){
+    this->head = head;
+}
+
+void Character::SetChest(std::string chest){
+    this->chest = chest;
+}
+
+void Character::SetArms(std::string arms){
+    this->arms = arms;
+}
+
+void Character::SetHands(std::string hands){
+    this->hands = hands;
+}
+
+void Character::SetLegs(std::string legs){
+    this->legs = legs;
+}
+
+void Character::SetFeet(std::string feet){
+    this->feet = feet;
+}
+
+void Character::SetCloak(std::string cloak){
+    this->cloak = cloak;
+}
+
+void Character::SetNecklace(std::string necklace){
+    this->necklace = necklace;
+}
+
+void Character::SetRingOne(std::string ringOne){
+    this->ringOne = ringOne;
+}
+
+void Character::SetRingTwo(std::string ringTwo){
+    this->ringTwo = ringTwo;
+}
+
+void Character::SetRightHand(std::string rightHand){
+    this->rightHand = rightHand;
+}
+
+void Character::SetLeftHand(std::string leftHand){
+    this->leftHand = leftHand;
 }
 
 void Character::SetLevel(int level) {

@@ -6,6 +6,7 @@
 #ifndef OLDENTIDE_SQLCONNECTOR_H
 #define OLDENTIDE_SQLCONNECTOR_H
 
+#include "Player.h"
 #include <string>
 #include <sqlite3.h>
 
@@ -15,6 +16,7 @@ class SQLConnector{
         ~SQLConnector();
         int Execute(std::string cmd);
         bool InsertAccount(char *, char *, char *);
+        bool InsertPlayer(Player newPlayer);
         void ListAccounts();
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);

@@ -70,6 +70,120 @@ bool SQLConnector::InsertAccount(char *accountName, char *key, char *salt) {
     }
 }
 
+// Inserts a new player into the database.
+bool SQLConnector::InsertPlayer(Player p) {
+    std::stringstream query;
+    query << "INSERT INTO players (accountid, firstname, lastname, race, gender, face, skin, ";
+    query << "profession, level, hp, maxhp, bp, maxbp, mp, maxmp, ep, maxep, strength, ";
+    query << "constitution, intelligence, dexterity, axe, dagger, unarmed, hammer, polearm, ";
+    query << "spear, staff, sword, archery, crossbow, sling, thrown, armor, dualweapon, shield, ";
+    query << "bardic, conjuring, druidic, illusion, necromancy, sorcery, shamanic, summoning, ";
+    query << "spellcraft, focus, armorsmithing, tailoring, fletching, weaponsmithing, ";
+    query << "alchemy, lapidary, calligraphy, enchanting, herbalism, hunting, mining, ";
+    query << "bargaining, camping, firstaid, lore, picklocks, scouting, search, stealth, ";
+    query << "traps, aeolandis, hieroform, highgundis, oldpraxic, praxic, runic, head, ";
+    query << "chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, righthand, ";
+    query << "lefthand, zone, x, y, z, pitch, yaw) VALUES (";
+    query << "'" << p.GetAccount() << "', ";
+    query << "'" << p.GetName() << "', ";
+    query << "'" << p.GetLastname() << "', ";
+    query << "'" << p.GetRace() << "', ";
+    query << "'" << p.GetGender() << "', ";
+    query << "'" << p.GetFace() << "', ";
+    query << "'" << p.GetSkin() << "', ";
+    query << "'" << p.GetProfession() << "', ";
+    query << p.GetLevel() << ", ";
+    query << p.GetHp() << ", ";
+    query << p.GetMaxHp() << ", ";
+    query << p.GetBp() << ", ";
+    query << p.GetMaxBp() << ", ";
+    query << p.GetMp() << ", ";
+    query << p.GetMaxMp() << ", ";
+    query << p.GetEp() << ", ";
+    query << p.GetMaxEp() << ", ";
+    query << p.GetStrength() << ", ";
+    query << p.GetConstitution() << ", ";
+    query << p.GetIntelligence() << ", ";
+    query << p.GetDexterity() << ", ";
+    query << p.GetAxe() << ", ";
+    query << p.GetDagger() << ", ";
+    query << p.GetUnarmed() << ", ";
+    query << p.GetHammer() << ", ";
+    query << p.GetPolearm() << ", ";
+    query << p.GetSpear() << ", ";
+    query << p.GetStaff() << ", ";
+    query << p.GetSword() << ", ";
+    query << p.GetArchery() << ", ";
+    query << p.GetCrossbow() << ", ";
+    query << p.GetSling() << ", ";
+    query << p.GetThrown() << ", ";
+    query << p.GetArmor() << ", ";
+    query << p.GetDualWeapon() << ", ";
+    query << p.GetShield() << ", ";
+    query << p.GetBardic() << ", ";
+    query << p.GetConjuring() << ", ";
+    query << p.GetDruidic() << ", ";
+    query << p.GetIllusion() << ", ";
+    query << p.GetNecromancy() << ", ";
+    query << p.GetSorcery() << ", ";
+    query << p.GetShamanic() << ", ";
+    query << p.GetSummoning() << ", ";
+    query << p.GetSpellcraft() << ", "; 
+    query << p.GetFocus() << ", ";
+    query << p.GetArmorsmithing() << ", ";
+    query << p.GetTailoring() << ", ";
+    query << p.GetFletching() << ", ";
+    query << p.GetWeaponsmithing() << ", ";
+    query << p.GetAlchemy() << ", ";
+    query << p.GetLapidary() << ", ";
+    query << p.GetCalligraphy() << ", ";
+    query << p.GetEnchanting() << ", ";
+    query << p.GetHerbalism() << ", "; 
+    query << p.GetHunting() << ", ";
+    query << p.GetMining() << ", "; 
+    query << p.GetBargaining() << ", ";
+    query << p.GetCamping() << ", "; 
+    query << p.GetFirstAid() << ", "; 
+    query << p.GetLore() << ", ";
+    query << p.GetPickLocks() << ", "; 
+    query << p.GetScouting() << ", "; 
+    query << p.GetSearch() << ", ";
+    query << p.GetStealth() << ", "; 
+    query << p.GetTraps() << ", "; 
+    query << p.GetAeolandis() << ", ";
+    query << p.GetHieroform() << ", "; 
+    query << p.GetHighGundis() << ", ";
+    query << p.GetOldPraxic() << ", "; 
+    query << p.GetPraxic() << ", "; 
+    query << p.GetRunic() << ", ";
+    query << "'" << p.GetHead() << "', "; 
+    query << "'" << p.GetChest() << "', "; 
+    query << "'" << p.GetArms() << "', ";
+    query << "'" << p.GetHands() << "', "; 
+    query << "'" << p.GetLegs() << "', "; 
+    query << "'" << p.GetFeet() << "', ";
+    query << "'" << p.GetCloak() << "', "; 
+    query << "'" << p.GetNecklace() << "', "; 
+    query << "'" << p.GetRingOne() << "', ";
+    query << "'" << p.GetRingTwo() << "', ";
+    query << "'" << p.GetRightHand() << "', ";
+    query << "'" << p.GetLeftHand() << "', ";
+    query << "'" << p.GetZone() << "', "; 
+    query << p.GetX() << ", ";
+    query << p.GetY() << ", "; 
+    query << p.GetZ() << ", "; 
+    query << p.GetPitch() << ", ";
+    query << p.GetYaw() << ")";
+    std::cout << query.str() << std::endl;
+    Execute(query.str());
+    if (sqls == SQLITE_OK) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 // Lists all the accounts
 void SQLConnector::ListAccounts() {
     std::stringstream query;

@@ -12,7 +12,6 @@ CREATE TABLE players (
     -- Identification:
     id integer not null primary key autoincrement,
     accountid numeric not null,
-    session integer not null,
     firstname text not null,
     lastname text not null,
     race text not null,
