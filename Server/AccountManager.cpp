@@ -12,40 +12,38 @@
 
 // Authenticates an account and key
 // @param account_name : The account to authenticate with.
-// @param candidate_key_string_hex : The user-supplied key to autheticate with.
+// @param candidateKeyString_hex : The user-supplied key to autheticate with.
 // @return : 1 if account successfully authenticated; 0 if not.
-int AccountManager::AuthenticateAccount(char *account_name, char *candidate_key_string_hex) {
+bool AccountManager::AuthenticateAccount(char *accountName, char *candidateKeyStringHex, 
+                                         SQLConnector * sql) {
     // Authenticate - perform a key lookup and check
-    int success = 0;
-    SQLConnector *sql = new SQLConnector();
+    bool success = false;
     // Create a container to hold the canonized key string hex
-    char canonized_key_string_hex[129];
-    sql->GetAccountKey(account_name, canonized_key_string_hex);
+    char canonizedKeyStringHex[129];
+    sql->GetAccountKey(accountName, canonizedKeyStringHex);
 
     // Initialize salt and generated key BIGNUMs
-    BIGNUM *candidate_key = BN_new();
-    BIGNUM *canonized_key = BN_new();
+    BIGNUM *candidateKey = BN_new();
+    BIGNUM *canonizedKey = BN_new();
 
     // Convert both keys to openssl bn BIGNUM
-    BN_hex2bn(&candidate_key, candidate_key_string_hex);
-    BN_hex2bn(&canonized_key, canonized_key_string_hex);
+    BN_hex2bn(&candidateKey, candidateKeyStringHex);
+    BN_hex2bn(&canonizedKey, canonizedKeyStringHex);
 
-    printf("Candidate Key: \n%s\n", candidate_key_string_hex);
-    printf("Canonized Key: \n%s\n", canonized_key_string_hex);
+    //printf("Candidate Key: \n%s\n", candidateKeyStringHex);
+    //printf("Canonized Key: \n%s\n", canonized_key_string_hex);
 
     // Compare both BIGNUMs to each other.
     // If the same, then return 1 (success)
     // If not, return 0.
-    if (BN_cmp(canonized_key, candidate_key) == 0) {
-        printf("Authentication is a success!!\n");
-        success = 1;
+    if (BN_cmp(canonizedKey, candidateKey) == 0) {
+        //printf("Authentication is a success!!\n");
+        success = true;
     }
     // Free the BIGNUMs and malloced strings
-    BN_clear_free(canonized_key);
-    BN_clear_free(candidate_key);
+    BN_clear_free(canonizedKey);
+    BN_clear_free(candidateKey);
     
-    // Free up memory allocations
-    delete sql;
     // TODO: Overwrite stack sensitive variables with with 0's,
     // since it doesn't get zeroed out once it's off the stack
     //for(int i = 0; i < EVP_MAX_MD_SIZE; ++i) {

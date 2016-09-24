@@ -26,7 +26,7 @@
 ```Cpp
     // This is a description for the foo class.
     // This is the way to do a multi-line comment.
-    class foo {
+    class Foo {
         private:
         int bar;    // This is a description for the bar variable.
         byte baz;   // This is a description for the baz variable.
@@ -43,8 +43,8 @@ UserContainer.h:
     Class UserContainer {
         public:
         User(int id);
-        int getId();
-        void setId(int id);
+        int GetId();
+        void SetId(int id);
         
         private:
         int id;
@@ -53,14 +53,14 @@ UserContainer.h:
 UserContainer.cpp:
 
     UserContainer::UserContainer(int id) {
-        setId(id);
+        SetId(id);
     }
     
-    int UserContainer::getId() {
+    int UserContainer::GetId() {
         return id;
     }
     
-    void UserContainer::setId(int id) {
+    void UserContainer::SetId(int id) {
         this.id = id;
     }
 ```
@@ -105,7 +105,7 @@ Referencial:
 * **Braces** should always open on the same line as the declaration, with a space between the declaration and the '{'.  
   Closing braces should always be on their own line, aligned with the declaration.
 ```Cpp
-    int foo(int bar) {
+    int Foo(int bar) {
         return bar;
     }
 ```

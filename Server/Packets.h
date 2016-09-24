@@ -23,10 +23,10 @@ enum PTYPE{
     UPDATEPC,
     UPDATENPC,
     SENDPLAYERCOMMAND,
+    SENDSERVERCOMMAND,
     SENDPLAYERACTION,
     SENDSERVERACTION,
-    MESSAGE,
-    GETLATESTMESSAGE
+    UNITY
 };
 
 struct PACKET_GENERIC {
@@ -217,6 +217,13 @@ struct PACKET_SENDPLAYERCOMMAND {
     char command[500];
 };
 
+struct PACKET_SENDSERVERCOMMAND {
+    PTYPE packetType = SENDSERVERCOMMAND;
+    int packetId;
+    int sessionId;
+    char command[500];
+};
+
 struct PACKET_SENDPLAYERACTION {
     PTYPE packetType = SENDPLAYERACTION;
     int packetId;
@@ -229,31 +236,8 @@ struct PACKET_SENDSERVERACTION {
     int sessionId;
 };
 
-// TODO: Make a send message packet?
-// This packet will be used for both sending and receiving messages
-// If messageNumber is empty, it is a message being sent from the client
-// If messageNumber is not empty, it is a message lookup
-struct PACKET_MESSAGE {
-    PTYPE packetType = MESSAGE;
-    int packetId;
-    int sessionId;
-    // The contents of the chat
-    char message[500];
-    // The message number assigned to this chat
-    long long int globalMessageNumber;
-    // The name of the account associated with the message
-    char accountName[30];
-};
-
-struct PACKET_GETLATESTMESSAGE {
-    PTYPE packetType = GETLATESTMESSAGE;
-    int packetId;
-    int sessionId;
-    // The message number of the most recent message on the server
-    long long int globalMessageNumber;
-};
-
 struct PACKET_UNITY {
+    PTYPE packetType = UNITY;
     int data1;
     int data2;
     int data3;

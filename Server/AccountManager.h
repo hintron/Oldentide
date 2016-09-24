@@ -11,7 +11,8 @@ class AccountManager{
     public:
         AccountManager();
         ~AccountManager();
-        static int AuthenticateAccount(char *, char *);
+        static bool AuthenticateAccount(char* accountName, char* candidateKeyStringHex, 
+                                        SQLConnector * sql);
 };
 
 #endif // OLDENTIDE_ACCOUNTMANAGER_H

@@ -29,10 +29,8 @@ class GameState{
         void PlayerCommand(char * command, int);
         void SelectPlayer(int sessionId);
         int GenerateSession(int sessionId);
-        long long int GetGlobalMessageNumber();
-        long long int GetMessage(long long int, char *, char *);
-        long long int StoreMessage(std::string, int);
         void SetSessionAccountName(char *, int);
+        std::set<Player> getPlayers();
 
     private:
         SQLConnector * sql;
@@ -40,15 +38,8 @@ class GameState{
         std::set<Npc> npcs;
         std::set<int> sessions;
         std::set<int> activeSessions;
-        // TODO: Make this players instead of accounts?
         std::map<int, std::string> sessionAccounts;
         int curSession;
-        // The index of the array will be the global message number
-        long long int globalMessageNumber;
-        // Create a global array of char pointers for the messages
-        // Malloc space for each new message
-        std::vector<std::string> globalMessageArray;
-        std::vector<int> globalMessageAccountArray;
         Player ReadPlayer(std::string name);
         void StorePlayer(std::string name);
 };
