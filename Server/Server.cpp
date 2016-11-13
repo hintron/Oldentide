@@ -6,9 +6,7 @@
 #include "Server.h"
 #include <cstring>
 #include <iostream>
-#include <istream>
 #include <iterator>
-#include <ostream>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>

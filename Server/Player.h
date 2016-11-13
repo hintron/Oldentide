@@ -128,7 +128,7 @@ class Player : public Character {
     int GetArmorsmithing();
     int GetTailoring();
     int GetFletching();
-    int GetWeaponsmith();
+    int GetWeaponsmithing();
     int GetAlchemy();
     int GetLapidary();
     int GetCalligraphy();

@@ -286,7 +286,7 @@ int Player::GetFletching() {
     return fletching;
 }
 
-int Player::GetWeaponsmith() {
+int Player::GetWeaponsmithing() {
     return weaponsmithing;
 }
 
