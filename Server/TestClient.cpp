@@ -94,6 +94,7 @@ int main(int argc, char * argv[]) {
                 // First packet - check if account exists and get salt
                 PACKET_GETSALT packetSalt;
                 packetSalt.packetId = packetNumber;
+                packetNumber++;
                 packetSalt.sessionId = session;
                 std::cout << "Account: ";
                 cin.getline(packetSalt.account, sizeof(packetSalt.account));
@@ -113,6 +114,7 @@ int main(int argc, char * argv[]) {
                     // Second packet - calculate key from salt and send key and account name
                     PACKET_LOGIN packetLogin;
                     packetLogin.packetId = packetNumber;
+                    packetNumber++;
                     packetLogin.sessionId = session;
                     strcpy(packetLogin.account, packetSalt.account);
                     std::cout << "Password: ";
@@ -178,6 +180,7 @@ int main(int argc, char * argv[]) {
                             // Start assembling the create account packet
                             PACKET_CREATEACCOUNT packetCreate;
                             packetCreate.packetId = packetNumber;
+                            packetNumber++;
                             packetCreate.sessionId = session;
                             strcpy(packetCreate.account, packetSalt.account);
                             LoginManager::GenerateSaltAndKey(password, packetCreate.saltStringHex, packetCreate.keyStringHex);
@@ -203,10 +206,83 @@ int main(int argc, char * argv[]) {
             }
             // Logged In.
             case 2: {
-                std::cout << "Selecting a character would happen here..." << std::endl;
+                bool hasNoCharacter = true;
+                while(hasNoCharacter) {
+                    PACKET_LISTCHARACTERS packetListCharacters;
+                    packetListCharacters.packetId = packetNumber;
+                    packetNumber++;
+                    packetListCharacters.sessionId = session;
+                    sendto(sockfd,(void*)&packetListCharacters,sizeof(packetListCharacters),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                    PACKET_LISTCHARACTERS *characterList = (PACKET_LISTCHARACTERS*) malloc(sizeof(PACKET_LISTCHARACTERS));
+                    if (characterList->character0 == "") {
+                        std::cout << "You do not have any characters selected on this account" << std:: endl;
+                        std::cout << "Please give me a first name for your new character: ";
+                        char firstName[25]; 
+                        cin.getline(firstName, sizeof(firstName));
+                        std::cout << "Please give me a last name for your new character: ";
+                        char lastName[25]; 
+                        cin.getline(lastName, sizeof(lastName));
+                        PACKET_CREATECHARACTER newCharacter;
+                        newCharacter.packetId = packetNumber;
+                        packetNumber++;
+                        newCharacter.sessionId = session;
+                        strcpy(newCharacter.firstName, firstName);
+                        strcpy(newCharacter.lastName, lastName);
+                        sendto(sockfd,(void*)&newCharacter,sizeof(newCharacter),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                    }
+                    else {
+                        int count = 0;
+                        bool notEmpty = true;
+                        while (notEmpty) {
+                            char name[25];
+                            switch (count) {
+                                case 0:
+                                    strcpy(name, characterList->character0);
+                                    break;
+                                case 1:
+                                    strcpy(name, characterList->character1);
+                                    break;
+                                case 2:
+                                    strcpy(name, characterList->character2);
+                                    break;
+                                case 3:
+                                    strcpy(name, characterList->character3);
+                                    break;
+                                case 4:
+                                    strcpy(name, characterList->character4);
+                                    break;
+                                case 5:
+                                    strcpy(name, characterList->character5);
+                                    break;
+                                case 6:
+                                    strcpy(name, characterList->character6);
+                                    break;
+                                case 7:
+                                    strcpy(name, characterList->character7);
+                                    break;
+                                case 8:
+                                    strcpy(name, characterList->character8);
+                                    break;
+                                case 9:
+                                    strcpy(name, characterList->character9);
+                                    break;
+                            }
+                            if (name != "") {
+                                std::cout << "Character " << count << ": " << name << std::endl;
+                                count++;
+                            }
+                            else {
+                                notEmpty = false;
+                            }
+                        }
+                    }
+                }
+                std::cout << "Please select a character: ";
+                char name[25];
+                cin.getline(name, sizeof(name));
                 PACKET_SELECTCHARACTER selectCharacter;
                 selectCharacter.sessionId = session;
-                strcpy(selectCharacter.character, "Poopymouth");
+                strcpy(selectCharacter.character, name);
                 sendto(sockfd,(void*)&selectCharacter,sizeof(selectCharacter),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                 clientState = 3;
                 break;

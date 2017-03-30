@@ -29,7 +29,8 @@ class GameState{
         void PlayerCommand(char * command, int);
         void SelectPlayer(int sessionId);
         int GenerateSession(int sessionId);
-        void SetSessionAccountName(char *, int);
+        void SetSessionAccountName(char * accountName, int sessionId);
+        std::string GetSessionAccountName(int sessionId);
         std::set<Player> getPlayers();
 
     private:

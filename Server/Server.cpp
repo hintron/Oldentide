@@ -48,11 +48,11 @@ void Server::Run() {
     std::thread shell(*adminshell);
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    bool validSession = true;
     bool listen = true;
     while(listen) {
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
+        bool validSession = true;
         if (packet->packetType != CONNECT) {
 			validSession = gameState->VerifySession(packet->sessionId);
 		}
@@ -147,7 +147,7 @@ void Server::DisConnectHandler(PACKET_DISCONNECT * packet) {
     free(packet);
 }
 
-// Remove the session for a given user, effectively disconnecting it from the server.
+// Return the salt for a specified account to the Client.
 void Server::GetSaltHandler(PACKET_GETSALT *packet, sockaddr_in client) {
     PACKET_GETSALT returnPacket;
     std::cout << "New salt request from account " << packet->account << "." << std::endl;
@@ -168,6 +168,7 @@ void Server::GetSaltHandler(PACKET_GETSALT *packet, sockaddr_in client) {
     free(packet);
 }
 
+// Take in new account information and create and account in the database.
 void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client) {
     PACKET_CREATEACCOUNT returnPacket;
     if (gameState->CreateAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
@@ -182,6 +183,7 @@ void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in clie
     free(packet);
 }
 
+// Take in username and salted password to check against database.  If correct, we log in the user.
 void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
     PACKET_CREATEACCOUNT returnPacket;
     if (gameState->LoginUser(packet->account, packet->keyStringHex)) {
@@ -199,6 +201,9 @@ void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
 }
 
 void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet) {
+    std::string account = gameState->GetSessionAccountName(packet->sessionId);
+    std::cout << "Associated account: " << account << std::endl;
+
     free(packet);
 }
 

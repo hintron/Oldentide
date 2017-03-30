@@ -137,6 +137,10 @@ void GameState::SetSessionAccountName(char *accountName, int sessionId) {
     sessionAccounts[sessionId] = accountNameString;
 }
 
+std::string GameState::GetSessionAccountName(int sessionId) {
+    return sessionAccounts[sessionId];
+}
+
 std::set<Player> GameState::getPlayers() {
     return players;
 }
