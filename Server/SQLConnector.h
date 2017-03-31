@@ -9,6 +9,7 @@
 #include "Player.h"
 #include <string>
 #include <sqlite3.h>
+#include <vector>
 
 class SQLConnector{
     public:
@@ -18,6 +19,7 @@ class SQLConnector{
         bool InsertAccount(char *, char *, char *);
         bool InsertPlayer(Player newPlayer);
         void ListAccounts();
+        std::vector<std::string> GetPlayerList(std::string account);
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
     private:
@@ -30,5 +32,6 @@ class SQLConnector{
 // See http://stackoverflow.com/a/8045331
 static int ExecuteCallback(void *, int, char **, char **);
 static int ReturnStringCallback(void *, int, char **, char **);
+static int ParsePlayerList(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H

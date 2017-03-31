@@ -202,8 +202,8 @@ void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
 
 void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet) {
     std::string account = gameState->GetSessionAccountName(packet->sessionId);
-    std::cout << "Associated account: " << account << std::endl;
-
+    std::cout << "Account: " << account << " requested their character list." << std::endl;
+    
     free(packet);
 }
 

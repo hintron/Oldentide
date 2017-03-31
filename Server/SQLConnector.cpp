@@ -41,6 +41,8 @@ int SQLConnector::Execute(std::string cmd) {
     return 0;
 }
 
+// -------------------------------------- Parent Functions ----------------------------------------
+
 // Insert a new account record.
 bool SQLConnector::InsertAccount(char *accountName, char *key, char *salt) {
     std::stringstream query;
@@ -191,6 +193,25 @@ void SQLConnector::ListAccounts() {
     Execute(query.str());
 }
 
+std::vector<std::string> GetPlayerList(std::string account) {
+    std::vector<std::string> players;
+    std::stringstream query;
+    char *errorMessage = NULL;
+    query << "SELECT firstname, lastname ";
+    query << "FROM players JOIN accounts ";
+    query << "ON players.accountid = accounts.id ";
+    query << "WHERE accountname = \"" << account << "\"";
+    sqls = sqlite3_exec(database, query.str().c_str(), ParsePlayerList, (void*)&players, &errorMessage);
+    if (sqls != SQLITE_OK) {
+        std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
+    }
+    if (errorMessage) {
+        std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
+        sqlite3_free(errorMessage);
+    }
+    return players;
+}
+
 // Return the salt for the passed account
 bool SQLConnector::GetAccountSalt(char *accountName, char *saltStringHex) {
     // Sanitize the account name before preceeding
@@ -246,6 +267,8 @@ int SQLConnector::GetAccountKey(char *accountName, char *keyStringHex) {
     return 1;
 }
 
+// -------------------------------------- Callback Functions ---------------------------------------
+
 // A generic callback function to sqlite3_exec() that copies a c string in the first column
 // of the returned row into stringToReturn. This function assumes that only one record will be
 // in the result set, or else the return value will be the value in the last row processed.
@@ -263,5 +286,10 @@ static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColNam
         std::cout << " | ";
     }
     std::cout << std::endl;
+    return 0;
+}
+
+static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
+    (std::vector<std::string> *)players.push_back(std::to_string(argv[0]) << " " << std::to_string(argv[1]);
     return 0;
 }
