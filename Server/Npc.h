@@ -24,8 +24,7 @@ class Npc : public Character {
         int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, int constitution, 
         int intelligence, int dexterity, float x, float y, float z, float pitch, float yaw);
     
-    Npc(std::string fromString);
-    //~Npc();
+    ~Npc();
 
     // Getter Functions.
     int GetId();

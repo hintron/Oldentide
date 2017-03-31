@@ -21,12 +21,8 @@ Npc::Npc(int id, std::string name, std::string lastname, std::string race, std::
     SetId(id);
 }
 
-Npc::Npc(std::string fromString)
-    :Character(fromString) {
-    std::vector<std::string> tokens = utils::Tokenfy(fromString, '|');
-    if (tokens[0] != "NPC_OBJECT")
-        return;
-    Npc::SetId(stoi(tokens[1]));
+Npc::~Npc() {
+    return;
 }
 
 //------------------------------------------------------------------------------------------------//

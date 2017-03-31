@@ -193,7 +193,7 @@ void SQLConnector::ListAccounts() {
     Execute(query.str());
 }
 
-std::vector<std::string> GetPlayerList(std::string account) {
+std::vector<std::string> SQLConnector::GetPlayerList(std::string account) {
     std::vector<std::string> players;
     std::stringstream query;
     char *errorMessage = NULL;
@@ -290,6 +290,7 @@ static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColNam
 }
 
 static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
-    (std::vector<std::string> *)players.push_back(std::to_string(argv[0]) << " " << std::to_string(argv[1]);
+    std::vector<std::string> * playerList = (std::vector<std::string> *)players;
+    playerList->push_back(std::string(argv[0]).append(" ").append(std::string(argv[1])));
     return 0;
 }

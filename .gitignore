@@ -1,6 +1,7 @@
 # Backup Files
 *~
 *.swp
+*.bac
 
 # Compiled Object files
 *.slo
