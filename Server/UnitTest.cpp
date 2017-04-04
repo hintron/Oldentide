@@ -27,11 +27,12 @@ int main() {
         getline(std::cin, test);
         switch(atoi(test.c_str())) {
             case 1:
-                Player p("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", 
-                         "Scarred", "Pale", "Newcomers_Guild", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                         0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                sockaddr_in dummyClient;
+                Player p(dummyClient, "example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Dorks", 
+                         "Human", "Male", "Scarred", "Pale", "Newcomers_Guild", 0, 0, 0, 0, 0, 0, 
+                         0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
                 if (sql->InsertPlayer(p)) {
                     std::cout << "Great Success!" << std::endl;
                 }

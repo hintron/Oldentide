@@ -118,8 +118,11 @@ struct PACKET_CREATECHARACTER {
     int sessionId;
     char firstName[25];
     char lastName[25];
+    char guild[50];
     char race[25];
     char gender[25];
+    char face[25];
+    char skin[25];
     char profession[25];
     int strength;
     int constitution;
@@ -198,10 +201,11 @@ struct PACKET_UPDATEPC {
     int bp;
     int mp;
     int ep;
-    int x;
-    int y;
-    int z;
-    float direction;
+    float x;
+    float y;
+    float z;
+    float pitch;
+    float yaw;
 };
 
 struct PACKET_UPDATENPC {

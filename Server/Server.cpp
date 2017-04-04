@@ -59,16 +59,16 @@ void Server::Run() {
         if (validSession) {
             switch (packet->packetType) {
                 case GENERIC:
-                    GenericHandler((PACKET_GENERIC*)packet);
+                    GenericHandler((PACKET_GENERIC*)packet, client);
                     break;
                 case ACK:
-                    AckHandler((PACKET_ACK*)packet);
+                    AckHandler((PACKET_ACK*)packet, client);
                     break;
                 case CONNECT:
                     ConnectHandler((PACKET_CONNECT*)packet, client);
                     break;
                 case DISCONNECT:
-                    DisConnectHandler((PACKET_DISCONNECT*)packet);
+                    DisConnectHandler((PACKET_DISCONNECT*)packet, client);
                     break;
                 case GETSALT:
                     GetSaltHandler((PACKET_GETSALT*)packet, client);
@@ -80,34 +80,34 @@ void Server::Run() {
                     LoginHandler((PACKET_LOGIN*)packet, client);
                     break;
                 case LISTCHARACTERS:
-                    ListCharactersHandler((PACKET_LISTCHARACTERS*)packet);
+                    ListCharactersHandler((PACKET_LISTCHARACTERS*)packet, client);
                     break;
                 case SELECTCHARACTER:
-                    SelectCharacterHandler((PACKET_SELECTCHARACTER*)packet);
+                    SelectCharacterHandler((PACKET_SELECTCHARACTER*)packet, client);
                     break;
                 case DELETECHARACTER:
-                    DeleteCharacterHandler((PACKET_DELETECHARACTER*)packet);
+                    DeleteCharacterHandler((PACKET_DELETECHARACTER*)packet, client);
                     break;
                 case CREATECHARACTER:
-                    CreateCharacterHandler((PACKET_CREATECHARACTER*)packet);
+                    CreateCharacterHandler((PACKET_CREATECHARACTER*)packet, client);
                     break;
                 case INITIALIZEGAME:
-                    InitializeGameHandler((PACKET_INITIALIZEGAME*)packet);
+                    InitializeGameHandler((PACKET_INITIALIZEGAME*)packet, client);
                     break;
                 case UPDATEPC:
-                    UpdatePcHandler((PACKET_UPDATEPC*)packet);
+                    UpdatePcHandler((PACKET_UPDATEPC*)packet, client);
                     break;
                 case UPDATENPC:
-                    UpdateNpcHandler((PACKET_UPDATENPC*)packet);
+                    UpdateNpcHandler((PACKET_UPDATENPC*)packet, client);
                     break;
                 case SENDPLAYERCOMMAND:
                     SendPlayerCommandHandler((PACKET_SENDPLAYERCOMMAND*)packet, client);
                     break;
                 case SENDPLAYERACTION:
-                    SendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet);
+                    SendPlayerActionHandler((PACKET_SENDPLAYERACTION*)packet, client);
                     break;
                 case SENDSERVERACTION:
-                    SendServerActionHandler((PACKET_SENDSERVERACTION*)packet);
+                    SendServerActionHandler((PACKET_SENDSERVERACTION*)packet, client);
                     break;
                 case UNITY:
                     UnityHandler((PACKET_UNITY*)packet, client);
@@ -123,12 +123,12 @@ void Server::Run() {
 }
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
-void Server::GenericHandler(PACKET_GENERIC * packet) {
+void Server::GenericHandler(PACKET_GENERIC * packet, sockaddr_in client) {
     free(packet);
 }
 
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
-void Server::AckHandler(PACKET_ACK * packet) {
+void Server::AckHandler(PACKET_ACK * packet, sockaddr_in client) {
     free(packet);
 }
 
@@ -142,7 +142,7 @@ void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client) {
 }
 
 // Remove the session for a given user, effectively disconnecting it from the server.
-void Server::DisConnectHandler(PACKET_DISCONNECT * packet) {
+void Server::DisConnectHandler(PACKET_DISCONNECT * packet, sockaddr_in client) {
     gameState->DisconnectSession(packet->sessionId);
     free(packet);
 }
@@ -200,35 +200,35 @@ void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet) {
+void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet, sockaddr_in client) {
     std::string account = gameState->GetSessionAccountName(packet->sessionId);
     std::cout << "Account: " << account << " requested their character list." << std::endl;
     
     free(packet);
 }
 
-void Server::SelectCharacterHandler(PACKET_SELECTCHARACTER * packet) {
+void Server::SelectCharacterHandler(PACKET_SELECTCHARACTER * packet, sockaddr_in client) {
     gameState->SelectPlayer(packet->sessionId);
     free(packet);
 }
 
-void Server::DeleteCharacterHandler(PACKET_DELETECHARACTER * packet) {
+void Server::DeleteCharacterHandler(PACKET_DELETECHARACTER * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::CreateCharacterHandler(PACKET_CREATECHARACTER * packet) {
+void Server::CreateCharacterHandler(PACKET_CREATECHARACTER * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::InitializeGameHandler(PACKET_INITIALIZEGAME * packet) {
+void Server::InitializeGameHandler(PACKET_INITIALIZEGAME * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::UpdatePcHandler(PACKET_UPDATEPC * packet) {
+void Server::UpdatePcHandler(PACKET_UPDATEPC * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::UpdateNpcHandler(PACKET_UPDATENPC * packet) {
+void Server::UpdateNpcHandler(PACKET_UPDATENPC * packet, sockaddr_in client) {
     free(packet);
 }
 
@@ -247,11 +247,11 @@ void Server::SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet, sockadd
     free(packet);
 }
 
-void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet) {
+void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet, sockaddr_in client) {
     free(packet);
 }
 
-void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet) {
+void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet, sockaddr_in client) {
     free(packet);
 }
 

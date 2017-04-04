@@ -9,11 +9,13 @@
 
 #include "Character.h"
 #include <string>
+#include <netinet/in.h>
 
 class Player : public Character {
     
     protected:
 
+    sockaddr_in client;
     std::string account;
     std::string profession;
     int id;
@@ -74,27 +76,26 @@ class Player : public Character {
     public:
 
     // Constructors.
-    Player(std::string account, std::string profession, int id, int session, float weight, int axe,
-           int dagger, int unarmed, int hammer, int polearm, int spear, int staff, int sword, 
-           int archery, int crossbow, int sling, int thrown, int armor, int dualWeapon, int shield,
-           int bardic, int conjuring, int druidic, int illusion, int necromancy, int sorcery, 
-           int shamanic, int spellcraft, int summoning, int focus, int armorsmithing, 
-           int tailoring, int fletching, int weaponsmithing, int alchemy, int lapidary, 
-           int calligraphy, int enchanting, int herbalism, int hunting, int mining, int bargaining,
-           int camping, int firstAid, int lore, int pickLocks, int scouting, int search, 
-           int stealth, int traps, int aeolandis, int hieroform, int highGundis, int oldPraxic,
-           int praxic, int runic, std::string name, std::string lastname, std::string race, 
-           std::string gender, std::string face, std::string skin, std::string zone, int level, 
-           int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, 
-           int constitution, int intelligence, int dexterity, float x, float y, float z, 
-           float pitch, float yaw);
+    Player(sockaddr_in client, std::string account, std::string profession, int id, int session, 
+           float weight, int axe, int dagger, int unarmed, int hammer, int polearm, int spear, 
+           int staff, int sword, int archery, int crossbow, int sling, int thrown, int armor, 
+           int dualWeapon, int shield, int bardic, int conjuring, int druidic, int illusion, 
+           int necromancy, int sorcery, int shamanic, int spellcraft, int summoning, int focus, 
+           int armorsmithing, int tailoring, int fletching, int weaponsmithing, int alchemy, 
+           int lapidary, int calligraphy, int enchanting, int herbalism, int hunting, int mining, 
+           int bargaining, int camping, int firstAid, int lore, int pickLocks, int scouting, 
+           int search, int stealth, int traps, int aeolandis, int hieroform, int highGundis, 
+           int oldPraxic, int praxic, int runic, std::string name, std::string lastname, 
+           std::string guild, std::string race, std::string gender, std::string face, 
+           std::string skin, std::string zone, int level, int hp, int maxHp, int bp, int maxBp, 
+           int mp, int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence, 
+           int dexterity, float x, float y, float z, float pitch, float yaw);
            
-    Player(std::string fromString);
-
-    //~Player();
+    ~Player();
 
     // Getter Functions.
     
+    sockaddr_in GetClient();
     std::string GetAccount();
     std::string GetProfession();
     int GetId();
@@ -154,6 +155,7 @@ class Player : public Character {
 
     // Setter Functions.
     
+    void SetClient(sockaddr_in client);
     void SetAccount(std::string account);
     void SetProfession(std::string profession);
     void SetId(int id);
@@ -212,7 +214,6 @@ class Player : public Character {
     void SetRunic(int runic);
 
     // Class Functions.
-    std::string ToString();
 };
 
 #endif //OLDENTIDE_PLAYER_H_

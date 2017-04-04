@@ -109,13 +109,9 @@ void GameState::SelectPlayer(int sessionId) {
     return;
 }
 
-Player GameState::ReadPlayer(std::string name) {
-    return Player("example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Human", "Male", "Scarred", "Pale", 
-                  "Newcomers_Guild", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 
-                  0.0);
-}
+//Player GameState::ReadPlayer(std::string name) {
+//    return void;
+//}
 
 void GameState::StorePlayer(std::string name) {
     return;

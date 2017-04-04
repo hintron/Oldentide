@@ -41,7 +41,7 @@ class GameState{
         std::set<int> activeSessions;
         std::map<int, std::string> sessionAccounts;
         int curSession;
-        Player ReadPlayer(std::string name);
+        //Player ReadPlayer(std::string name);
         void StorePlayer(std::string name);
 };
 

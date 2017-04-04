@@ -10,14 +10,14 @@
 //-------------------                     Class Constructors                   -------------------//
 //------------------------------------------------------------------------------------------------//
 
-Character::Character(std::string name, std::string lastname, std::string race, std::string gender, 
-                     std::string face, std::string skin, std::string zone, int level, int hp, 
-                     int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, 
-                     int strength, int constitution, int intelligence, int dexterity, float x, 
-                     float y, float z, float pitch, float yaw) {
+Character::Character(std::string name, std::string lastname, std::string guild, std::string race, 
+                     std::string gender, std::string face, std::string skin, std::string zone, 
+                     int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, 
+                     int maxEp, int strength, int constitution, int intelligence, int dexterity, 
+                     float x, float y, float z, float pitch, float yaw) {
     SetName(name);
     SetLastname(lastname);
-    setGuild(guild);
+    SetGuild(guild);
     SetRace(race);
     SetGender(gender);
     SetFace(face);
@@ -374,3 +374,11 @@ void Character::SetYaw(float yaw) {
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Class Functions                     -------------------//
 //------------------------------------------------------------------------------------------------//
+
+void Character::SetPosition(float x, float y, float z, float pitch, float yaw) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->pitch = pitch;
+    this->yaw = yaw;
+}

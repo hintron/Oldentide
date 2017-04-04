@@ -143,6 +143,7 @@ class Character {
     void SetYaw(float yaw);
 
     // Class Functions
+    void SetPosition(float x, float y, float z, float pitch, float yaw);
 
 };
 
