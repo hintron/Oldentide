@@ -278,3 +278,20 @@ tree_01_normal.png
 tree_02_diffuse.png
 wood_wall_01_diffuse.png
 wood_wall_02_sm_diffuse.png
+-------------------------------------------------------------------------------
+[sketchuptextureclub.com]
+---------------------------------------
+Don't redestribute - These copies are only to be used for Oldentide.
+---------------------------------------
+olddamagedbrick0.jpg
+olddamagedbrick1.jpg
+bareconcrete0.jpg
+insidewoodroof0.jpg
+insidewoodroof1.jpg
+clayroof0.jpg
+tileblack4_0.jpg
+tileblack4bump_0.jpg
+tileblack4specular_0.jpg
+tilesand4_0.jpg
+tilesand4bump_0.jpg
+tilesand4specular_0.jpg
