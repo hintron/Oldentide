@@ -10,7 +10,7 @@
 **Initial Starting Date**: 2/9/2013<br>
 **Principal Author**: Joseph DeVictoria<br>
 **Contributing Authors**: Scott Heidbrink, Michael Hinton<br>
-**Client Platform**: Unity 5.4 (As of 8/25/2016)<br>
+**Client Platform**: Unity 5.4.2 (As of 4/8/2017)<br>
 **Languages**: C++, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
 **Wiki**: [Github Wiki](https://github.com/Oldentide/Oldentide/wiki)<br>
