@@ -42,7 +42,11 @@ app.use(session({
         httpOnly: true, // Do not let client browser js to access cookie (only http request)
         maxAge: SESSION_EXPIRE_TIME,
     },
-    store: new SQLiteStore,
+    store: new SQLiteStore({
+        table: "web_sessions", // to avoid confusion with possible game sessions. Will be created if doesn't already exist
+        db: "Oldentide", // appends .db automatically
+        dir: "../db",
+    }),
 }));
 
 
