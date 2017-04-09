@@ -65,10 +65,10 @@ int main(int argc, char * argv[]) {
         switch (clientState) {
             // Initial State.
             case 0: {
-                std::cout << "Connect? (Y/N) " << std::endl;
+                std::cout << "Connect? (Y/n) " << std::endl;
                 string response;
                 getline (cin, response);
-                if ((response.compare("y") == 0) || (response.compare("Y") == 0)) {
+                if ((response.compare("y") == 0) || (response.compare("Y") == 0) || (response.compare("") == 0)) {
                     PACKET_CONNECT packet;
                     packet.packetId = packetNumber;
                     packetNumber++;
@@ -147,10 +147,10 @@ int main(int argc, char * argv[]) {
                 }
                 else {
                     std::cout << "Account doesn't exist..." << std::endl;
-                    std::cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/N) " << std::endl;
+                    std::cout << "Did you want to create a new account called " << packetSalt.account << "? (Y/n) " << std::endl;
                     string response;
                     getline(cin, response);
-                    if ((response.compare("y") == 0) || (response.compare("Y") == 0)) {
+                    if ((response.compare("y") == 0) || (response.compare("Y") == 0) || (response.compare("") == 0)) {
                         char password[1000];
                         char password2[1000];
                         bool repeat_try;
@@ -167,7 +167,7 @@ int main(int argc, char * argv[]) {
                             std::cout << "Repeat password: ";
                             cin.getline(password2, sizeof(password2));
                             if (strcmp(password, password2) != 0) {
-                                std::cout << "Passwords were not the same... Please retype the password" << std::endl;                                
+                                std::cout << "Passwords were not the same... Please retype the password" << std::endl;
                                 repeat_try = true;
                                 continue;
                             }
@@ -217,10 +217,10 @@ int main(int argc, char * argv[]) {
                     if (characterList->character0 == "") {
                         std::cout << "You do not have any characters selected on this account" << std:: endl;
                         std::cout << "Please give me a first name for your new character: ";
-                        char firstName[25]; 
+                        char firstName[25];
                         cin.getline(firstName, sizeof(firstName));
                         std::cout << "Please give me a last name for your new character: ";
-                        char lastName[25]; 
+                        char lastName[25];
                         cin.getline(lastName, sizeof(lastName));
                         PACKET_CREATECHARACTER newCharacter;
                         newCharacter.packetId = packetNumber;
