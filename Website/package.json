@@ -16,7 +16,7 @@
     "node": "6.10.2"
   },
   "dependencies": {
-    "bcrypt": "latest",
+    "bcryptjs": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
     "express": "latest",

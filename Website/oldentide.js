@@ -3,7 +3,7 @@
 // Date:        Apr_8_2016
 // Purpose:     Main Express file for Oldentide Account registration and login.
 // Includes:
-var bcrypt          = require('bcrypt');
+var bcrypt          = require('bcryptjs');
 var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
 var express         = require('express');
@@ -15,6 +15,7 @@ var sqlite3         = require('sqlite3').verbose();
 
 // Application Setup:
 var app = express();
+var domain = "https://goblin.oldentide.com";
 app.set('port', 80);
 // Set handlebars as our template engine.
 app.engine('handlebars', handlebars());
@@ -47,4 +48,4 @@ var emailer = mailer.createTransport({
 });
 
 // Set up external router file.
-require('./router')(app, bcrypt, db, emailer);
+require('./router')(app, domain, bcrypt, db, emailer);

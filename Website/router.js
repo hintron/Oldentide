@@ -1,10 +1,10 @@
-// Filename:    main.js
+// Filename:    router.js
 // Author:      Joseph DeVictoria
-// Date:        Oct_3_2016
+// Date:        Apr_8_2017
 // Purpose:     Main router for Mutable on express.
 
 // Web App Path Requests:
-module.exports = function(app, bcrypt, db, emailer) {
+module.exports = function(app, domain, bcrypt, db, emailer) {
 
     // Get Handlers and Callbacks
     app.get('/', function(req, res) {
@@ -126,7 +126,6 @@ module.exports = function(app, bcrypt, db, emailer) {
             salt = bcrypt.genSaltSync(10);
         }
         var session = null;
-        console.log(salt);
         var key = bcrypt.hashSync(req.body.registration_password_first, salt);
         var query = "INSERT INTO accounts (valid, accountname, email, session, key, salt) " +
                     "VALUES (0, '" + username + "', '" + email + "', " + session + ", '" + key + "', '" + salt + "');";
@@ -140,7 +139,7 @@ module.exports = function(app, bcrypt, db, emailer) {
                     to: email,
                     subject: "Verify Your Oldentide Account!",
                     text: ("Hello " + username + ",\r\n\r\nPlease verify your Oldentide account by clicking the following link:\r\n" +
-                          "https://login.oldentide.com/register/verify/" + salt + " \r\n\r\nRegards,\r\nMutable Team")
+                            domain + "/register/verify/" + salt + " \r\n\r\nRegards,\r\nOldentide Team")
                 }, function(error, response) {
                     if (error) {
                         console.log(error);
