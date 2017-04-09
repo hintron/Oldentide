@@ -1,3 +1,6 @@
+# Generic Log Files
+*.log
+
 # Backup Files
 *~
 *.swp
@@ -115,3 +118,8 @@ sysinfo.txt
 ehthumbs.db
 [Tt]humbs.db
 [Dd]esktop.ini
+
+# ============== #
+# Node generated #
+# ============== #
+Website/node_modules/

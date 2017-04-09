@@ -4,7 +4,10 @@ DROP TABLE IF EXISTS npcs;
 DROP TABLE IF EXISTS items;
 CREATE TABLE accounts (
     id integer not null primary key autoincrement,
+    valid integer not null,
     accountname text not null unique collate nocase,
+    email text not null collate nocase,
+    session text collate nocase,
     key text not null collate nocase,
     salt text not null collate nocase
 );

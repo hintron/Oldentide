@@ -1,0 +1,28 @@
+{
+  "name": "Oldentide",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Account creation and login for Oldentide.",
+  "main": "oldentide.js",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "Oldentide Team",
+    "email": "jldevictoria@gmail.com"
+  },
+  "scripts": {
+    "start": "node ./oldentide.js"
+  },
+  "engines": {
+    "node": "6.10.2"
+  },
+  "dependencies": {
+    "bcrypt": "latest",
+    "body-parser": "latest",
+    "cookie-parser": "latest",
+    "express": "latest",
+    "express-session": "latest",
+    "express-handlebars": "latest",
+    "nodemailer": "latest",
+    "sqlite3": "latest"
+  }
+}

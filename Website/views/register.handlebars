@@ -1,0 +1,58 @@
+<!doctype html>
+<!-- Joseph DeVictoria 2017 -->
+<html>
+    <head>
+        <!-- Page setup -->
+        <title>Oldentide: A game where you can be anyone.</title>
+        <meta charset="utf-8">
+        <meta name="author" content="Joseph DeVictoria">
+        <meta name=viewport content="width=device-width, initial-scale=1"> 
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
+        <!-- CSS -->
+        <link href="/styles/skeleton.css" rel="stylesheet">
+        <link href="/styles/normalize.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div>
+                <a href="/"><img src="/img/oldentide_logo.png" class="logo"></a>
+            </div>
+            <div>
+                <a href="/profile" class="button">Profile</a>
+            </div>
+            <div>
+                {{#if get}}
+                <form name="registration" method="post" action="/register" role="form">
+                    <div>
+                        <label for="registration_username">Username</label>
+                        <input type="text" id="registration_username" name="registration_username" required="required" maxlength="30" pattern="[A-Za-z0-9]{3,}">
+                    </div>
+                    <div>
+                        <label for="registration_email">Email</label>
+                        <input type="email" id="registration_email" name="registration_email" required="required">
+                    </div>
+                    <div>
+                        <label for="registration_password_first">Password [minimum 6 characters]</label>
+                        <input type="password" id="registration_password_first" name="registration_password_first" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}">
+                    </div>
+                    <div>
+                        <label for="registration_password_second">Confirm Password [minimum 6 characters]</label>
+                        <input type="password" id="registration_password_second" name="registration_password_second" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}">
+                    </div>
+                    <input type="submit" value="Register" />
+                </form>
+                {{/if}}
+                {{#if post}}
+                <h1>Registration submitted, please check your email to complete verification!</h1>
+                {{/if}}
+                {{#if exists}}
+                <h1>An account for this username or email already exists!</h1>
+                {{/if}}
+            </div>
+            <div>
+                <a href="/about" class="button">About</a>
+            </div>
+        </div>
+    </body>
+</html>
