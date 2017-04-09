@@ -1,0 +1,16 @@
+{
+  "name": "oldentide_website",
+  "version": "0.1.0",
+  "description": "A website that Oldentide game users can use to create and manage accounts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "helmet": "^3.5.0",
+    "sqlite3": "^3.1.8"
+  }
+}
