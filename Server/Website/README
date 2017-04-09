@@ -1,0 +1,18 @@
+First, install nodejs on Ubuntu/Debian. This assumes Nodejs 6.x.
+See https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+
+    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+
+Then cd to Oldentide/Server/Website/ and run:
+
+    npm install
+    sudo node index.js
+
+Then open a browser and navigate to:
+
+    localhost
+
+You can log in as an admin, see Oldentide account data if you are logged in, and log out.
+This simple web server demonstrates accessing the Oldentide database via node and printing sqlite records to a client browser.
+This also demonstrates persistent sessions using sqlite as the session store. This will be needed for proper authentication later.

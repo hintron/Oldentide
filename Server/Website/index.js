@@ -1,6 +1,5 @@
 var express = require('express');
 var http = require('http');
-var fs = require('fs');
 
 // Header security improvements
 var helmet = require('helmet');
@@ -11,21 +10,16 @@ var helmet = require('helmet');
 var sqlite3 = require('sqlite3').verbose();
 
 // For sessions and cookies
-// var session = require('express-session');
+var session = require('express-session');
 // Sets the storage mechanism for the session
-// var MongoStore = require('connect-mongo')(session);
-// TODO: Create a session, use sqlite
 // https://www.npmjs.com/package/connect-sqlite3
+var SQLiteStore = require('connect-sqlite3')(session);
 
 // To parse JSON data
 // var bodyparser = require('body-parser');
 
-
-
-
-
-
-
+// Set the session to expire after 12 hours
+const SESSION_EXPIRE_TIME = 12*60*60*1000;
 
 
 var app = express();
@@ -35,10 +29,71 @@ var app = express();
 // https://www.npmjs.com/package/helmet
 app.use(helmet());
 
+// Boot up the session
+app.use(session({
+    // TODO: Pull this from an environmental variable so secrets aren't open source
+    secret: 'thisismylittlesecret',
+    name: "Oldentide",
+    resave: false,
+    // Don't save new sessions until they are modified (authenticated)
+    saveUninitialized: false,
+    cookie: {
+        // secure: true, // Only send cookie if HTTPS
+        httpOnly: true, // Do not let client browser js to access cookie (only http request)
+        maxAge: SESSION_EXPIRE_TIME,
+    },
+    store: new SQLiteStore,
+}));
 
 
 
-app.get('/info', function (req, res, next) {
+
+
+
+app.get('/auth', function (req, res, next) {
+
+    var sess = req.session;
+
+    // Skip admin check if already authenticated
+    if(sess.authenticated){
+        res.send(JSON.stringify({
+            success: true,
+            already_authenticated: true,
+            msg:'already authenticated...',
+        }));
+        return;
+    }
+
+    // TODO: Check user password to see if admin
+
+    // TODO: Grab user credentials (should already be salted and stretched by the client by now)
+    // TODO: Use bcrypt?
+
+    // TODO: Compare passed key with key and salt on record
+
+
+    // If admin, set them as admin
+    sess.authenticated = true;
+    res.send(JSON.stringify({
+        success: true,
+        msg:'You have now been bestowed admin powers',
+    }));
+});
+
+app.get('/accounts', function (req, res, next) {
+
+    // Check to make sure person is an admin
+    var sess = req.session;
+    if(!sess.authenticated){
+        // console.log("Already authenticated...");
+        res.send(JSON.stringify({
+            success: false,
+            msg:'You are not an admin!',
+        }));
+        return;
+    }
+
+    // TODO: Move this outside somewhere, so only happens once?
     var db = new sqlite3.Database('../db/Oldentide.db');
 
     db.serialize(function() {
@@ -62,6 +117,12 @@ app.get('/info', function (req, res, next) {
     db.close();
 });
 
+// Logout action for both bosses and users
+app.get('/logout', function (req, res, next) {
+    req.session.destroy();
+    // Show the logged-out page
+    res.status(200).sendFile(__dirname + '/public/logged_out.html');
+});
 
 
 
