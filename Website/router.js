@@ -1,7 +1,7 @@
 // Filename:    router.js
 // Author:      Joseph DeVictoria
 // Date:        Apr_8_2017
-// Purpose:     Main router for Mutable on express.
+// Purpose:     Main router for Oldentide on express.
 
 // Web App Path Requests:
 module.exports = function(app, domain, bcrypt, db, emailer) {
@@ -53,7 +53,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
         });
         console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Logout page!');
     });
-    
+
     app.get('/profile', function(req, res) {
         db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
             if (row) {
@@ -132,7 +132,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
         db.get("SELECT * FROM accounts WHERE accountname = '" + username + "' OR email = '"  + email + "';", function(err, row) {
             if (row) {
                 res.render('register', { get: true, exists: true });
-            }    
+            }
             else {
                 emailer.sendMail({
                     from: '"Oldentide Server", <oldentide@gmail.com>',
@@ -151,10 +151,10 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 db.run(query);
                 res.render('register', { post: true });
             }
-        }); 
+        });
         console.log('User at ' + req.headers['x-forwarded-for'] + ' posted data to the Register page!');
     });
-    
+
     // Errorr handlers
     app.use(function(req, res) {
         res.status(404);
