@@ -10,23 +10,25 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     app.get('/', function(req, res) {
         db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
             if (row) {
+                res.render('home');
             }
             else {
+                res.render('home', { loggedout: true });
             }
-            res.render('main');
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Home page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the Home page!');
     });
 
     app.get('/about', function(req, res) {
         db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
             if (row) {
-            }
-            else {
                 res.render('about');
             }
+            else {
+                res.render('about', { loggedout: true });
+            }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the About page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the About page!');
     });
 
     app.get('/login', function(req, res) {
@@ -38,7 +40,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 res.render('login', { loggedout: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Login page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the Login page!');
     });
 
     app.get('/logout', function(req, res) {
@@ -48,10 +50,10 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 res.render('logout', { loggedin: true });
             }
             else {
-                res.render('logout', { loggedin: false });
+                res.render('logout', { loggedin: false, loggedout: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Logout page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the Logout page!');
     });
 
     app.get('/profile', function(req, res) {
@@ -63,7 +65,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 res.render('profile', { loggedout: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Profile page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the Profile page!');
     });
 
     app.get('/register', function(req, res) {
@@ -72,10 +74,10 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 res.render('login', { loggedin: true });
             }
             else {
-                res.render('register', { get: true });
+                res.render('register', { get: true, loggedout: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' requested the Registration page!');
+        console.log('User at ' + req.connection.remoteAddress + ' requested the Registration page!');
     });
 
     app.get('/register/verify/:salt', function(req, res) {
@@ -87,8 +89,8 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 console.log('User at ' + req.headers['x-forwarded-for'] + ' successfully verified the account "' + row.accountname + '"!');
             }
             else {
-                res.render('verify', { flag: false });
-                console.log('User at ' + req.headers['x-forwarded-for'] + ' failed to verify the salt ' + salt + '!');
+                res.render('verify', { flag: false, loggedout: true });
+                console.log('User at ' + req.connection.remoteAddress + ' failed to verify the salt ' + salt + '!');
             }
         });
     });
@@ -115,7 +117,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                 res.render('login', { loggedout: true, incorrect: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' posted data to the Login page! (Login attempt)');
+        console.log('User at ' + req.connection.remoteAddress + ' posted data to the Login page! (Login attempt)');
     });
 
     app.post('/register', function(req, res) {
@@ -131,7 +133,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                     "VALUES (0, '" + username + "', '" + email + "', " + session + ", '" + key + "', '" + salt + "');";
         db.get("SELECT * FROM accounts WHERE accountname = '" + username + "' OR email = '"  + email + "';", function(err, row) {
             if (row) {
-                res.render('register', { get: true, exists: true });
+                res.render('register', { get: true, exists: true, loggedout: true });
             }
             else {
                 emailer.sendMail({
@@ -149,24 +151,24 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                     }
                 });
                 db.run(query);
-                res.render('register', { post: true });
+                res.render('register', { post: true, loggedout: true });
             }
         });
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' posted data to the Register page!');
+        console.log('User at ' + req.connection.remoteAddress + ' posted data to the Register page!');
     });
 
     // Errorr handlers
     app.use(function(req, res) {
         res.status(404);
-        res.render('404', {page: req.originalUrl});
-        console.log('User at ' + req.headers['x-forwarded-for'] + ' generated a 404 error requesting "' + req.originalUrl + '"!');
+        res.render('404', { page: req.originalUrl, loggout: true });
+        console.log('User at ' + req.connection.remoteAddress + ' generated a 404 error requesting "' + req.originalUrl + '"!');
     });
 
     app.use(function(error, req, res, next) {
         if (error.status == 500) {
             res.status(500);
-            res.render('505');
-            console.log('User at ' + req.headers['x-forwarded-for'] + ' generated a 500 error requesting "' + req.originalUrl + '"!');
+            res.render('505', { loggedout: true });
+            console.log('User at ' + req.connection.remoteAddress + ' generated a 500 error requesting "' + req.originalUrl + '"!');
         }
     });
 }

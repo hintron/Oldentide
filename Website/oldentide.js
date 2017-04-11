@@ -41,8 +41,9 @@ console.log("Webserver running on domain \"" + domain + "\"");
 // Application Setup:
 var app = express();
 // Set handlebars as our template engine.
-app.engine('handlebars', handlebars());
+app.engine('handlebars', handlebars({defaultLayout: 'main'}));
 app.set('views', __dirname + '/views');
+app.set('layouts', __dirname + '/views/layouts');
 app.set('view engine', 'handlebars');
 // Set the public folder as static and viewable by anyone.
 app.use(express.static('public'));

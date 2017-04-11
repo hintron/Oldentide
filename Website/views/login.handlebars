@@ -1,46 +1,29 @@
 <!doctype html>
 <!-- Joseph DeVictoria 2017 -->
-<html>
-    <head>
-        <!-- Page setup -->
-        <title>Oldentide: A game where you can be anyone.</title>
-        <meta charset="utf-8">
-        <meta name="author" content="Joseph DeVictoria">
-        <meta name=viewport content="width=device-width, initial-scale=1"> 
-        <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
-        <!-- CSS -->
-        <link href="/styles/skeleton.css" rel="stylesheet">
-        <link href="/styles/normalize.css" rel="stylesheet">
-    </head>
-    <body>
         <div class="container">
-            <div>
-                <a href="/"><img src="/img/oldentide_logo.png" class="logo"></a>
-            </div>
-            <div>
-                <a href="/profile" class="button">Profile</a>
-            </div>
-            <div>
-                {{#if incorrect}}
-                <h1>Your username or password was incorrect...</h1>
-                {{/if}}
-                {{#if loggedout}}
-                <form name="login" method="post" action="/login" role="form">
-                    <label for="login_username">Username</label>
-                    <div><input type="text" id="login_username" name="login_username" required="required" maxlength="30" pattern="[A-Za-z0-9]{3,}"></div>
-                    <label for="login_password">Password</label>
-                    <div><input type="password" id="login_password" name="login_password" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}"></div>
-                    <input type="submit" value="Login" />
-                </form>
-                {{/if}}
-                {{#if loggedin}}
-                <h1>You are logged in!</h1>
-                {{/if}}
-            </div>
-            <div>
-                <a href="/about" class="button">About</a>
-            </div>
+            <center>
+                <div>
+                    {{#if incorrect}}
+                    <h1>Your username or password was incorrect...</h1>
+                    {{/if}}
+                    {{#if loggedout}}
+                    <form name="login" method="post" action="/login" role="form">
+                        <div class="row">
+                            <div class="six columns">
+                                <label for="login_username">Username</label>
+                                <div><input type="text" id="login_username" name="login_username" required="required" maxlength="30" pattern="[A-Za-z0-9]{3,}"></div>
+                            </div>
+                            <div class="six columns">
+                                <label for="login_password">Password</label>
+                                <div><input type="password" id="login_password" name="login_password" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}"></div>
+                            </div>
+                        </div>
+                        <input class="button-primary" type="submit" value="Login">
+                    </form>
+                    {{/if}}
+                    {{#if loggedin}}
+                        <h1>You are logged in!</h1>
+                    {{/if}}
+                </div>
+            </center>
         </div>
-    </body>
-</html>
