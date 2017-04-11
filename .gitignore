@@ -1,3 +1,9 @@
+# Ignore environmental variable config files
+*.env
+
+# Ignore any local letsencrypt files and keys
+letsencrypt
+
 # Generic Log Files
 *.log
 
@@ -92,7 +98,7 @@ DerivedDataCache/*
 /[Ll]ibrary/
 sysinfo.txt
 *.stackdump
- 
+
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
 # ============================================= #
@@ -107,7 +113,7 @@ sysinfo.txt
 /*.unityproj
 /*.booproj
 /.idea*/
- 
+
 # ============ #
 # OS generated #
 # ============ #

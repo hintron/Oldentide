@@ -9,14 +9,37 @@ var cookieParser    = require('cookie-parser');
 var express         = require('express');
 var handlebars      = require('express-handlebars');
 var http            = require('http');
+var https           = require('https');
 var mailer          = require('nodemailer');
 var path            = require('path');
 var sqlite3         = require('sqlite3').verbose();
+var fs              = require('fs');
+var dotenv          = require('dotenv');
+
+
+dotenv.config({path: './config.env'});
+const ENABLE_HTTPS = process.env.OLDENTIDE_ENABLE_HTTPS;
+const DOMAIN_NAME = process.env.OLDENTIDE_DOMAIN;
+const HTTP_PORT = 80;
+const HTTPS_PORT = 443;
+
+var domain;
+if(DOMAIN_NAME){
+    if(ENABLE_HTTPS){
+        console.log("HTTPS enabled");
+        domain = "https://" + DOMAIN_NAME;
+    }
+    else {
+        domain = "http://" + DOMAIN_NAME;
+    }
+}
+else {
+    domain = "localhost";
+}
+console.log("Webserver running on domain \"" + domain + "\"");
 
 // Application Setup:
 var app = express();
-var domain = "https://goblin.oldentide.com";
-app.set('port', 80);
 // Set handlebars as our template engine.
 app.engine('handlebars', handlebars());
 app.set('views', __dirname + '/views');
@@ -34,11 +57,7 @@ var db = new sqlite3.Database('../Server/db/Oldentide.db', function() {
     console.log('Successfully opened Oldentide.db!');
 });
 
-// Launch App Listening on Public Port 80.
-var server = app.listen(app.get('port'), function() {
-    console.log('Listening on port ' + app.get('port') + '...');
-});
-
+// TODO: Read these credentials in from the config file
 var emailer = mailer.createTransport({
     service: 'gmail',
     auth: {
@@ -49,3 +68,49 @@ var emailer = mailer.createTransport({
 
 // Set up external router file.
 require('./router')(app, domain, bcrypt, db, emailer);
+
+// Set up HTTP and HTTPS
+if(ENABLE_HTTPS){
+    // See http://stackoverflow.com/questions/11804202/how-do-i-setup-a-ssl-certs-for-an-express-js-server
+    // See http://stackoverflow.com/questions/11744975/enabling-https-on-express-js
+    // See https://community.letsencrypt.org/t/android-doesnt-trust-the-certificate/16498/16
+    // See http://stackoverflow.com/questions/19104215/node-js-express-js-chain-certificate-not-working
+
+    // Get the HTTPS certificate
+    var cert_base_path = "/etc/letsencrypt/live/" + DOMAIN_NAME + "/"
+    var privkey_path = cert_base_path + "privkey.pem";
+    var cert_path = cert_base_path + "cert.pem";
+    var chain_path = cert_base_path + "chain.pem";
+
+    var privateKey  = fs.readFileSync(privkey_path, 'utf8');
+    var certificate = fs.readFileSync(cert_path, 'utf8');
+    var chain_cert = fs.readFileSync(chain_path, 'utf8');
+
+    var credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: chain_cert,
+    };
+
+    // Create the https server
+    https.createServer(credentials, app).listen(HTTPS_PORT, function(){
+        console.log('Listening on port ' + HTTPS_PORT + '...');
+    });
+
+    // Set up an http server and redirect all http requests to https by default
+    var app_http = express();
+    app_http.get('*', function (req, res) {
+        console.log("redirecting http to https! " + req.headers['host'] + req.url);
+        res.redirect('https://' + req.headers['host'] + req.url);
+    });
+    http.createServer(app_http).listen(HTTP_PORT, function() {
+        console.log('Listening on port ' + HTTP_PORT + '...');
+    });
+
+}
+else {
+    // HTTP only
+    var server = app.listen(HTTP_PORT, function() {
+        console.log('Listening on port ' + HTTP_PORT + '...');
+    });
+}

@@ -19,9 +19,10 @@
     "bcryptjs": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
+    "dotenv": "^4.0.0",
     "express": "latest",
-    "express-session": "latest",
     "express-handlebars": "latest",
+    "express-session": "latest",
     "nodemailer": "latest",
     "sqlite3": "latest"
   }
