@@ -9,7 +9,7 @@
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
 **Principal Author**: Joseph DeVictoria<br>
-**Contributing Authors**: Scott Heidbrink, Michael Hinton<br>
+**Contributing Authors**: Scott Heidbrink, Michael Hinton, John Weber.<br>
 **Client Platform**: Unity 5.4.2 (As of 4/8/2017)<br>
 **Languages**: C++, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
@@ -31,4 +31,6 @@ Navigate to this base directory (repository base) and click open.  Game scenes a
 Feel free to play around with the engine, but if you want to commit, please do so on a separate branch for review!<br> 
 
 **A readme for Server operation is found within the Server directory.**<br>
+**A readme for Website operation is found within the Website directory.**<br><br>
+
 ####Please contact me immediately if you see any bugs or want to contribute.  I need help developing the game!
