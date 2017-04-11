@@ -31,10 +31,25 @@ Install:
 * sudo apt-get install -y nodejs
 * sudo ln -s /usr/bin/nodejs /usr/bin/node
 * sudo apt-get install npm
-* npm install
+* npm install       # may need sudo
 
 Run:
 
 * sudo npm start
 or
-* ./run.sh 
+* ./run.sh
+
+####Installing and enabling HTTPS
+
+Install certbot from https://certbot.eff.org/
+Make sure Oldentide webserver is running.
+* sudo certbot certonly --webroot -w ~/Oldentide/Website/public -d example.com -d www.example.com
+Edit the crontab file to automate cert renewal:
+* sudo crontab -e
+Add the following line, which will do a renewal check every day at 5 am:
+0 5 * * * certbot renew -q
+Make a copy of config.env.example and rename it config.env
+In config.env,
+-uncomment #OLDENTIDE_ENABLE_HTTPS=1
+-uncomment and set #OLDENTIDE_DOMAIN=yourdomain.com
+Save the file and restart the Oldentide server. HTTPS should now be enabled.
