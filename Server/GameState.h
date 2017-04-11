@@ -23,8 +23,6 @@ class GameState{
         ~GameState();
         bool VerifySession(int sessionId);
         bool VerifyActiveSession(int sessionId);
-        bool CreateAccount(char * account, char * keyStringHex, char * saltStringHex);
-        bool LoginUser(char * account, char * keyStringHex);
         void DisconnectSession(int sessionId);
         void PlayerCommand(char * command, int);
         void SelectPlayer(int sessionId);

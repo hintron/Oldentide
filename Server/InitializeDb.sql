@@ -8,6 +8,7 @@ CREATE TABLE accounts (
     accountname text not null unique collate nocase,
     email text not null collate nocase,
     session text collate nocase,
+    playing integer not null,
     key text not null collate nocase,
     salt text not null collate nocase
 );

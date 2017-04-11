@@ -33,9 +33,6 @@ class Server{
         void AckHandler(PACKET_ACK * packet, sockaddr_in client);
         void ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client);
         void DisConnectHandler(PACKET_DISCONNECT * packet, sockaddr_in client);
-        void GetSaltHandler(PACKET_GETSALT *packet, sockaddr_in client);
-        void CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client);
-        void LoginHandler(PACKET_LOGIN * packet, sockaddr_in client);
         void ListCharactersHandler(PACKET_LISTCHARACTERS * packet, sockaddr_in client);
         void SelectCharacterHandler(PACKET_SELECTCHARACTER * packet, sockaddr_in client);
         void DeleteCharacterHandler(PACKET_DELETECHARACTER * packet, sockaddr_in client);
@@ -46,7 +43,6 @@ class Server{
         void SendPlayerCommandHandler(PACKET_SENDPLAYERCOMMAND * packet, sockaddr_in client);
         void SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet, sockaddr_in client);
         void SendServerActionHandler(PACKET_SENDSERVERACTION * packet, sockaddr_in client);
-        void UnityHandler(PACKET_UNITY * packet, sockaddr_in client);
 };
 
 #endif //OLDENTIDE_SERVER_H

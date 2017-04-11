@@ -17,7 +17,6 @@
 Server::Server(int port) {
     sql = new SQLConnector();
     gameState = new GameState(sql);
-    adminshell = new AdminShell(sql, gameState);
 
     // Create server address struct.
     sockaddr_in server;
@@ -70,15 +69,6 @@ void Server::Run() {
                 case DISCONNECT:
                     DisConnectHandler((PACKET_DISCONNECT*)packet, client);
                     break;
-                case GETSALT:
-                    GetSaltHandler((PACKET_GETSALT*)packet, client);
-                    break;
-                case CREATEACCOUNT:
-                    CreateAccountHandler((PACKET_CREATEACCOUNT*)packet, client);
-                    break;
-                case LOGIN:
-                    LoginHandler((PACKET_LOGIN*)packet, client);
-                    break;
                 case LISTCHARACTERS:
                     ListCharactersHandler((PACKET_LISTCHARACTERS*)packet, client);
                     break;
@@ -108,9 +98,6 @@ void Server::Run() {
                     break;
                 case SENDSERVERACTION:
                     SendServerActionHandler((PACKET_SENDSERVERACTION*)packet, client);
-                    break;
-                case UNITY:
-                    UnityHandler((PACKET_UNITY*)packet, client);
                     break;
            }
         }
@@ -144,59 +131,6 @@ void Server::ConnectHandler(PACKET_CONNECT * packet, sockaddr_in client) {
 // Remove the session for a given user, effectively disconnecting it from the server.
 void Server::DisConnectHandler(PACKET_DISCONNECT * packet, sockaddr_in client) {
     gameState->DisconnectSession(packet->sessionId);
-    free(packet);
-}
-
-// Return the salt for a specified account to the Client.
-void Server::GetSaltHandler(PACKET_GETSALT *packet, sockaddr_in client) {
-    PACKET_GETSALT returnPacket;
-    std::cout << "New salt request from account " << packet->account << "." << std::endl;
-    // Check to make sure account already exists
-    // If account doesn't exist, notify user
-    // else, return the salt so the user can start key calculation
-    bool account_exists = sql->GetAccountSalt(packet->account, returnPacket.saltStringHex);
-    if (account_exists) {
-        strcpy(returnPacket.account, packet->account);
-    }
-    else {
-        std::cout << "Account " << packet->account << " was not found on the server!" << std::endl;
-        //std::string failedAccount = "FAILED";
-        strcpy(returnPacket.account, "failed");
-    }
-    // Either return the salt or return the response
-    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_GETSALT), 0, (struct sockaddr *)&client, sizeof(client));
-    free(packet);
-}
-
-// Take in new account information and create and account in the database.
-void Server::CreateAccountHandler(PACKET_CREATEACCOUNT *packet, sockaddr_in client) {
-    PACKET_CREATEACCOUNT returnPacket;
-    if (gameState->CreateAccount(packet->account, packet->keyStringHex, packet->saltStringHex)) {
-        strcpy(returnPacket.account, packet->account);
-    }
-    else {
-        std::cout << "Failed to create user " << packet->account << std::endl;
-        // Resue the same packet as the return packet
-        strcpy(returnPacket.account, "FAILED");
-    }
-    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CREATEACCOUNT), 0, (struct sockaddr *)&client, sizeof(client));
-    free(packet);
-}
-
-// Take in username and salted password to check against database.  If correct, we log in the user.
-void Server::LoginHandler(PACKET_LOGIN * packet, sockaddr_in client) {
-    PACKET_CREATEACCOUNT returnPacket;
-    if (gameState->LoginUser(packet->account, packet->keyStringHex)) {
-        strcpy(returnPacket.account, packet->account);
-        // Register the accountName to the sessionId
-        gameState->SetSessionAccountName(packet->account, packet->sessionId);
-    }
-    else {
-        std::cout << "Failed login attempt for user: " << packet->account << std::endl;
-        // Resue the same packet as the return packet
-        strcpy(returnPacket.account, "FAILED");
-    }
-    sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_CREATEACCOUNT), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
 
@@ -252,29 +186,5 @@ void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet, sockaddr_
 }
 
 void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet, sockaddr_in client) {
-    free(packet);
-}
-
-void Server::UnityHandler(PACKET_UNITY * packet, sockaddr_in client) {
-    std::cout << "0x" << std::hex << packet->data1 << std::endl;
-    std::cout << "0x" << std::hex << packet->data2 << std::endl;
-    std::cout << "0x" << std::hex << packet->data3 << std::endl;
-    std::cout << "0x" << std::hex << packet->data4 << std::endl;
-    std::cout << "0x" << std::hex << packet->data5 << std::endl;
-    std::cout << "------------------------" << std::endl;
-    PACKET_UNITY retPacket;
-    retPacket.data1 = packet->data1;
-    retPacket.data2 = packet->data2;
-    retPacket.data3 = packet->data3;
-    retPacket.data4 = packet->data4;
-    retPacket.data5 = packet->data5;
-    std::cout << "retPacket: " << std::endl;
-    std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
-    std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
-    std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
-    std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
-    std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
-    std::cout << "----------------------------------------------" << std::endl;
-    sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }

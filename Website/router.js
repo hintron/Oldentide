@@ -127,10 +127,9 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
         while ((salt.split('/').length - 1) > 0) {
             salt = bcrypt.genSaltSync(10);
         }
-        var session = null;
         var key = bcrypt.hashSync(req.body.registration_password_first, salt);
-        var query = "INSERT INTO accounts (valid, accountname, email, session, key, salt) " +
-                    "VALUES (0, '" + username + "', '" + email + "', " + session + ", '" + key + "', '" + salt + "');";
+        var query = "INSERT INTO accounts (valid, accountname, email, session, playing, key, salt) " +
+                    "VALUES (0, '" + username + "', '" + email + "', " + null + ", 0, '" + key + "', '" + salt + "');";
         db.get("SELECT * FROM accounts WHERE accountname = '" + username + "' OR email = '"  + email + "';", function(err, row) {
             if (row) {
                 res.render('register', { get: true, exists: true, loggedout: true });

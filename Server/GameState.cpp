@@ -10,7 +10,6 @@
 #include "Utils.h"
 #include <iterator>
 #include <iostream>
-#include "AccountManager.h"
 #include <cstring>
 #include <map>
 
@@ -40,32 +39,6 @@ bool GameState::VerifySession(int sessionId) {
 // Active sessions refer to users that have already authenticated and may or may not be already using a character.
 bool GameState::VerifyActiveSession(int sessionId) {
     if (activeSessions.find(sessionId) != activeSessions.end()) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-bool GameState::CreateAccount(char * account, char * keyStringHex, char * saltStringHex) {
-    bool success = false;
-    if (sql->InsertAccount(account, keyStringHex, saltStringHex)) {
-        std::cout << "Created Account..." << std::endl;
-        std::cout << "Account: " << account << std::endl;
-        std::cout << "Key: " << keyStringHex << std::endl;
-        std::cout << "Salt: " << saltStringHex << std::endl;
-        success = true;
-    }
-    else {
-        printf("Unable to insert new account record into database...\n");
-    }
-    return success;
-}
-
-bool GameState::LoginUser(char * account, char * keyStringHex) {
-    if (AccountManager::AuthenticateAccount(account, keyStringHex, sql)) {
-        std::cout << "Logging in account: " << account << std::endl;
-        std::cout << "Key: " << keyStringHex << std::endl;
         return true;
     }
     else {

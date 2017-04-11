@@ -14,7 +14,6 @@ enum PTYPE{
     DISCONNECT,
     GETSALT,
     CREATEACCOUNT,
-    LOGIN,
     LISTCHARACTERS,
     SELECTCHARACTER,
     DELETECHARACTER,
@@ -73,20 +72,10 @@ struct PACKET_CREATEACCOUNT {
     char keyStringHex[129];
 };
 
-struct PACKET_LOGIN {
-    PTYPE packetType = LOGIN;
-    int packetId;
-    int sessionId;
-    char account[30];
-    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char keyStringHex[129];
-};
-
 struct PACKET_LISTCHARACTERS {
     PTYPE packetType = LISTCHARACTERS;
     int packetId;
     int sessionId;
-    char character0[25];
     char character1[25];
     char character2[25];
     char character3[25];
@@ -96,6 +85,7 @@ struct PACKET_LISTCHARACTERS {
     char character7[25];
     char character8[25];
     char character9[25];
+    char character10[25];
 };
 
 struct PACKET_SELECTCHARACTER {

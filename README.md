@@ -9,7 +9,7 @@
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
 **Principal Author**: Joseph DeVictoria<br>
-**Contributing Authors**: Scott Heidbrink, Michael Hinton, John Weber.<br>
+**Contributing Authors**: Scott Heidbrink, Michael Hinton, Adam Johnson, John Weber.<br>
 **Client Platform**: Unity 5.4.2 (As of 4/8/2017)<br>
 **Languages**: C++, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>

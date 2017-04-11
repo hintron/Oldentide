@@ -5,7 +5,6 @@
 
 #include "AdminShell.h"
 #include "GameState.h"
-#include "LoginManager.h"
 #include "Npc.h"
 #include "Packets.h"
 #include "Player.h"
