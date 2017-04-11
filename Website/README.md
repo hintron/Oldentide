@@ -51,7 +51,7 @@ Install certbot from https://certbot.eff.org/:
 
 Generate certbot certificate:
 
-* sudo npm start
+* sudo npm start &
 * sudo certbot certonly --webroot -w ~/Oldentide/Website/public -d example.com -d www.example.com
 * ( sudo crontab -l; echo "0 5 * * * certbot renew -q" ) | sudo crontab -
 * cp config.env.example config.env.
