@@ -56,7 +56,7 @@ Generate certbot certificate:
 * ( sudo crontab -l; echo "0 5 * * * certbot renew -q" ) | sudo crontab -
 * cp config.env.example config.env.
 * Edit config.env and make the following changes:
-        * -uncomment #OLDENTIDE_ENABLE_HTTPS=1
-        * -uncomment and set #OLDENTIDE_DOMAIN=yourdomain.com
+1. Uncomment #OLDENTIDE_ENABLE_HTTPS=1
+2. Uncomment and set #OLDENTIDE_DOMAIN=yourdomain.com
 
 Restart the Oldentide server and HTTPS should now be enabled.
