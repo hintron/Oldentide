@@ -1,19 +1,22 @@
-####Installing HTTPS using Let's Encrypt - Long Description:
+#### Installing HTTPS using Let's Encrypt - Long Description:
 
-Before anything, you need to have a public domain name and IP address associated with your server.
+Before anything, you need to have a public domain name pointing to the IP address associated with your server.
 Then you need to have the Oldentide server up and running. See instructions above to run.
-This is important, because certbot expects a webserver to serve up static files in Oldentide/Website/public/
-to prove that you are in control of the domain.
-All the Let's Encrypt certbot does is prove that you are in control of the domain, and then gives you a certificate.
+This is important, because certbot expects a webserver on port 80 to serve up static files where you specify -
+i.e. ~/Oldentide/Website/public - to prove that you are in control of the domain.
+All the Let's Encrypt certbot does is issue challenges and receive reponses to prove that you are
+in control of the domain, and then gives you an HTTPS certificate for that domain.
 
-These instructions assume:
--that the Oldentide webserver is currently running
--that the Oldentide directory is at ~/Oldentide.
--that the Oldentide webserver is running at domain example.com
-(i.e. the example.com/ webroot is pointed to ~/Oldentide/Website/public/)
+These instructions assume that:
+-the Oldentide webserver is currently running
+(NOTE: example.com/ webroot should now be pointed to ~/Oldentide/Website/public/)
+-the Oldentide directory is at ~/Oldentide.
+-the Oldentide webserver is running under domain example.com on port 80
+-no other webservers or services are running on port 80
+-both example.com and www.example.com are pointed to your server's IP address.
 
 
-##Install certbot
+## Install certbot
 
 Go to https://certbot.eff.org/
 For software, select None of the above.
@@ -21,20 +24,21 @@ For system, select your OS - e.g. Ubuntu 16.04 (xenial), Debian 8 (jesse).
 Follow the instructions to install the certbot command line utility
 
 
-##Create a certificate
+## Create a certificate
 
 Once certbot is installed, simply run the following command:
 * sudo certbot certonly --webroot -w ~/Oldentide/Website/public -d example.com -d www.example.com
 This will create a single certificate that can be used for domains https://example.com and https://www.example.com.
+If you don't want the www version of the domain to be included in the cert, simply remove it from the command.
 The certificates will be stored in /etc/letsencrypt/live/$domain/.
-The $domain folder is just the first domain listed in the command (example.com).
+The $domain folder is just the FIRST domain listed in the command (example.com).
 See https://certbot.eff.org/docs/using.html#where-are-my-certificates.
 To double check that the certificates were generated properly, run this command:
 * openssl x509 -text -noout -inform pem -in /etc/letsencrypt/live/example.com/cert.pem
 The key thing to check here is that "X509v3 Subject Alternate Name" shows both example.com and www.example.com.
 
 
-##Setup certificate auto-renewal
+## Setup certificate auto-renewal
 
 Let's Encrypt certs last for only 90 days, so we need to automate the renewal of the certificates in the future.
 First, test to see if autorenewal works:
@@ -43,7 +47,7 @@ Edit the crontab file in order to automate renewal when certs expire:
 * sudo crontab -e
 Add the following line, which will do a renewal check every day at 5 am:
 0 5 * * * certbot renew -q
-Again, this assumes that a webserver is running and serving static files when it runs.
+Again, this assumes that the Oldentide webserver is running and serving static files from the same place.
 (See https://help.ubuntu.com/community/CronHowto)
 
 
@@ -85,7 +89,7 @@ You can further test your site using this tool:
     https://www.ssllabs.com/ssltest/analyze.html
 
 
-###Alternative way of starting the Oldentide webserver:
+### Forever: Alternative way of starting the Oldentide webserver:
 
 Globally install the forever node module:
 * npm install forever -g
