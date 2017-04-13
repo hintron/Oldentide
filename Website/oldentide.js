@@ -20,6 +20,9 @@ var dotenv          = require('dotenv');
 dotenv.config({path: './config.env'});
 const ENABLE_HTTPS = process.env.OLDENTIDE_ENABLE_HTTPS;
 const DOMAIN_NAME = process.env.OLDENTIDE_DOMAIN;
+const EMAIL_SERVICE = process.env.OLDENTIDE_EMAIL_SERVICE;
+const EMAIL_USER = process.env.OLDENTIDE_EMAIL_USER;
+const EMAIL_PASSWORD = process.env.OLDENTIDE_EMAIL_PASSWORD;
 const HTTP_PORT = 80;
 const HTTPS_PORT = 443;
 
@@ -58,14 +61,18 @@ var db = new sqlite3.Database('../Server/db/Oldentide.db', function() {
     console.log('Successfully opened Oldentide.db!');
 });
 
-// TODO: Read these credentials in from the config file
-var emailer = mailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'oldentide@gmail.com',
-        pass: 'PhoenixL1ves'
-    }
-});
+
+var emailer;
+if(EMAIL_SERVICE && EMAIL_USER && EMAIL_PASSWORD){
+    emailer = mailer.createTransport({
+        service: EMAIL_SERVICE,
+        auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASSWORD,
+        }
+    });
+}
+
 
 // Set up external router file.
 require('./router')(app, domain, bcrypt, db, emailer);

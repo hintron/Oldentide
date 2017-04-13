@@ -136,7 +136,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
             }
             else {
                 emailer.sendMail({
-                    from: '"Oldentide Server", <oldentide@gmail.com>',
+                    from: '"Oldentide Server", <' + emailer.options.auth.user + '>',
                     to: email,
                     subject: "Verify Your Oldentide Account!",
                     text: ("Hello " + username + ",\r\n\r\nPlease verify your Oldentide account by clicking the following link:\r\n" +
