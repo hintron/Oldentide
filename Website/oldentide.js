@@ -109,7 +109,14 @@ if(ENABLE_HTTPS){
     var app_http = express();
     app_http.get('*', function (req, res) {
         console.log("redirecting http to https! " + req.headers['host'] + req.url);
-        res.redirect('https://' + req.headers['host'] + req.url);
+        if(HTTPS_PORT != 443){
+            // Redirect to non-standard, custom HTTPS port
+            //console.log("redirecting port " + HTTP_PORT + " to " + HTTPS_PORT);
+            res.redirect('https://' + (req.headers['host'].slice(0, -HTTP_PORT.toString().length)) + HTTPS_PORT + req.url);
+        }
+        else {
+            res.redirect('https://' + req.headers['host'] + req.url);
+        }
     });
     http.createServer(app_http).listen(HTTP_PORT, function() {
         console.log('Listening on port ' + HTTP_PORT + '...');
