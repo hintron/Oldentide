@@ -15,6 +15,7 @@ var path            = require('path');
 var sqlite3         = require('sqlite3').verbose();
 var fs              = require('fs');
 var dotenv          = require('dotenv');
+var helmet          = require('helmet');
 
 
 dotenv.config({path: './config.env'});
@@ -43,6 +44,8 @@ console.log("Webserver running on domain \"" + domain + "\"");
 
 // Application Setup:
 var app = express();
+// Use the helmet middleware to shore up sundry attack vectors
+app.use(helmet());
 // Set handlebars as our template engine.
 app.engine('handlebars', handlebars({defaultLayout: 'main'}));
 app.set('views', __dirname + '/views');
