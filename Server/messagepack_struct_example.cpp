@@ -38,6 +38,7 @@ int main(int argc, char const *argv[]) {
 
     // Cannot do this unless you take away the default values for struct type
     foo_struct_t src2 = {
+        // Use designated/tagged initialization
         .packetType = SENDPLAYERACTION,
         .packetId = 17,
         .sessionId = 1337,
@@ -60,10 +61,11 @@ int main(int argc, char const *argv[]) {
     std::string str(buffer.str());
 
     // Print out how the message pack looks like
-    const char *msgpack_string = str.c_str();
-    // Don't calculate length based on c_str, in case data has 0x00s in it, causing it to fake out strlen(c_str)
+    const char *msgpack_string = str.data();
+    // Don't calculate length based on c_str, in case data has 0x00s fake out strlen(c_str)
     for (int i = 0; i < str.length(); ++i) {
         // Use hh to designate char-width, since it expects an int
+        // See http://www.cplusplus.com/reference/cstdio/printf/
         // Use 02 to backfill with 0s up to 2 places
         // See http://stackoverflow.com/questions/8441257/why-does-c-print-my-hex-values-incorrectly
         printf("%02hhX", msgpack_string[i]);
