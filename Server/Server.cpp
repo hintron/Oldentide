@@ -100,6 +100,12 @@ void Server::Run() {
                 case SENDSERVERACTION:
                     SendServerActionHandler((PACKET_SENDSERVERACTION*)packet, client);
                     break;
+                case UNITY:
+                    UnityHandler((PACKET_UNITY*)packet, client);
+                    break;
+                default:
+                    std::cout << "Received unknown packet!!" << std::endl;
+                    break;
            }
         }
         else {
@@ -187,5 +193,30 @@ void Server::SendPlayerActionHandler(PACKET_SENDPLAYERACTION * packet, sockaddr_
 }
 
 void Server::SendServerActionHandler(PACKET_SENDSERVERACTION * packet, sockaddr_in client) {
+    free(packet);
+}
+
+
+void Server::UnityHandler(PACKET_UNITY * packet, sockaddr_in client) {
+    std::cout << "0x" << std::hex << packet->data1 << std::endl;
+    std::cout << "0x" << std::hex << packet->data2 << std::endl;
+    std::cout << "0x" << std::hex << packet->data3 << std::endl;
+    std::cout << "0x" << std::hex << packet->data4 << std::endl;
+    std::cout << "0x" << std::hex << packet->data5 << std::endl;
+    std::cout << "------------------------" << std::endl;
+    PACKET_UNITY retPacket;
+    retPacket.data1 = packet->data1;
+    retPacket.data2 = packet->data2;
+    retPacket.data3 = packet->data3;
+    retPacket.data4 = packet->data4;
+    retPacket.data5 = packet->data5;
+    std::cout << "retPacket: " << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
+    std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+    sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
     free(packet);
 }
