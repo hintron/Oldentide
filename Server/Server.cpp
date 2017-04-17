@@ -17,6 +17,7 @@
 Server::Server(int port) {
     sql = new SQLConnector();
     gameState = new GameState(sql);
+    adminshell = new AdminShell(sql, gameState);
 
     // Create server address struct.
     sockaddr_in server;
@@ -137,7 +138,7 @@ void Server::DisConnectHandler(PACKET_DISCONNECT * packet, sockaddr_in client) {
 void Server::ListCharactersHandler(PACKET_LISTCHARACTERS * packet, sockaddr_in client) {
     std::string account = gameState->GetSessionAccountName(packet->sessionId);
     std::cout << "Account: " << account << " requested their character list." << std::endl;
-    
+
     free(packet);
 }
 
