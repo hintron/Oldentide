@@ -53,9 +53,12 @@ void Server::Run() {
         PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
         int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
         bool validSession = true;
-        if (packet->packetType != CONNECT) {
-			validSession = gameState->VerifySession(packet->sessionId);
-		}
+        std::cout << "Recieved packet of type " << packet->packetType << std::endl;
+        std::cout << "Unity packet is of type " << UNITY << std::endl;
+        // TODO: Uncomment for production code
+        // if (packet->packetType != CONNECT) {
+        //     validSession = gameState->VerifySession(packet->sessionId);
+        // }
         if (validSession) {
             switch (packet->packetType) {
                 case GENERIC:
@@ -104,7 +107,7 @@ void Server::Run() {
                     UnityHandler((PACKET_UNITY*)packet, client);
                     break;
                 default:
-                    std::cout << "Received unknown packet!!" << std::endl;
+                    std::cout << "Received unknown packet of type " << packet->packetType << std::endl;
                     break;
            }
         }
