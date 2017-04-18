@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using MessagePack;
 
 public class NetworkInterface : MonoBehaviour {
 
@@ -68,7 +69,52 @@ public class NetworkInterface : MonoBehaviour {
 				Debug.Log("Data received @[" + i + "]: " + next);
 				i++;
 			}*/
+
 		}
+
+		if(Input.GetKeyDown(KeyCode.M)){
+			Debug.Log("Sending a single packet via message pack!!");
+			PACKET_UNITY pp;
+			pp.packetType = Oldentide.Networking.PTYPE.UNITY;
+			pp.data1 = 1;
+			pp.data2 = 8;
+			pp.data3 = 16;
+			pp.data4 = 64;
+			pp.data5 = 255;
+
+			// For the MessagePack library, using:
+			// https://github.com/neuecc/MessagePack-CSharp
+			// instead of:
+			// https://github.com/msgpack/msgpack-cli
+
+			// To install, simply download the Unity zip from the releases page:
+			// https://github.com/neuecc/MessagePack-CSharp/releases
+			// Unzip it into a folder NOT under Oldentide/
+			// (don't want unity automatically ingesting the files just yet)
+			// In the Unity editor, click Assets -> Import Package
+			// Select the MessagePack .unitypackage file and click import.
+			// e.g. ...\MessagePack.Unity.1.2.0\MessagePack.Unity.1.2.0.unitypackage"
+			// Now all the MessagePack files are loaded into the project!
+			// To use it in code, put "using MessagePack" at the top of any C# files
+
+
+
+			// Message Pack example
+			// See https://github.com/neuecc/MessagePack-CSharp#quick-start
+
+			// call Serialize/Deserialize, that's all.
+	        var bytes = MessagePackSerializer.Serialize(pp);
+
+			clientSocket.SendTo(bytes, serverEndPoint);
+			Debug.Log("Data sent: " + bytes.ToString());
+	        // you can dump msgpack binary to human readable json.
+	        // In default, MessagePack for C# reduce property name information.
+	        // [99,"hoge","huga"]
+	        var json = MessagePackSerializer.ToJson(bytes);
+			Debug.Log("MessagePack json: " + json);
+	        var mc2 = MessagePackSerializer.Deserialize<PACKET_UNITY>(bytes);
+       }
+
 	}
 
 	public byte [] StructureToByteArray(object obj){

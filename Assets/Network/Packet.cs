@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace Oldentide.Networking {
 
@@ -228,12 +229,23 @@ namespace Oldentide.Networking {
 	};
 */
 
+	// mark MessagePackObjectAttribute
+	[MessagePackObject]
 	public struct PACKET_UNITY {
+	    [Key(0)]
 		public PTYPE packetType;
+	    [Key(1)]
 		public int data1;
+	    [Key(2)]
 		public int data2;
+	    [Key(3)]
 		public int data3;
+	    [Key(4)]
 		public int data4;
+	    [Key(5)]
 		public int data5;
 	};
+
+
+
 }
