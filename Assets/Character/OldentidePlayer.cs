@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-public class OldentidePlayer : OldentideCharacter MonoBehaviour {
+public class OldentidePlayer : OldentideCharacter {
 
 	// Character Description
 	private string account;
 	private string profession;
+	private string session;
 	private int dp;
 
 	// Martial Skills
@@ -70,7 +71,7 @@ public class OldentidePlayer : OldentideCharacter MonoBehaviour {
 	private int runic;
 
 	// Full Constructor
-	public OldentidePlayer ( string account, string profession, string session, int axe,
+	public OldentidePlayer ( string account, string profession, string session, int dp, int axe,
 							 int dagger, int unarmed, int hammer, int polearm, int spear,
 							 int staff, int sword, int archery, int crossbow, int sling,
 							 int thrown, int armor, int dualWeapon, int shield, int bardic,
@@ -81,13 +82,20 @@ public class OldentidePlayer : OldentideCharacter MonoBehaviour {
 							 int enchanting, int herbalism, int hunting, int mining,
 							 int bargaining, int camping, int firstAid, int lore, int pickLocks,
 							 int scouting, int search, int stealth, int traps, int aeolandis,
-							 int hieroform, int highGundis, int oldPraxic, int praxic, int runic ) 
-	   :OldentideCharacter ( string name, string lastname, string guild, string race,
-	   						 string gender, string face, string skin, string zone, int id, 
-	   						 int level, int dp, int hp, int maxHp, int bp, int maxBp, int mp,
-	   						 int maxMp, int ep, int maxEp, int strength, int constitution, 
-	   						 int intelligence, int dexterity, float weight, float x, float y,
-	   						 float z, float pitch, float yaw ) {
+							 int hieroform, int highGundis, int oldPraxic, int praxic, int runic,
+							 string firstname, string lastname, string guild, string race,
+	   						 string gender, string face, string skin, string zone, string head,
+	   						 string chest, string arms, string hands, string legs, string feet,
+	   						 string cloak, string necklace, string ringOne, string ringTwo, 
+	   						 string rightHand, string leftHand, int id, int level, int hp,
+	   						 int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp,
+	   						 int strength, int constitution, int intelligence, int dexterity,
+	   						 float weight, float x, float y, float z, float pitch, float yaw ) 
+	   				: base ( firstname, lastname, guild, race, gender, face, skin, zone, head, 
+	   						 chest, arms, hands, legs, feet, cloak, necklace, ringOne, ringTwo,
+	   						 rightHand, leftHand, id, level, hp, maxHp, bp, maxBp, mp, maxMp, ep,
+	   						 maxEp, strength, constitution, intelligence, dexterity, weight, x, y,
+	   						 z, pitch, yaw ) {
 		SetAccount(account);
 	    SetProfession(profession);
 	    SetSession(session);
@@ -144,20 +152,6 @@ public class OldentidePlayer : OldentideCharacter MonoBehaviour {
 	    SetRunic(runic);
 	}
 
-	// Player Creation Constructor
-	public OldentidePlayer ( string name, string lastname, string account, string profession,
-							 string race, string gender, string face, string skin ) {
-
-	}
-
-	public void Start () {
-
-	}
-
-	public void Update () {
-
-	}
-
 	// Getters
 
 	public string GetAccount() {
@@ -174,10 +168,6 @@ public class OldentidePlayer : OldentideCharacter MonoBehaviour {
 
 	public int GetDp() {
 	    return dp;
-	}
-
-	public int GetSession() {
-	    return session;
 	}
 
 	public int GetAxe() {

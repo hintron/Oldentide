@@ -4,7 +4,7 @@ using System.Collections;
 public class OldentideCharacter : MonoBehaviour {
 
 	// Character Description
-	protected string name;
+	protected string firstname;
 	protected string lastname;
 	protected string guild;
 	protected string race;
@@ -49,7 +49,7 @@ public class OldentideCharacter : MonoBehaviour {
 	protected float yaw;
 
 	// Full Constructor
-	public OldentideCharacter ( string name, string lastname, string guild, string race,
+	public OldentideCharacter ( string firstname, string lastname, string guild, string race,
 								string gender, string face, string skin, string zone, string head,
 								string chest, string arms, string hands, string legs, string feet,
 								string cloak, string necklace, string ringOne, string ringTwo,
@@ -57,8 +57,8 @@ public class OldentideCharacter : MonoBehaviour {
 								int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp,
 								int strength, int constitution, int intelligence, int dexterity,
 								float weight, float x, float y, float z, float pitch, float yaw ) {
-		SetName(name);
-	    SetLastname(lastname);
+		Setfirstname(firstname);
+	    Setlastname(lastname);
 	    SetGuild(guild);
 	    SetRace(race);
 	    SetGender(gender);
@@ -99,7 +99,7 @@ public class OldentideCharacter : MonoBehaviour {
 	}
 
 	public OldentidePosition GetPosition () {
-		return OldentidePosition(zone, x, y, z, pitch, yaw);
+		return new OldentidePosition(zone, x, y, z, pitch, yaw);
 	}
 
 	public void UpdatePosition ( string zone, float x, float y, float z, float pitch, float yaw) {
@@ -120,21 +120,13 @@ public class OldentideCharacter : MonoBehaviour {
 		SetYaw(position.yaw);
 	}
 
-	public void Start () {
-
-	}
-
-	public void Update () {
-
-	}
-
 	// Getters
 
-	public string GetName() {
-	    return name;
+	public string Getfirstname() {
+	    return firstname;
 	}
 
-	public string GetLastname() {
+	public string Getlastname() {
 	    return lastname;
 	}
 
@@ -292,11 +284,11 @@ public class OldentideCharacter : MonoBehaviour {
 
 	// Setters
 
-	public void SetName(string name) {
-	    this.name = name;
+	public void Setfirstname(string firstname) {
+	    this.firstname = firstname;
 	}
 
-	public void SetLastname(string lastname) {
+	public void Setlastname(string lastname) {
 	    this.lastname = lastname;
 	}
 
@@ -420,8 +412,8 @@ public class OldentideCharacter : MonoBehaviour {
 	    this.constitution = constitution;
 	}
 
-	public void SetYntelligence(int intelligence) {
-	    this.public intelligence = public intelligence;
+	public void SetIntelligence(int intelligence) {
+	    this.intelligence = intelligence;
 	}
 
 	public void SetDexterity(int dexterity) {
