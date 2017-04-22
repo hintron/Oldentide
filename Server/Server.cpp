@@ -13,6 +13,9 @@
 #include <thread>
 #include <unistd.h>
 #include <limits.h>
+#include <msgpack.hpp>
+#include "Utils.h"
+
 
 Server::Server(int port) {
     sql = new SQLConnector();
@@ -48,19 +51,51 @@ void Server::Run() {
     std::thread shell(*adminshell);
     sockaddr_in client;
     socklen_t len = sizeof(client);
+
     bool listen = true;
     while(listen) {
-        PACKET_GENERIC * packet = (PACKET_GENERIC*) malloc(sizeof(PACKET_GENERIC));
-        int n = recvfrom(sockfd, (void *)packet, sizeof(PACKET_GENERIC), 0, (struct sockaddr *)&client, &len);
+        char *packet = (char *)malloc(PACKET_MAX_SIZE);
+        int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)&client, &len);
+
+        uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
+        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
+
+        std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
+        std::cout << "Msgpck Size: " << msgpckSize << std::endl;
+
+        // Check to make sure we don't accidentally access data outside the packet!
+        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "Msgpck Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
+            continue;
+        }
+
+        // Convert to std::string so we can use it with messagepack
+        std::string msgpck_data = utils::GetMsgpckDataFromPacket(packet);
+
+        utils::PrintStringHex(&msgpck_data);
+
+        // Use MessagePack to Deserialize the payload
+        msgpack::object_handle oh = msgpack::unpack(msgpck_data.data(), msgpck_data.size());
+        msgpack::object deserialized = oh.get();
+        std::cout << deserialized << std::endl;
+        TestData test;
+        deserialized.convert(test);
+
+        // Prove that deserialization worked
+        std::cout << test.value << std::endl;
+        std::cout << test.i << std::endl;
+
+        continue;
+
+        // TODO: Get messagepack working for all types of packets!
+
         bool validSession = true;
-        std::cout << "Recieved packet of type " << packet->packetType << std::endl;
-        std::cout << "Unity packet is of type " << UNITY << std::endl;
         // TODO: Uncomment for production code
-        // if (packet->packetType != CONNECT) {
+        // if (packetType != CONNECT) {
         //     validSession = gameState->VerifySession(packet->sessionId);
         // }
         if (validSession) {
-            switch (packet->packetType) {
+            switch (packetType) {
                 case GENERIC:
                     GenericHandler((PACKET_GENERIC*)packet, client);
                     break;
@@ -107,13 +142,16 @@ void Server::Run() {
                     UnityHandler((PACKET_UNITY*)packet, client);
                     break;
                 default:
-                    std::cout << "Received unknown packet of type " << packet->packetType << std::endl;
+                    std::cout << "Received unknown packet of type " << packetType << std::endl;
                     break;
            }
         }
         else {
             free(packet);
         }
+
+        // TODO: Instead of freeing the packet at the end of every function call, free it here, when they all join back up!
+        // free(packet);
     }
     shell.join();
     return;

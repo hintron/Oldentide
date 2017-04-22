@@ -4,6 +4,9 @@
 # Ignore any local letsencrypt files and keys
 letsencrypt
 
+# Ignore MessagePack library
+msgpack-c
+
 # Generic Log Files
 *.log
 

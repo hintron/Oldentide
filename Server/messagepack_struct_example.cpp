@@ -54,13 +54,10 @@ int main(int argc, char const *argv[]) {
     msgpack::pack(buffer, src2);
     // msgpack::pack(buffer, src3);
 
-    // send the buffer ...
     buffer.seekg(0);
-
-    // deserialize the buffer into msgpack::object instance.
     std::string str(buffer.str());
 
-    // Print out how the message pack looks like
+    // Print out how the message pack looks
     const char *msgpack_string = str.data();
     // Don't calculate length based on c_str, in case data has 0x00s fake out strlen(c_str)
     for (int i = 0; i < str.length(); ++i) {

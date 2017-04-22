@@ -35,12 +35,17 @@ Dependencies
 * sqlite3 - To store data, the simple, lightweight [sqlite3][5] database is used.
 * libsqlite3-dev - To develop with [sqlite3][5], we need the c++ libraries.  This
   library is the package name on debian based systems.
+* msgpck-c v2.1.1 - To efficiently and predictably transmit packet data between server and client
+    (this will automatically be installed the first time you run make)
 
 Server and Test Client Usage
 ------------
 In linux, cd into Oldentide/Server/ and run
 
     make
+
+The first time you build, after a few minutes it will ask you for sudo permission in order
+to install msgpck-c headers in /usr/local/indlude.
 
 If everything built properly, run
 

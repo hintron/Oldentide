@@ -6,6 +6,8 @@
 #ifndef PACKETS_H
 #define PACKETS_H
 
+#include <msgpack.hpp>
+
 // Enumerate list of packet types (One-hot encoded)
 enum PTYPE{
     // Reserve 0 for null/uninitialized
@@ -29,6 +31,33 @@ enum PTYPE{
     SENDSERVERACTION = 18,
     UNITY = 19
 };
+
+
+// Use this to send enums over messagepack - currently not needed
+// MSGPACK_ADD_ENUM(PTYPE);
+
+// Define packet maximums
+// Generally, to avoid packet fragmentation, it is suggested to keep it to around 512 for maximum leniency,
+// though they say you can go up to about 1400 for general use.
+// See http://stackoverflow.com/questions/2862071/how-large-should-my-recv-buffer-be-when-calling-recv-in-the-socket-library
+// See http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
+#define PACKET_MAX_SIZE 512
+#define PACKET_HEADER_SIZE 3
+const uint16_t MSGPCK_MAX_PAYLOAD_SIZE = PACKET_MAX_SIZE - PACKET_HEADER_SIZE;
+
+
+class TestData {
+    public:
+        std::string value;
+        int i;
+        MSGPACK_DEFINE(value, i); // write the member variables that you want to pack
+    // private:
+    //     PTYPE packetType;
+};
+
+
+
+
 
 struct PACKET_GENERIC {
     PTYPE packetType = GENERIC;
@@ -240,5 +269,7 @@ struct PACKET_UNITY {
     int data4;
     int data5;
 };
+
+
 
 #endif //PACKETS_H

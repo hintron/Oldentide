@@ -4,6 +4,7 @@
 // Purpose:     Miscellaneous functions.
 
 #include "Utils.h"
+#include "Packets.h"
 #include <algorithm>
 #include <regex>
 #include <iostream>
@@ -67,7 +68,7 @@ namespace utils{
             return 1;
         }
     }
-    
+
     // CLIENT/SERVER. Checks to make sure the passed string looks like a valid account name
     // Checks the length of the string, and then makes sure it is alphanumeric and underscore only.
     bool SanitizeAccountName(char *account_name) {
@@ -83,7 +84,7 @@ namespace utils{
         }
     }
 
-    // CLIENT/SERVER. Checks to makesure the passed string is only alphanumeric characters and underscore.   
+    // CLIENT/SERVER. Checks to makesure the passed string is only alphanumeric characters and underscore.
     // Use regex to check that the account name is only alpha-numeric
     // Regex: \^\w{3,30}$\
     // Tested regex at regex101.com using javascript (ECMAScript) flavor
@@ -103,7 +104,7 @@ namespace utils{
     // CLIENT/SERVER. Checks to make sure the passed string is only hex - a-f, A-F, 0-9.
     // Returns 1 if it's hex, 0 if not.
     bool SanitizeHexString(char *string) {
-        // Check to see if the passed string is at least one character (+) of only hex characters 
+        // Check to see if the passed string is at least one character (+) of only hex characters
         std::regex check_hex_regex("^[a-fA-F0-9]+$");
         if (!regex_match(string, check_hex_regex)) {
             return false;
@@ -112,4 +113,125 @@ namespace utils{
             return true;
         }
     }
+
+
+    // Prints the bytes of str in a hex format
+    void PrintStringHex(std::string *str){
+        printf("Hex:\n");
+        const char *c_str = str->data();
+        size_t size = str->size();
+        // Don't calculate length based on c_str, in case data has 0x00s fake out strlen(c_str)
+        for (size_t i = 0; i < size; ++i) {
+            printf("%02hhX", c_str[i]);
+        }
+        printf("\n");
+    }
+
+    // TODO: Put the following in the packet.h class/file?
+
+
+    /*
+
+    Oldentide Packet Header
+    =======================
+
+    The following packet header shall be appended to the beginning
+    of every packet sent to and from the server:
+
+    one byte:
+    +--------+
+    |        |
+    +--------+
+
+    a variable number of bytes:
+    +========+
+    |        |
+    +========+
+
+    type is a uint8_t
+    size is a uint16_t (stored little-endian)
+    l = lower byte (LSB)
+    h = higher/upper byte (MSB)
+
+    +----------+----------+----------+=========================+
+    |   type   |  size(l) |  size(h) |  msgpck_data...         |
+    +----------+----------+----------+=========================+
+
+    To safely and consistently access this data, use the helper functions in Utils.cpp.
+
+
+
+    How to install and set up msgpck-c in the project:
+    ==================================================
+
+    See https://github.com/msgpack/msgpack-c#building-and-installing
+
+        git clone https://github.com/msgpack/msgpack-c.git
+        cd msgpack-c
+        cmake .
+        make
+        sudo make install
+
+    Note that sudo make install should copy the msgpck-c headers to /usr/local/include,
+    and this should automatically be part of the include path to g++
+
+    */
+
+
+
+
+
+
+
+    // Adds in the packetType and the size of the message pack data
+    // TODO: Make this more efficient by using memcpy instead of insert?
+    void PrependPacketHeader(std::string *str, uint8_t packetType){
+        uint16_t size = str->size();
+        if(size > MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "ERROR: MessagePack data is larger than " << MSGPCK_MAX_PAYLOAD_SIZE << " bytes!!!!" << std::endl;
+        }
+
+        std::string size_str = std::string((char *)&size,2);
+        // Add in header info - prepend the packet type and messagepack data size
+        str->insert(0, size_str);
+        str->insert(0, 1, (char)packetType);
+    }
+
+    // Returns the PTYPE of the packet
+    uint8_t GetPacketTypeFromPacket(char *packet_buffer){
+        // Simply return the first byte of the packet, since that is where the PTYPE value is
+        return packet_buffer[0];
+    }
+
+    // Returns the size of the msgpack data payload
+    // Accesses the udp packet from position 1, grabs 2 bytes, and stores them in a short
+    uint16_t GetMsgpckSizeFromPacket(char *packet_buffer){
+        // TODO: Make it so that there are no unaligned accesses -
+        // i.e. no short access starting at arr[1] (RISC machines - ARM, etc)
+        uint16_t *shorty_array = (uint16_t *)(&packet_buffer[1]);
+        if(shorty_array[0] > MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "ERROR: Msgpck Size is too large (> " << MSGPCK_MAX_PAYLOAD_SIZE << ")to be correct!" << std::endl;
+        }
+
+        return shorty_array[0];
+    }
+
+
+
+    std::string GetMsgpckDataFromPacket(char *packet_buffer){
+        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet_buffer);
+
+        // Check to make sure we don't accidentally access data outside the packet!
+        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "Msgpck Size is too large to be correct! Returning empty string" << std::endl;
+            return std::string();
+        }
+
+        // Return the msgpck payload, which starts at index 3 and is msgpckSize in length
+        return std::string(packet_buffer+PACKET_HEADER_SIZE, msgpckSize);
+    };
+
+
+
+
 }

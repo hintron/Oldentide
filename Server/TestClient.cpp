@@ -16,6 +16,9 @@
 #include <sys/socket.h>
 #include <thread>
 #include "Utils.h"
+#include <msgpack.hpp>
+#include <sstream>
+
 
 using namespace std;
 
@@ -60,6 +63,9 @@ int main(int argc, char * argv[]) {
 
     int clientState = 0;
 
+    int test_counter = 1337;
+    std::string test_string("Test!");
+
     while (running) {
         switch (clientState) {
             // Initial State.
@@ -72,13 +78,53 @@ int main(int argc, char * argv[]) {
                     packet.packetId = packetNumber;
                     packetNumber++;
                     packet.sessionId = session;
-                    sendto(sockfd,(void*)&packet,sizeof(packet),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+
+
+                    // Test out with a class of data (a struct)
+                    TestData test = TestData{test_string, test_counter};
+                    test_counter++;
+                    test_string.append(1, '!');
+
+
+                    // Use MessagePack to serialize data
+                    std::stringstream buffer;
+                    // msgpack::pack(buffer, packet);
+                    msgpack::pack(buffer, test);
+                    buffer.seekg(0);
+                    std::string str(buffer.str());
+
+
+                    utils::PrintStringHex(&str);
+
+                    // Check to make sure that the msgpck data isn't too big
+                    if(str.size() > PACKET_MAX_SIZE){
+                        std::cout << "ERROR: Packet is larger than " << PACKET_MAX_SIZE << " bytes!!!!" << std::endl;
+                    }
+
+
+                    // Add in header info - prepend the packet type and messagepack data size
+                    utils::PrependPacketHeader(&str, ACK);
+                    // See what the packet looks like now
+                    utils::PrintStringHex(&str);
+
+                    // Send the packet
+                    sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+
+                    continue;
+
                     PACKET_CONNECT * returnPacket = (PACKET_CONNECT*) malloc(sizeof(PACKET_CONNECT));
                     sockaddr_in servret;
                     socklen_t len = sizeof(servret);
                     int n = recvfrom(sockfd, (void *)returnPacket, sizeof(PACKET_CONNECT), 0, (struct sockaddr *)&servret, &len);
-                    std::cout << "Connected! Given the session id: " << returnPacket->sessionId << std::endl;
-                    session = returnPacket->sessionId;
+
+
+                    // Convert to std::string so we can use it with messagepack
+                    // std::string str2((char *)returnPacket, sizeof(PACKET_CONNECT));
+                    // Use MessagePack to Deserialize the data
+                    // msgpack::unpack(str2.data(), str2.size()).get().convert(*returnPacket);
+
+                    // std::cout << "Connected! Given the session id: " << returnPacket->sessionId << std::endl;
+                    // session = returnPacket->sessionId;
                     free(returnPacket);
                     clientState = 1;
                 }
@@ -103,8 +149,10 @@ int main(int argc, char * argv[]) {
                     packetListCharacters.sessionId = session;
                     sendto(sockfd,(void*)&packetListCharacters,sizeof(packetListCharacters),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     PACKET_LISTCHARACTERS *characterList = (PACKET_LISTCHARACTERS*) malloc(sizeof(PACKET_LISTCHARACTERS));
-                    if (characterList->character1 == "") {
-                        std::cout << "You do not have any characters selected on this account" << std:: endl;
+
+                    // std::cout << "Character 1: " << characterList->character1 << std::endl;
+                    if (std::string(characterList->character1) == "") {
+                        std::cout << "You do not have any characters selected on this account" << std::endl;
                         std::cout << "Please give me a first name for your new character: ";
                         char firstName[25];
                         cin.getline(firstName, sizeof(firstName));
@@ -120,9 +168,10 @@ int main(int argc, char * argv[]) {
                         sendto(sockfd,(void*)&newCharacter,sizeof(newCharacter),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
                     }
                     else {
+                        // TODO: I think this loop might be broken
                         int count = 0;
                         bool notEmpty = true;
-                        while (notEmpty) {
+                        while (count < 25) {
                             char name[25];
                             switch (count) {
                                 case 0:
@@ -165,7 +214,7 @@ int main(int argc, char * argv[]) {
                             }
                         }
                     }
-                }
+                } // End has no character while loop
                 std::cout << "Please select a character: ";
                 char name[25];
                 cin.getline(name, sizeof(name));

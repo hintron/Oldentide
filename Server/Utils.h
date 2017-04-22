@@ -16,6 +16,12 @@ namespace utils{
     bool SanitizeAccountName(char *);
     bool SanitizeAlphanumeric(char *);
     bool SanitizeHexString(char *);
+    void PrintStringHex(std::string *);
+    void PrependPacketHeader(std::string *, uint8_t);
+    uint8_t GetPacketTypeFromPacket(char *);
+    uint16_t GetMsgpckSizeFromPacket(char *);
+    std::string GetMsgpckDataFromPacket(char *packet_buffer);
+
 };
 
 
