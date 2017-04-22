@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Oldentide.Game;
 
 public class InventoryController : MonoBehaviour {
 
@@ -17,6 +18,9 @@ public class InventoryController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		bagZeroSize = 60;
+		bagOneSize = 0;
+		bagTwoSize = 0;
+		bagThreeSize = 0;
 		bags = new OldentideBag[4];
 		bags[0] = new OldentideBag(bagZeroSize);
 		bags[1] = new OldentideBag(bagOneSize);
@@ -45,7 +49,7 @@ public class InventoryController : MonoBehaviour {
 				bags[startBag].SetItemStack(startIndex, null);
 				bags[finalBag].GetItemStack(finalIndex).SetCount(count);
 			}
-			else if (itemStack.GetCount() > count) {
+			else if (startItemStack.GetCount() > count) {
 				bags[startBag].GetItemStack(startIndex).SetCount(startItemStack.GetCount() - count);	
 				bags[finalBag].GetItemStack(finalIndex).SetCount(count);
 			}
@@ -55,9 +59,9 @@ public class InventoryController : MonoBehaviour {
 				bags[startBag].SetItemStack(startIndex, null);
 				bags[finalBag].SetItemStack(finalIndex, startItemStack);
 			}
-			else if (itemStack.GetCount() > count) {
+			else if (startItemStack.GetCount() > count) {
 				bags[startBag].GetItemStack(startIndex).SetCount(startItemStack.GetCount() - count);	
-				startItemStack.SetCount(startItemStack.GetCount - count);
+				startItemStack.SetCount(startItemStack.GetCount() - count);
 				bags[finalBag].SetItemStack(finalIndex, startItemStack);
 			}
 		}

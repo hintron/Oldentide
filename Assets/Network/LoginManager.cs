@@ -30,6 +30,7 @@ public class LoginManager : MonoBehaviour {
         } else {
             Debug.Log(download.text);
         }
+        ChangeScene("Newcomers_Guild");
 	}
 
 	public void ChangeScene (string newScene) {

@@ -63,7 +63,7 @@ public class PlayerControls : MonoBehaviour {
 			inventoryMenu.SetActive(inventoryMenuFlag);
 		}
 
-		if (Input.GetKeyDown("s")) {
+		if (Input.GetKeyDown("b")) {
 			if (spellbookMenuFlag) {
 				Debug.Log("Spellbook menu closed.");
 				spellbookMenuFlag = false;
