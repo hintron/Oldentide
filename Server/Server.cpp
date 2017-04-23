@@ -55,7 +55,7 @@ void Server::Run() {
 
     bool listen = true;
     while(listen) {
-        char *packet = (char *)malloc(PACKET_MAX_SIZE);
+        char packet[PACKET_MAX_SIZE];
         int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)&client, &len);
 
         uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
@@ -130,9 +130,6 @@ void Server::Run() {
                 std::cout << "Received unknown packet of type " << packetType << std::endl;
                 break;
         }
-
-        // Instead of freeing the packet at the end of every function call, free it here, when they all join back up!
-        free(packet);
     }
     shell.join();
     return;

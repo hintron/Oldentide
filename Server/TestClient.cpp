@@ -97,7 +97,7 @@ int main(int argc, char * argv[]) {
                     // Send the packet
                     sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
 
-                    char *returnPacket = (char*) malloc(PACKET_MAX_SIZE);
+                    char returnPacket[PACKET_MAX_SIZE];
                     sockaddr_in servret;
                     socklen_t len = sizeof(servret);
                     int n = recvfrom(sockfd, returnPacket, PACKET_MAX_SIZE, 0, (struct sockaddr *)&servret, &len);
@@ -116,7 +116,6 @@ int main(int argc, char * argv[]) {
                     std::cout << "Connected! Given the session id: " << returnConnectPacket.sessionId << std::endl;
                     // Set the session for the client
                     session = returnConnectPacket.sessionId;
-                    free(returnPacket);
                     clientState = 1;
                 }
                 else {
@@ -150,7 +149,7 @@ int main(int argc, char * argv[]) {
                     sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
 
                     // Wait for the response
-                    char *returnPacket = (char*) malloc(PACKET_MAX_SIZE);
+                    char returnPacket[PACKET_MAX_SIZE];
                     sockaddr_in servret;
                     socklen_t len = sizeof(servret);
                     int n = recvfrom(sockfd, returnPacket, PACKET_MAX_SIZE, 0, (struct sockaddr *)&servret, &len);
