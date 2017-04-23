@@ -24,7 +24,7 @@ class GameState{
         bool VerifySession(int sessionId);
         bool VerifyActiveSession(int sessionId);
         void DisconnectSession(int sessionId);
-        void PlayerCommand(char * command, int);
+        void PlayerCommand(std::string command, int sessionId);
         void SelectPlayer(int sessionId);
         int GenerateSession(int sessionId);
         void SetSessionAccountName(char * accountName, int sessionId);

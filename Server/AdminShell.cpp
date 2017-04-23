@@ -13,7 +13,7 @@
 
 AdminShell::AdminShell(SQLConnector * sql, GameState * gameState) {
     this->sql = sql;
-    this->gameState = gameState; 
+    this->gameState = gameState;
     gethostname(serverHostname, HOST_NAME_MAX);
 }
 
@@ -26,7 +26,7 @@ void AdminShell::operator()() {
 }
 
 void AdminShell::Run() {
-    std::string adminCommand; 
+    std::string adminCommand;
     std::cout << "Starting Server Administrator Shell.\n";
     PrintLogo();
     while(true) {
@@ -55,25 +55,25 @@ void AdminShell::Run() {
                     }
                 }
                 if (adminTokens[1] == "npcs") {
-                    std::cout << "NPCSSSSS" << std::endl;    
+                    std::cout << "NPCSSSSS" << std::endl;
                 }
                 if (adminTokens[1] == "packets") {
                     std::cout << "Server Running!\n";
                     std::cout << "Packet Sizes:\n";
-                    std::cout << "GENERIC: " << sizeof(PACKET_GENERIC) << std::endl;
-                    std::cout << "ACK: " << sizeof(PACKET_ACK) << std::endl;
-                    std::cout << "CONNECT: " << sizeof(PACKET_CONNECT) << std::endl;
-                    std::cout << "DISCONNECT: " << sizeof(PACKET_DISCONNECT) << std::endl;
-                    std::cout << "LISTCHARACTERS: " << sizeof(PACKET_LISTCHARACTERS) << std::endl;
-                    std::cout << "SELECTCHARACTER: " << sizeof(PACKET_SELECTCHARACTER) << std::endl;
-                    std::cout << "DELETECHARACTER: " << sizeof(PACKET_DELETECHARACTER) << std::endl;
-                    std::cout << "CREATECHARACTER: " << sizeof(PACKET_CREATECHARACTER) << std::endl;
-                    std::cout << "INITIALIZEGAME: " << sizeof(PACKET_INITIALIZEGAME) << std::endl;
-                    std::cout << "UPDATEPC: " << sizeof(PACKET_UPDATEPC) << std::endl;
-                    std::cout << "UPDATENPC: " << sizeof(PACKET_UPDATENPC) << std::endl;
-                    std::cout << "SENDPLAYERCOMMAND: " << sizeof(PACKET_SENDPLAYERCOMMAND) << std::endl;
-                    std::cout << "SENDPLAYERACTION: " << sizeof(PACKET_SENDPLAYERACTION) << std::endl;
-                    std::cout << "SENDSERVERACTION: " << sizeof(PACKET_SENDSERVERACTION) << std::endl;
+                    std::cout << "GENERIC: " << sizeof(PacketGeneric) << std::endl;
+                    std::cout << "ACK: " << sizeof(PacketAck) << std::endl;
+                    std::cout << "CONNECT: " << sizeof(PacketConnect) << std::endl;
+                    std::cout << "DISCONNECT: " << sizeof(PacketDisconnect) << std::endl;
+                    std::cout << "LISTCHARACTERS: " << sizeof(PacketListcharacters) << std::endl;
+                    // std::cout << "SELECTCHARACTER: " << sizeof(PacketSelectcharacter) << std::endl;
+                    // std::cout << "DELETECHARACTER: " << sizeof(PacketDeletecharacter) << std::endl;
+                    // std::cout << "CREATECHARACTER: " << sizeof(PacketCreatecharacter) << std::endl;
+                    // std::cout << "INITIALIZEGAME: " << sizeof(PacketInitializegame) << std::endl;
+                    // std::cout << "UPDATEPC: " << sizeof(PacketUpdatepc) << std::endl;
+                    // std::cout << "UPDATENPC: " << sizeof(PacketUpdatenpc) << std::endl;
+                    // std::cout << "SENDPLAYERCOMMAND: " << sizeof(PacketSendplayercommand) << std::endl;
+                    // std::cout << "SENDPLAYERACTION: " << sizeof(PacketSendplayeraction) << std::endl;
+                    // std::cout << "SENDSERVERACTION: " << sizeof(PacketSendserveraction) << std::endl;
                 }
             }
             else {
@@ -104,7 +104,7 @@ void AdminShell::PrintLogo() {
     std::cout << "|      | |      |    | |___   | \\ |    |      |    |   | |___" << std::endl;
     std::cout << "\\      / |      |   /  |      |  \\|    |      |    |   / |" << std::endl;
     std::cout << " \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << std::endl;
-    std::cout << " " << std::endl; 
+    std::cout << " " << std::endl;
     std::cout << "                              |" << std::endl;
     std::cout << "                             / \\" << std::endl;
     std::cout << "                            /\\_/\\" << std::endl;

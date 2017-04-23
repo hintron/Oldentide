@@ -50,224 +50,321 @@ class TestData {
     public:
         std::string value;
         int i;
-        MSGPACK_DEFINE(value, i); // write the member variables that you want to pack
-    // private:
-    //     PTYPE packetType;
+        // write the member variables that you want to pack
+        MSGPACK_DEFINE(value, i);
 };
 
 
 
 
 
-struct PACKET_GENERIC {
-    PTYPE packetType = GENERIC;
+class PacketGeneric {
+public:
     int packetId;
     int sessionId;
-    char dummy[600];
+    std::string message;
+    MSGPACK_DEFINE(packetId, sessionId, message);
 };
 
-struct PACKET_ACK {
-    PTYPE packetType = ACK;
+class PacketAck {
+public:
     int packetId;
     int sessionId;
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_CONNECT {
-    PTYPE packetType = CONNECT;
+class PacketConnect {
+public:
     int packetId;
     int sessionId;
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_DISCONNECT {
-    PTYPE packetType = DISCONNECT;
+class PacketDisconnect {
+public:
     int packetId;
     int sessionId;
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_GETSALT {
-    PTYPE packetType = GETSALT;
+// class PacketGetsalt {
+// public:
+//     int packetId;
+//     int sessionId;
+//     std::string account;
+//     // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
+//     std::string saltStringHex;
+// };
+
+// class PacketCreateaccount {
+// public:
+//     int packetId;
+//     int sessionId;
+//     std::string account;
+//     // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
+//     std::string saltStringHex;
+//     std::string keyStringHex;
+//     MSGPACK_DEFINE(packetId, sessionId);
+// };
+
+class PacketListcharacters {
+public:
     int packetId;
     int sessionId;
-    char account[30];
-    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char saltStringHex[129];
+    // Array of characters!
+    std::vector<std::string> characters;
+    MSGPACK_DEFINE(packetId, sessionId, characters);
 };
 
-struct PACKET_CREATEACCOUNT {
-    PTYPE packetType = CREATEACCOUNT;
+class PacketSelectcharacter {
+public:
     int packetId;
     int sessionId;
-    char account[30];
-    // 512-bit key -> 64 bytes -> 2 chars per byte for hex -> 128 + 1 null = 129
-    char saltStringHex[129];
-    char keyStringHex[129];
+    std::string character;
+    MSGPACK_DEFINE(packetId, sessionId, character);
 };
 
-struct PACKET_LISTCHARACTERS {
-    PTYPE packetType = LISTCHARACTERS;
+class PacketDeletecharacter {
+public:
     int packetId;
     int sessionId;
-    char character1[25];
-    char character2[25];
-    char character3[25];
-    char character4[25];
-    char character5[25];
-    char character6[25];
-    char character7[25];
-    char character8[25];
-    char character9[25];
-    char character10[25];
+    std::string character;
+    MSGPACK_DEFINE(packetId, sessionId, character);
 };
 
-struct PACKET_SELECTCHARACTER {
-    PTYPE packetType = SELECTCHARACTER;
+class PacketCreatecharacter {
+public:
     int packetId;
     int sessionId;
-    char character[25];
+    std::string firstName;
+    std::string lastName;
+    // std::string guild;
+    // std::string race;
+    // std::string gender;
+    // std::string face;
+    // std::string skin;
+    // std::string profession;
+    // int strength;
+    // int constitution;
+    // int intelligence;
+    // int dexterity;
+    // int axe;
+    // int dagger;
+    // int unarmed;
+    // int hammer;
+    // int polearm;
+    // int spear;
+    // int staff;
+    // int sword;
+    // int archery;
+    // int crossbow;
+    // int sling;
+    // int thrown;
+    // int armor;
+    // int dualWeapon;
+    // int shield;
+    // int bardic;
+    // int conjuring;
+    // int druidic;
+    // int illusion;
+    // int necromancy;
+    // int sorcery;
+    // int shamanic;
+    // int spellcraft;
+    // int summoning;
+    // int focus;
+    // int armorsmithing;
+    // int tailoring;
+    // int fletching;
+    // int weaponsmithing;
+    // int alchemy;
+    // int lapidary;
+    // int calligraphy;
+    // int enchanting;
+    // int herbalism;
+    // int hunting;
+    // int mining;
+    // int bargaining;
+    // int camping;
+    // int firstAid;
+    // int lore;
+    // int pickLocks;
+    // int scouting;
+    // int search;
+    // int stealth;
+    // int traps;
+    // int aeolandis;
+    // int hieroform;
+    // int highGundis;
+    // int oldPraxic;
+    // int praxic;
+    // int runic;
+    MSGPACK_DEFINE(
+        packetId,
+        sessionId,
+        firstName,
+        lastName
+        // guild,
+        // race,
+        // gender,
+        // face,
+        // skin,
+        // profession,
+        // strength,
+        // constitution,
+        // intelligence,
+        // dexterity,
+        // axe,
+        // dagger,
+        // unarmed,
+        // hammer,
+        // polearm,
+        // spear,
+        // staff,
+        // sword,
+        // archery,
+        // crossbow,
+        // sling,
+        // thrown,
+        // armor,
+        // dualWeapon,
+        // shield,
+        // bardic,
+        // conjuring,
+        // druidic,
+        // illusion,
+        // necromancy,
+        // sorcery,
+        // shamanic,
+        // spellcraft,
+        // summoning,
+        // focus,
+        // armorsmithing,
+        // tailoring,
+        // fletching,
+        // weaponsmithing,
+        // alchemy,
+        // lapidary,
+        // calligraphy,
+        // enchanting,
+        // herbalism,
+        // hunting,
+        // mining,
+        // bargaining,
+        // camping,
+        // firstAid,
+        // lore,
+        // pickLocks,
+        // scouting,
+        // search,
+        // stealth,
+        // traps,
+        // aeolandis,
+        // hieroform,
+        // highGundis,
+        // oldPraxic,
+        // praxic,
+        // runic
+    );
 };
 
-struct PACKET_DELETECHARACTER {
-    PTYPE packetType = DELETECHARACTER;
+class PacketInitializegame {
+public:
     int packetId;
     int sessionId;
-    char character[25];
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_CREATECHARACTER {
-    PTYPE packetType = CREATECHARACTER;
+class PacketUpdatepc {
+public:
     int packetId;
     int sessionId;
-    char firstName[25];
-    char lastName[25];
-    char guild[50];
-    char race[25];
-    char gender[25];
-    char face[25];
-    char skin[25];
-    char profession[25];
-    int strength;
-    int constitution;
-    int intelligence;
-    int dexterity;
-    int axe;
-    int dagger;
-    int unarmed;
-    int hammer;
-    int polearm;
-    int spear;
-    int staff;
-    int sword;
-    int archery;
-    int crossbow;
-    int sling;
-    int thrown;
-    int armor;
-    int dualWeapon;
-    int shield;
-    int bardic;
-    int conjuring;
-    int druidic;
-    int illusion;
-    int necromancy;
-    int sorcery;
-    int shamanic;
-    int spellcraft;
-    int summoning;
-    int focus;
-    int armorsmithing;
-    int tailoring;
-    int fletching;
-    int weaponsmithing;
-    int alchemy;
-    int lapidary;
-    int calligraphy;
-    int enchanting;
-    int herbalism;
-    int hunting;
-    int mining;
-    int bargaining;
-    int camping;
-    int firstAid;
-    int lore;
-    int pickLocks;
-    int scouting;
-    int search;
-    int stealth;
-    int traps;
-    int aeolandis;
-    int hieroform;
-    int highGundis;
-    int oldPraxic;
-    int praxic;
-    int runic;
+    std::string firstName;
+    std::string lastName;
+//     std::string race;
+//     std::string gender;
+//     std::string profession;
+//     int level;
+//     int hp;
+//     int bp;
+//     int mp;
+//     int ep;
+//     float x;
+//     float y;
+//     float z;
+//     float pitch;
+//     float yaw;
+    MSGPACK_DEFINE(packetId, sessionId,
+        firstName,
+        lastName
+//         race,
+//         gender,
+//         profession,
+//         level,
+//         hp,
+//         bp,
+//         mp,
+//         ep,
+//         x,
+//         y,
+//         z,
+//         pitch,
+//         yaw
+    );
 };
 
-struct PACKET_INITIALIZEGAME {
-    PTYPE packetType = INITIALIZEGAME;
+class PacketUpdatenpc {
+public:
     int packetId;
     int sessionId;
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_UPDATEPC {
-    PTYPE packetType = UPDATEPC;
+class PacketSendplayercommand {
+public:
     int packetId;
     int sessionId;
-    char firstName[25];
-    char lastName[25];
-    char race[25];
-    char gender[25];
-    char profession[25];
-    int level;
-    int hp;
-    int bp;
-    int mp;
-    int ep;
-    float x;
-    float y;
-    float z;
-    float pitch;
-    float yaw;
+    std::string command;
+    MSGPACK_DEFINE(packetId, sessionId, command);
 };
 
-struct PACKET_UPDATENPC {
-    PTYPE packetType = UPDATENPC;
+class PacketSendservercommand {
+public:
     int packetId;
     int sessionId;
+    std::string command;
+    MSGPACK_DEFINE(packetId, sessionId, command);
 };
 
-struct PACKET_SENDPLAYERCOMMAND {
-    PTYPE packetType = SENDPLAYERCOMMAND;
+class PacketSendplayeraction {
+public:
     int packetId;
     int sessionId;
-    char command[500];
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_SENDSERVERCOMMAND {
-    PTYPE packetType = SENDSERVERCOMMAND;
+class PacketSendserveraction {
+public:
     int packetId;
     int sessionId;
-    char command[500];
+    MSGPACK_DEFINE(packetId, sessionId);
 };
 
-struct PACKET_SENDPLAYERACTION {
-    PTYPE packetType = SENDPLAYERACTION;
+class PacketUnity {
+public:
     int packetId;
     int sessionId;
-};
-
-struct PACKET_SENDSERVERACTION {
-    PTYPE packetType = SENDSERVERACTION;
-    int packetId;
-    int sessionId;
-};
-
-struct PACKET_UNITY {
-    PTYPE packetType = UNITY;
     int data1;
     int data2;
     int data3;
     int data4;
     int data5;
+    MSGPACK_DEFINE(packetId, sessionId,
+    data1,
+    data2,
+    data3,
+    data4,
+    data5);
 };
 
 

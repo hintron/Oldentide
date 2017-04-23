@@ -117,7 +117,7 @@ namespace utils{
 
     // Prints the bytes of str in a hex format
     void PrintStringHex(std::string *str){
-        printf("Hex:\n");
+        printf("0x");
         const char *c_str = str->data();
         size_t size = str->size();
         // Don't calculate length based on c_str, in case data has 0x00s fake out strlen(c_str)
@@ -126,8 +126,6 @@ namespace utils{
         }
         printf("\n");
     }
-
-    // TODO: Put the following in the packet.h class/file?
 
 
     /*
