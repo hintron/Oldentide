@@ -43,6 +43,9 @@ Server::Server(int port) {
     };
 
     std::cout << "Server socket: " << GetIpAndPortFromSocket(&server) <<  std::endl;
+
+    // Set up some client constants
+    CLIENT_LEN = sizeof(sockaddr_in);
 }
 
 Server::~Server() {
@@ -53,36 +56,17 @@ Server::~Server() {
 
 void Server::Run() {
     std::thread shell(*adminshell);
-    sockaddr_in client;
-    socklen_t len = sizeof(client);
 
     bool listen = true;
     while(listen) {
-        char packet[PACKET_MAX_SIZE];
-        int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)&client, &len);
-        std::cout << "Received packet from " << GetIpAndPortFromSocket(&client) << std::endl;
-        uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
-        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
-        std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
-        std::cout << "Msgpack Size: " << msgpckSize << std::endl;
-
-        // Check to make sure we don't accidentally access data outside the packet!
-        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
-            std::cout << "Msgpack Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
-            continue;
-        }
-
-        // Get msgpack data
-        std::string msgpack_data = utils::GetMsgpckDataFromPacket(packet);
-        std::cout << "Msgpack data: ";
-        utils::PrintStringHex(&msgpack_data);
-
-        // Use MessagePack to Deserialize the payload
-        msgpack::object deserialized_data = msgpack::unpack(msgpack_data.data(), msgpack_data.size()).get();
-        std::cout << "Msgpack deserialized: ";
-        std::cout << deserialized_data << std::endl;
+        sockaddr_in client;
+        msgpack::object deserialized_data;
+        uint8_t packetType = ReceiveDataFromClient(&deserialized_data, &client);
 
         switch (packetType) {
+            case false:
+                std::cout << "Error receiving packet! Ignoring..." << std::endl;
+                break;
             case GENERIC:
                 GenericHandler(&deserialized_data, client);
                 break;
@@ -147,6 +131,40 @@ std::string Server::GetIpAndPortFromSocket(sockaddr_in *socket){
     ss << host << ":" << ntohs(socket->sin_port);
     return ss.str();
 }
+
+
+// return PTYPE or 0 on error
+uint8_t Server::ReceiveDataFromClient(msgpack::object *data_out, sockaddr_in *client){
+    char packet[PACKET_MAX_SIZE];
+    int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)client, &CLIENT_LEN);
+
+    std::cout << "Received packet from " << GetIpAndPortFromSocket(client) << std::endl;
+
+    uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
+    uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
+
+    std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
+    std::cout << "Msgpack Size: " << msgpckSize << std::endl;
+
+    // Check to make sure we don't accidentally access data outside the packet!
+    if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+        std::cout << "Msgpack Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
+        return false;
+    }
+
+    // Get msgpack data
+    std::string msgpack_data = utils::GetMsgpckDataFromPacket(packet);
+    std::cout << "Msgpack data: ";
+    utils::PrintStringHex(&msgpack_data);
+
+    // Use MessagePack to deserialize the payload, and return it in data_out
+    *data_out = msgpack::unpack(msgpack_data.data(), msgpack_data.size()).get();
+    std::cout << "Msgpack deserialized: ";
+    std::cout << *data_out << std::endl;
+
+    return packetType;
+}
+
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void Server::GenericHandler(msgpack::object * deserialized_data, sockaddr_in client) {

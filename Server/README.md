@@ -35,8 +35,10 @@ Dependencies
 * sqlite3 - To store data, the simple, lightweight [sqlite3][5] database is used.
 * libsqlite3-dev - To develop with [sqlite3][5], we need the c++ libraries.  This
   library is the package name on debian based systems.
-* msgpck-c v2.1.1 - To efficiently and predictably transmit packet data between server and client
-    (this will automatically be installed the first time you run make)
+* msgpck-c v2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
+* git - Needed to download and install msgpack
+* cmake - Needed to install msgpack
+
 
 Server and Test Client Usage
 ------------
@@ -64,3 +66,4 @@ Where <IP> is the address of the server and <Port> is the port of the server.
 [3]: http://www.ubuntu.com/ "Ubuntu · The world's most popular free OS"
 [4]: https://gcc.gnu.org/ "Gnu C / C++ Compiler"
 [5]: https://www.sqlite.org/ "SQLite 3"
+[6]: https://github.com/msgpack/msgpack-c/ "msgpack-c"
