@@ -42,10 +42,7 @@ Server::Server(int port) {
         exit(EXIT_FAILURE);
     };
 
-    std::cout << "Server socket: " << GetIpAndPortFromSocket(&server) <<  std::endl;
-
-    // Set up some client constants
-    CLIENT_LEN = sizeof(sockaddr_in);
+    std::cout << "Server socket: " << utils::GetIpAndPortFromSocket(&server) <<  std::endl;
 }
 
 Server::~Server() {
@@ -61,7 +58,7 @@ void Server::Run() {
     while(listen) {
         sockaddr_in client;
         msgpack::object deserialized_data;
-        uint8_t packetType = ReceiveDataFromClient(&deserialized_data, &client);
+        uint8_t packetType = utils::ReceiveDataFrom(sockfd, &deserialized_data, &client);
 
         switch (packetType) {
             case false:
@@ -122,64 +119,11 @@ void Server::Run() {
 }
 
 
-// Returns the ip address and port number of the socket
-std::string Server::GetIpAndPortFromSocket(sockaddr_in *socket){
-    char host[100];
-    char service[100];
-    getnameinfo((sockaddr *)socket, sizeof(sockaddr), host, sizeof(host), service, sizeof(service), NI_NUMERICHOST);
-    std::stringstream ss;
-    ss << host << ":" << ntohs(socket->sin_port);
-    return ss.str();
-}
 
-
-// return PTYPE or 0 on error
-uint8_t Server::ReceiveDataFromClient(msgpack::object *data_out, sockaddr_in *client){
-    char packet[PACKET_MAX_SIZE];
-    int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)client, &CLIENT_LEN);
-
-    std::cout << "Received packet from " << GetIpAndPortFromSocket(client) << std::endl;
-
-    uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
-    uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
-
-    std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
-    std::cout << "Msgpack Size: " << msgpckSize << std::endl;
-
-    // Check to make sure we don't accidentally access data outside the packet!
-    if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
-        std::cout << "Msgpack Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
-        return false;
-    }
-
-    // Get msgpack data
-    std::string msgpack_data = utils::GetMsgpckDataFromPacket(packet);
-    std::cout << "Msgpack data: ";
-    utils::PrintStringHex(&msgpack_data);
-
-    // Use MessagePack to deserialize the payload, and return it in data_out
-    *data_out = msgpack::unpack(msgpack_data.data(), msgpack_data.size()).get();
-    std::cout << "Msgpack deserialized: ";
-    std::cout << *data_out << std::endl;
-
-    return packetType;
-}
-
-// return error
-// Takes data already packed in a buffer, the type of packet to send, and the client to send to
-int Server::SendDataToClient(std::stringstream *data_in, uint8_t ptype, sockaddr_in *client){
-    // Make sure that the buffer is at the 0th position
-    data_in->seekg(0);
-    std::string str(data_in->str());
-    std::cout << "Sending msgpack data:" << std::endl;
-    utils::PrintStringHex(&str);
-    // Add in header info - prepend the packet type and messagepack data size
-    utils::PrependPacketHeader(&str, ptype);
-    std::cout << "Sending header + msgpack data:" << std::endl;
-    utils::PrintStringHex(&str);
-    // Send the packet
-    return sendto(sockfd, str.data(), str.size(), 0, (struct sockaddr *)client, CLIENT_LEN);
-}
+// // Return error
+// int Server::CreateUdpServer(int port){
+//     //Set sockfd
+// }
 
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
@@ -218,7 +162,7 @@ void Server::ConnectHandler(msgpack::object * deserialized_data, sockaddr_in *cl
     msgpack::pack(buffer, returnPacket);
 
     // Send the packet
-    SendDataToClient(&buffer, CONNECT, client);
+    utils::SendDataTo(sockfd, &buffer, CONNECT, client);
 
     std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
 }
@@ -260,7 +204,7 @@ void Server::ListCharactersHandler(msgpack::object * deserialized_data, sockaddr
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
     // Send the packet
-    SendDataToClient(&buffer, LISTCHARACTERS, client);
+    utils::SendDataTo(sockfd, &buffer, LISTCHARACTERS, client);
 }
 
 void Server::SelectCharacterHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
@@ -330,7 +274,7 @@ void Server::SendPlayerCommandHandler(msgpack::object * deserialized_data, socka
 
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    SendDataToClient(&buffer, SENDSERVERCOMMAND, client);
+    utils::SendDataTo(sockfd, &buffer, SENDSERVERCOMMAND, client);
 }
 
 void Server::SendPlayerActionHandler(msgpack::object * deserialized_data, sockaddr_in *client) {

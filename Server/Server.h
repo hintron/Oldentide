@@ -26,14 +26,9 @@ class Server{
         void Run();
     private:
         int sockfd;
-        // sockaddr_in client; // The current client that is being served
-        socklen_t CLIENT_LEN; // The size of the client socket type
         SQLConnector * sql;
         GameState * gameState;
         AdminShell * adminshell;
-        std::string GetIpAndPortFromSocket(sockaddr_in *socket);
-        uint8_t ReceiveDataFromClient(msgpack::object *data_out, sockaddr_in *client);
-        int SendDataToClient(std::stringstream *data_in, uint8_t ptype, sockaddr_in *client);
 
         void GenericHandler(msgpack::object *data, sockaddr_in *client);
         void AckHandler(msgpack::object *data, sockaddr_in *client);

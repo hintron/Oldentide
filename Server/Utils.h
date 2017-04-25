@@ -8,6 +8,8 @@
 
 #include <string>
 #include <vector>
+#include <arpa/inet.h>
+#include <msgpack.hpp>
 
 namespace utils{
     std::vector<std::string> Tokenfy(std::string s, char delim);
@@ -21,7 +23,9 @@ namespace utils{
     uint8_t GetPacketTypeFromPacket(char *);
     uint16_t GetMsgpckSizeFromPacket(char *);
     std::string GetMsgpckDataFromPacket(char *packet_buffer);
-
+    std::string GetIpAndPortFromSocket(sockaddr_in *socket);
+    uint8_t ReceiveDataFrom(int sockfd, msgpack::object *data_out, sockaddr_in *client);
+    int SendDataTo(int sockfd, std::stringstream *data_in, uint8_t ptype, sockaddr_in *client);
 };
 
 

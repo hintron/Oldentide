@@ -11,6 +11,15 @@
 #include <iterator>
 #include <string.h>
 
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#include <netdb.h> // For getnameinfo() and related flags
+#include <msgpack.hpp>
+
+
+
 #define MIN_ACCOUNT_NAME_LENGTH 3
 #define MIN_ACCOUNT_NAME_LENGTH_STRING "3"
 #define MAX_ACCOUNT_NAME_LENGTH 30
@@ -228,6 +237,73 @@ namespace utils{
         // Return the msgpck payload, which starts at index 3 and is msgpckSize in length
         return std::string(packet_buffer+PACKET_HEADER_SIZE, msgpckSize);
     };
+
+
+
+
+
+    // Returns the ip address and port number of the socket
+    std::string GetIpAndPortFromSocket(sockaddr_in *socket){
+        char host[100];
+        char service[100];
+        getnameinfo((sockaddr *)socket, sizeof(sockaddr), host, sizeof(host), service, sizeof(service), NI_NUMERICHOST);
+        std::stringstream ss;
+        ss << host << ":" << ntohs(socket->sin_port);
+        return ss.str();
+    }
+
+
+    // return PTYPE or 0 on error
+    // Returns the data using the dataOut parameter
+    uint8_t ReceiveDataFrom(int sockfd, msgpack::object *dataOut, sockaddr_in *source){
+        static socklen_t LEN = sizeof(sockaddr_in);
+        char packet[PACKET_MAX_SIZE];
+        int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)source, &LEN);
+
+        std::cout << "Received packet from " << utils::GetIpAndPortFromSocket(source) << std::endl;
+
+        uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
+        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
+
+        std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
+        std::cout << "Msgpack Size: " << msgpckSize << std::endl;
+
+        // Check to make sure we don't accidentally access data outside the packet!
+        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "Msgpack Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
+            return false;
+        }
+
+        // Get msgpack data
+        std::string msgpack_data = utils::GetMsgpckDataFromPacket(packet);
+        std::cout << "Msgpack data: ";
+        utils::PrintStringHex(&msgpack_data);
+
+        // Use MessagePack to deserialize the payload, and return it in dataOut
+        *dataOut = msgpack::unpack(msgpack_data.data(), msgpack_data.size()).get();
+        std::cout << "Msgpack deserialized: ";
+        std::cout << *dataOut << std::endl;
+
+        return packetType;
+    }
+
+    // return error
+    int SendDataTo(int sockfd, std::stringstream *dataIn, uint8_t packetType, sockaddr_in *dest){
+        static socklen_t LEN = sizeof(sockaddr_in);
+        // Make sure that the buffer is at the 0th position
+        dataIn->seekg(0);
+        std::string str(dataIn->str());
+        std::cout << "Sending msgpack data:" << std::endl;
+        utils::PrintStringHex(&str);
+        // Add in header info - prepend the packet type and messagepack data size
+        utils::PrependPacketHeader(&str, packetType);
+        std::cout << "Sending header + msgpack data:" << std::endl;
+        utils::PrintStringHex(&str);
+        // Send the packet
+        return sendto(sockfd, str.data(), str.size(), 0, (struct sockaddr *)dest, LEN);
+    }
+
+
 
 
 
