@@ -16,6 +16,7 @@
 #include <msgpack.hpp>
 #include <sstream>
 #include "Utils.h"
+#include <netdb.h> // For getnameinfo() and related flags
 
 
 Server::Server(int port) {
@@ -40,6 +41,8 @@ Server::Server(int port) {
         std::cout << "Cannot bind socket..." << std::endl;
         exit(EXIT_FAILURE);
     };
+
+    std::cout << "Server socket: " << GetIpAndPortFromSocket(&server) <<  std::endl;
 }
 
 Server::~Server() {
@@ -57,10 +60,9 @@ void Server::Run() {
     while(listen) {
         char packet[PACKET_MAX_SIZE];
         int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)&client, &len);
-
+        std::cout << "Received packet from " << GetIpAndPortFromSocket(&client) << std::endl;
         uint8_t packetType = utils::GetPacketTypeFromPacket(packet);
         uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
-
         std::cout << "Packet type: " << (unsigned int) packetType << std::endl;
         std::cout << "Msgpack Size: " << msgpckSize << std::endl;
 
@@ -133,6 +135,17 @@ void Server::Run() {
     }
     shell.join();
     return;
+}
+
+
+// Returns the ip address and port number of the socket
+std::string Server::GetIpAndPortFromSocket(sockaddr_in *socket){
+    char host[100];
+    char service[100];
+    getnameinfo((sockaddr *)socket, sizeof(sockaddr), host, sizeof(host), service, sizeof(service), NI_NUMERICHOST);
+    std::stringstream ss;
+    ss << host << ":" << ntohs(socket->sin_port);
+    return ss.str();
 }
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...

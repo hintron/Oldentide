@@ -29,6 +29,9 @@ class Server{
         SQLConnector * sql;
         GameState * gameState;
         AdminShell * adminshell;
+        std::string GetIpAndPortFromSocket(sockaddr_in *socket);
+
+
         void GenericHandler(msgpack::object *data, sockaddr_in client);
         void AckHandler(msgpack::object *data, sockaddr_in client);
         void ConnectHandler(msgpack::object *data, sockaddr_in client);
