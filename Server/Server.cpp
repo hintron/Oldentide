@@ -68,49 +68,49 @@ void Server::Run() {
                 std::cout << "Error receiving packet! Ignoring..." << std::endl;
                 break;
             case GENERIC:
-                GenericHandler(&deserialized_data, client);
+                GenericHandler(&deserialized_data, &client);
                 break;
             case ACK:
-                AckHandler(&deserialized_data, client);
+                AckHandler(&deserialized_data, &client);
                 break;
             case CONNECT:
-                ConnectHandler(&deserialized_data, client);
+                ConnectHandler(&deserialized_data, &client);
                 break;
             case DISCONNECT:
-                DisconnectHandler(&deserialized_data, client);
+                DisconnectHandler(&deserialized_data, &client);
                 break;
             case LISTCHARACTERS:
-                ListCharactersHandler(&deserialized_data, client);
+                ListCharactersHandler(&deserialized_data, &client);
                 break;
             case SELECTCHARACTER:
-                SelectCharacterHandler(&deserialized_data, client);
+                SelectCharacterHandler(&deserialized_data, &client);
                 break;
             case DELETECHARACTER:
-                DeleteCharacterHandler(&deserialized_data, client);
+                DeleteCharacterHandler(&deserialized_data, &client);
                 break;
             case CREATECHARACTER:
-                CreateCharacterHandler(&deserialized_data, client);
+                CreateCharacterHandler(&deserialized_data, &client);
                 break;
             case INITIALIZEGAME:
-                InitializeGameHandler(&deserialized_data, client);
+                InitializeGameHandler(&deserialized_data, &client);
                 break;
             case UPDATEPC:
-                UpdatePcHandler(&deserialized_data, client);
+                UpdatePcHandler(&deserialized_data, &client);
                 break;
             case UPDATENPC:
-                UpdateNpcHandler(&deserialized_data, client);
+                UpdateNpcHandler(&deserialized_data, &client);
                 break;
             case SENDPLAYERCOMMAND:
-                SendPlayerCommandHandler(&deserialized_data, client);
+                SendPlayerCommandHandler(&deserialized_data, &client);
                 break;
             case SENDPLAYERACTION:
-                SendPlayerActionHandler(&deserialized_data, client);
+                SendPlayerActionHandler(&deserialized_data, &client);
                 break;
             case SENDSERVERACTION:
-                SendServerActionHandler(&deserialized_data, client);
+                SendServerActionHandler(&deserialized_data, &client);
                 break;
             case UNITY:
-                UnityHandler(&deserialized_data, client);
+                UnityHandler(&deserialized_data, &client);
                 break;
             default:
                 std::cout << "Received unknown packet of type " << packetType << std::endl;
@@ -165,9 +165,25 @@ uint8_t Server::ReceiveDataFromClient(msgpack::object *data_out, sockaddr_in *cl
     return packetType;
 }
 
+// return error
+// Takes data already packed in a buffer, the type of packet to send, and the client to send to
+int Server::SendDataToClient(std::stringstream *data_in, uint8_t ptype, sockaddr_in *client){
+    // Make sure that the buffer is at the 0th position
+    data_in->seekg(0);
+    std::string str(data_in->str());
+    std::cout << "Sending msgpack data:" << std::endl;
+    utils::PrintStringHex(&str);
+    // Add in header info - prepend the packet type and messagepack data size
+    utils::PrependPacketHeader(&str, ptype);
+    std::cout << "Sending header + msgpack data:" << std::endl;
+    utils::PrintStringHex(&str);
+    // Send the packet
+    return sendto(sockfd, str.data(), str.size(), 0, (struct sockaddr *)client, CLIENT_LEN);
+}
+
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
-void Server::GenericHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::GenericHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketGeneric packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -178,7 +194,7 @@ void Server::GenericHandler(msgpack::object * deserialized_data, sockaddr_in cli
 }
 
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
-void Server::AckHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::AckHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketAck packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -189,7 +205,7 @@ void Server::AckHandler(msgpack::object * deserialized_data, sockaddr_in client)
 }
 
 // Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.
-void Server::ConnectHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::ConnectHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketConnect packet;
     deserialized_data->convert(packet);
 
@@ -200,18 +216,15 @@ void Server::ConnectHandler(msgpack::object * deserialized_data, sockaddr_in cli
     // Use MessagePack to serialize data
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    buffer.seekg(0);
-    std::string str(buffer.str());
-    // Add in header info - prepend the packet type and messagepack data size
-    utils::PrependPacketHeader(&str, CONNECT);
 
     // Send the packet
-    sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&client,sizeof(client));
+    SendDataToClient(&buffer, CONNECT, client);
+
     std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
 }
 
 // Remove the session for a given user, effectively disconnecting it from the server.
-void Server::DisconnectHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::DisconnectHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketDisconnect packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -222,7 +235,7 @@ void Server::DisconnectHandler(msgpack::object * deserialized_data, sockaddr_in 
     gameState->DisconnectSession(packet.sessionId);
 }
 
-void Server::ListCharactersHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::ListCharactersHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketListcharacters packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -246,18 +259,11 @@ void Server::ListCharactersHandler(msgpack::object * deserialized_data, sockaddr
     // Use MessagePack to serialize data
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    buffer.seekg(0);
-    std::string str(buffer.str());
-    std::cout << "ListCharacters returnPacket msgpack data:" << std::endl;
-    utils::PrintStringHex(&str);
-    // Add in header info - prepend the packet type and messagepack data size
-    utils::PrependPacketHeader(&str, LISTCHARACTERS);
-    std::cout << "ListCharacters returnPacket header + msgpack data:" << std::endl;
-    utils::PrintStringHex(&str);
-    sendto(sockfd,str.data(),str.size(),0,(struct sockaddr *)&client,sizeof(client));
+    // Send the packet
+    SendDataToClient(&buffer, LISTCHARACTERS, client);
 }
 
-void Server::SelectCharacterHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::SelectCharacterHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketSelectcharacter packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -269,11 +275,11 @@ void Server::SelectCharacterHandler(msgpack::object * deserialized_data, sockadd
     gameState->SelectPlayer(packet.sessionId);
 }
 
-void Server::DeleteCharacterHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::DeleteCharacterHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "TODO: Delete Character handler!" << std::endl;
 }
 
-void Server::CreateCharacterHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::CreateCharacterHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketCreatecharacter packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -285,19 +291,19 @@ void Server::CreateCharacterHandler(msgpack::object * deserialized_data, sockadd
     std::cout << "TODO: Create character " << packet.lastName << ", " <<  packet.firstName << std::endl;
 }
 
-void Server::InitializeGameHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::InitializeGameHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "InitializeGameHandler!" << std::endl;
 }
 
-void Server::UpdatePcHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::UpdatePcHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "UpdatePcHandler!" << std::endl;
 }
 
-void Server::UpdateNpcHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::UpdateNpcHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "UpdateNpcHandler!" << std::endl;
 }
 
-void Server::SendPlayerCommandHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::SendPlayerCommandHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     PacketSendplayercommand packet;
     deserialized_data->convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
@@ -322,28 +328,21 @@ void Server::SendPlayerCommandHandler(msgpack::object * deserialized_data, socka
     returnPacket.packetId = packet.packetId;
     returnPacket.command = server_response_s.str();
 
-    // strcpy(returnPacket.command, temp.c_str());
-    // sendto(sockfd, (void *)&returnPacket, sizeof(PACKET_SENDSERVERCOMMAND), 0, (struct sockaddr *)&client, sizeof(client));
-
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    buffer.seekg(0);
-    std::string str(buffer.str());
-    // Add in header info - prepend the packet type and messagepack data size
-    utils::PrependPacketHeader(&str, SENDSERVERCOMMAND);
-    sendto(sockfd,str.data(),str.size(),0,(struct sockaddr *)&client,sizeof(client));
+    SendDataToClient(&buffer, SENDSERVERCOMMAND, client);
 }
 
-void Server::SendPlayerActionHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::SendPlayerActionHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "SendPlayerActionHandler!" << std::endl;
 }
 
-void Server::SendServerActionHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::SendServerActionHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "SendServerActionHandler!" << std::endl;
 }
 
 
-void Server::UnityHandler(msgpack::object * deserialized_data, sockaddr_in client) {
+void Server::UnityHandler(msgpack::object * deserialized_data, sockaddr_in *client) {
     std::cout << "UnityHandler!" << std::endl;
 
 //     std::cout << "0x" << std::hex << packet->data1 << std::endl;
@@ -365,5 +364,5 @@ void Server::UnityHandler(msgpack::object * deserialized_data, sockaddr_in clien
 //     std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
 //     std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
 //     std::cout << "----------------------------------------------" << std::endl;
-//     sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)&client, sizeof(client));
+//     sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)client, CLIENT_LEN);
 }
