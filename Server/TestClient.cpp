@@ -19,16 +19,11 @@
 #include <msgpack.hpp>
 #include <sstream>
 
-
-using namespace std;
-
 int main(int argc, char * argv[]) {
 
     int sockfd;
     struct sockaddr_in servaddr;
-    struct sockaddr_in cliaddr;
     char * server_address;
-    char * names[10];
     int session = 0;
     int packetNumber = 1;
     bool running = true;
@@ -68,8 +63,8 @@ int main(int argc, char * argv[]) {
             // Initial State.
             case 0: {
                 std::cout << "Connect? (Y/n) " << std::endl;
-                string response;
-                getline (cin, response);
+                std::string response;
+                getline (std::cin, response);
                 if ((response.compare("y") == 0) || (response.compare("Y") == 0) || (response.compare("") == 0)) {
                     PacketConnect packet;
                     packet.packetId = packetNumber;
@@ -79,39 +74,35 @@ int main(int argc, char * argv[]) {
                     // Use MessagePack to serialize data
                     std::stringstream buffer;
                     msgpack::pack(buffer, packet);
-                    // msgpack::pack(buffer, test);
-                    buffer.seekg(0);
-                    std::string str(buffer.str());
-                    utils::PrintStringHex(&str);
+                    utils::SendDataTo(sockfd, &buffer, CONNECT, &servaddr);
 
-                    // Check to make sure that the msgpck data isn't too big
-                    if(str.size() > PACKET_MAX_SIZE){
-                        std::cout << "ERROR: Packet is larger than " << PACKET_MAX_SIZE << " bytes!!!!" << std::endl;
-                    }
+                    // Wait for a response
+                    // TODO: Implement a timer
 
-                    // Add in header info - prepend the packet type and messagepack data size
-                    utils::PrependPacketHeader(&str, CONNECT);
-                    // See what the packet looks like now
-                    utils::PrintStringHex(&str);
-
-                    // Send the packet
-                    sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-
-                    char returnPacket[PACKET_MAX_SIZE];
                     sockaddr_in servret;
-                    socklen_t len = sizeof(servret);
-                    int n = recvfrom(sockfd, returnPacket, PACKET_MAX_SIZE, 0, (struct sockaddr *)&servret, &len);
+                    uint8_t packetType;
+                    msgpack::object_handle returnData = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
 
-                    // We are assuming that the return packet will always be on type CONNECT
+                    std::cout << "Msgpack deserialized: ";
+                    std::cout << returnData.get() << std::endl;
 
-                    if(utils::GetPacketTypeFromPacket(returnPacket) != CONNECT){
+                    //// Test if it still works with stringstream
+                    // std::stringstream asdf;
+                    // asdf << "!!!!!!!!!!!!!!!!!!!!";
+
+                    // NOTE! Currently, if you create a new stringstream, it messes up the msgpack data!
+                    // Probably because we used a stringstream as the messagepack buffer
+                    std::cout << "Received a packet from " << utils::GetIpAndPortFromSocket(&servret) << std::endl;
+
+                    // // We are assuming that the return packet will always be on type CONNECT
+                    if(packetType != CONNECT){
                         std::cout << "ERROR: Received packet other than CONNECT!! " << std::endl;
+                        break;
                     }
 
-                    std::string returnMsgpackData = utils::GetMsgpckDataFromPacket(returnPacket);
-                    PacketConnect returnConnectPacket;
                     // Use MessagePack to Deserialize the data
-                    msgpack::unpack(returnMsgpackData.data(), returnMsgpackData.size()).get().convert(returnConnectPacket);
+                    PacketConnect returnConnectPacket;
+                    returnData.get().convert(returnConnectPacket);
 
                     std::cout << "Connected! Given the session id: " << returnConnectPacket.sessionId << std::endl;
                     // Set the session for the client
@@ -206,7 +197,7 @@ int main(int argc, char * argv[]) {
                 std::cout << "Please select a character: " << std::endl;
 
                 std::string name;
-                getline(cin, name);
+                getline(std::cin, name);
                 std::cout << "TODO: Attempting to select character " << name << ": " << std::endl;
 
                 PacketSelectcharacter characterToSelect;
@@ -230,8 +221,8 @@ int main(int argc, char * argv[]) {
                 std::cout << "Send commands to the server!" << std::endl;
                 // TODO: Get user account value
                 std::cout << userAccount << ": ";
-                string command;
-                getline(cin, command);
+                std::string command;
+                getline(std::cin, command);
                 if (command.empty()) {
                     break;
                 }

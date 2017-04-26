@@ -30,21 +30,21 @@ class Server{
         GameState * gameState;
         AdminShell * adminshell;
 
-        void GenericHandler(msgpack::object *data, sockaddr_in *client);
-        void AckHandler(msgpack::object *data, sockaddr_in *client);
-        void ConnectHandler(msgpack::object *data, sockaddr_in *client);
-        void DisconnectHandler(msgpack::object *data, sockaddr_in *client);
-        void ListCharactersHandler(msgpack::object *data, sockaddr_in *client);
-        void SelectCharacterHandler(msgpack::object *data, sockaddr_in *client);
-        void DeleteCharacterHandler(msgpack::object *data, sockaddr_in *client);
-        void CreateCharacterHandler(msgpack::object *data, sockaddr_in *client);
-        void InitializeGameHandler(msgpack::object *data, sockaddr_in *client);
-        void UpdatePcHandler(msgpack::object *data, sockaddr_in *client);
-        void UpdateNpcHandler(msgpack::object *data, sockaddr_in *client);
-        void SendPlayerCommandHandler(msgpack::object *data, sockaddr_in *client);
-        void SendPlayerActionHandler(msgpack::object *data, sockaddr_in *client);
-        void SendServerActionHandler(msgpack::object *data, sockaddr_in *client);
-        void UnityHandler(msgpack::object *data, sockaddr_in *client);
+        void GenericHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void AckHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void ConnectHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void DisconnectHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void ListCharactersHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void SelectCharacterHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void DeleteCharacterHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void CreateCharacterHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void InitializeGameHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void UpdatePcHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void UpdateNpcHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void SendPlayerCommandHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void SendPlayerActionHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void SendServerActionHandler(msgpack::object_handle *data, sockaddr_in *client);
+        void UnityHandler(msgpack::object_handle *data, sockaddr_in *client);
 };
 
 #endif //OLDENTIDE_SERVER_H

@@ -22,10 +22,10 @@ namespace utils{
     void PrependPacketHeader(std::string *, uint8_t);
     uint8_t GetPacketTypeFromPacket(char *);
     uint16_t GetMsgpckSizeFromPacket(char *);
-    std::string GetMsgpckDataFromPacket(char *packet_buffer);
+    std::string GetMsgpckDataFromPacket(char *packetBuffer);
     std::string GetIpAndPortFromSocket(sockaddr_in *socket);
-    uint8_t ReceiveDataFrom(int sockfd, msgpack::object *data_out, sockaddr_in *client);
-    int SendDataTo(int sockfd, std::stringstream *data_in, uint8_t ptype, sockaddr_in *client);
+    msgpack::object_handle ReceiveDataFrom(int sockfd,  uint8_t *packetTypeOut, sockaddr_in *sourceOut);
+    int SendDataTo(int sockfd, std::stringstream *dataIn, uint8_t packetTypeIn, sockaddr_in *destIn);
 };
 
 
