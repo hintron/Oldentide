@@ -190,7 +190,7 @@ namespace utils{
 
 
 
-    // Adds in the packetType and the size of the message pack data
+    // Adds in the packetType and the size of the msgpack data
     // TODO: Make this more efficient by using memcpy instead of insert?
     void PrependPacketHeader(std::string *str, uint8_t packetType){
         uint16_t size = str->size();
@@ -253,16 +253,10 @@ namespace utils{
     }
 
 
-    // return PTYPE or 0 on error
-    // Returns the data using the dataOut parameter
-    // Also returns information about where the source was from in sourceOut
-
-    // NOTE: The reason object_handle is being returned instead of object is because
-    // if object_handle goes out of scope, then the object itself will be freed,
-    // and strange things will happen (e.g. if stringstream is used before convert, convert will fail)
-    // Also, the = operator doesn't seem to work with object_handle, so I need to return it instead of
-    // using a pointer.
-    // See https://github.com/msgpack/msgpack-c/wiki/v2_0_cpp_unpacker
+    // Wrapper for recvfrom that returns msgpack data (object handle).
+    // The packetType is returned in the uint8_t pointer, and sender info
+    // is returned in the sockaddr_in pointer.
+    // If packetType is 0, then an error occured.
     msgpack::object_handle ReceiveDataFrom(int sockfd, uint8_t *packetTypeOut, sockaddr_in *sourceOut){
         static socklen_t LEN = sizeof(sockaddr_in);
         char packet[PACKET_MAX_SIZE];
@@ -289,14 +283,25 @@ namespace utils{
 
         // Use MessagePack to deserialize the payload, and return it in dataOut
         msgpack::object_handle dataOut = msgpack::unpack(msgpack_data.data(), msgpack_data.size());
-        // Copy it out
+
         std::cout << "Msgpack deserialized: ";
         std::cout << dataOut.get() << std::endl;
 
         return dataOut;
     }
+    // NOTE: The reason object_handle is being returned instead of object is because
+    // if object_handle goes out of scope, then the object itself will be freed,
+    // and strange things will happen (e.g. if stringstream is used before convert, convert will fail)
+    // Also, the = operator doesn't seem to work with object_handle, so I need to return it instead of
+    // using a pointer.
+    // See https://github.com/msgpack/msgpack-c/wiki/v2_0_cpp_unpacker
 
-    // return error
+
+
+
+    // Wrapper for sendto. Takes data msgpacked into dataIn, prepends a custom header to include the
+    // packet type, and sends data in a UDP packet to destIn.
+    // Returns the return value of sendto.
     int SendDataTo(int sockfd, std::stringstream *dataIn, uint8_t packetTypeIn, sockaddr_in *destIn){
         std::cout << "Sending packetType " << (int) packetTypeIn << std::endl;
         static socklen_t LEN = sizeof(sockaddr_in);

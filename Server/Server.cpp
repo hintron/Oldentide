@@ -16,7 +16,6 @@
 #include <msgpack.hpp>
 #include <sstream>
 #include "Utils.h"
-#include <netdb.h> // For getnameinfo() and related flags
 
 
 Server::Server(int port) {
@@ -118,13 +117,6 @@ void Server::Run() {
     shell.join();
     return;
 }
-
-
-
-// // Return error
-// int Server::CreateUdpServer(int port){
-//     //Set sockfd
-// }
 
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
@@ -267,6 +259,9 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
 
     std::stringstream server_response_s;
     server_response_s << "Server says " << packet.sessionId << " session sent message: " << packet.command;
+
+    std::cout << server_response_s.str() << std::endl;
+
 
     PacketSendservercommand returnPacket;
     returnPacket.sessionId = packet.sessionId;

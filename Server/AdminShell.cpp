@@ -57,6 +57,8 @@ void AdminShell::Run() {
                 if (adminTokens[1] == "npcs") {
                     std::cout << "NPCSSSSS" << std::endl;
                 }
+                // TODO: What's the value of listing packet sizes, especially since now they are variable with msgpack?
+                // Maybe a better alternative would be to list the packet type number
                 if (adminTokens[1] == "packets") {
                     std::cout << "Server Running!\n";
                     std::cout << "Packet Sizes:\n";

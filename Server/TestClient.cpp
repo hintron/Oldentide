@@ -76,25 +76,13 @@ int main(int argc, char * argv[]) {
                     msgpack::pack(buffer, packet);
                     utils::SendDataTo(sockfd, &buffer, CONNECT, &servaddr);
 
-                    // Wait for a response
-                    // TODO: Implement a timer
-
                     sockaddr_in servret;
                     uint8_t packetType;
                     msgpack::object_handle returnData = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
 
-                    std::cout << "Msgpack deserialized: ";
-                    std::cout << returnData.get() << std::endl;
-
-                    //// Test if it still works with stringstream
-                    // std::stringstream asdf;
-                    // asdf << "!!!!!!!!!!!!!!!!!!!!";
-
-                    // NOTE! Currently, if you create a new stringstream, it messes up the msgpack data!
-                    // Probably because we used a stringstream as the messagepack buffer
                     std::cout << "Received a packet from " << utils::GetIpAndPortFromSocket(&servret) << std::endl;
 
-                    // // We are assuming that the return packet will always be on type CONNECT
+                    // We are assuming that the return packet will always be on type CONNECT
                     if(packetType != CONNECT){
                         std::cout << "ERROR: Received packet other than CONNECT!! " << std::endl;
                         break;
@@ -131,30 +119,17 @@ int main(int argc, char * argv[]) {
                     p.packetId = packetNumber;
                     packetNumber++;
                     p.sessionId = session;
-                    // Send it using msgpack
+
                     std::stringstream buffer;
                     msgpack::pack(buffer, p);
-                    buffer.seekg(0);
-                    std::string str(buffer.str());
-                    utils::PrependPacketHeader(&str, LISTCHARACTERS);
-                    sendto(sockfd,(void*)str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                    utils::SendDataTo(sockfd, &buffer, LISTCHARACTERS, &servaddr);
 
                     // Wait for the response
-                    char returnPacket[PACKET_MAX_SIZE];
                     sockaddr_in servret;
-                    socklen_t len = sizeof(servret);
-                    int n = recvfrom(sockfd, returnPacket, PACKET_MAX_SIZE, 0, (struct sockaddr *)&servret, &len);
-
-                    std::string returnMsgpackData = utils::GetMsgpckDataFromPacket(returnPacket);
-
-                    std::cout << "ListChars MessagePack data:" << std::endl;
-                    utils::PrintStringHex(&returnMsgpackData);
-
+                    uint8_t packetType;
+                    msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
                     PacketListcharacters characterList;
-                    // Use MessagePack to Deserialize the data
-                    msgpack::object deserialized = msgpack::unpack(returnMsgpackData.data(), returnMsgpackData.size()).get();
-                    std::cout << "ListChars MessagePack deserialized:" << deserialized << std::endl;
-                    deserialized.convert(characterList);
+                    deserialized.get().convert(characterList);
 
                     std::cout << "Number of available characters: " << characterList.characters.size() << std::endl;
                     if (characterList.characters.size() == 0) {
@@ -176,10 +151,7 @@ int main(int argc, char * argv[]) {
 
                         std::stringstream buffer2;
                         msgpack::pack(buffer2, newCharacter);
-                        buffer2.seekg(0);
-                        std::string str2(buffer2.str());
-                        utils::PrependPacketHeader(&str2, CREATECHARACTER);
-                        sendto(sockfd,str2.data(),str2.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                        utils::SendDataTo(sockfd, &buffer, CREATECHARACTER, &servaddr);
 
                         // After creating the new character, loop back to the top
                         // and send a new request for the list of players.
@@ -208,10 +180,7 @@ int main(int argc, char * argv[]) {
 
                 std::stringstream buffer;
                 msgpack::pack(buffer, characterToSelect);
-                buffer.seekg(0);
-                std::string str(buffer.str());
-                utils::PrependPacketHeader(&str, SELECTCHARACTER);
-                sendto(sockfd,str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                utils::SendDataTo(sockfd, &buffer, SELECTCHARACTER, &servaddr);
 
                 clientState = 3;
                 break;
@@ -240,10 +209,15 @@ int main(int argc, char * argv[]) {
 
                 std::stringstream buffer;
                 msgpack::pack(buffer, PlayerCommand);
-                buffer.seekg(0);
-                std::string str(buffer.str());
-                utils::PrependPacketHeader(&str, SENDPLAYERCOMMAND);
-                sendto(sockfd,str.data(),str.size(),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
+                utils::SendDataTo(sockfd, &buffer, SENDPLAYERCOMMAND, &servaddr);
+
+
+                sockaddr_in servret;
+                uint8_t packetType;
+                msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
+                PacketSendservercommand serverCommand;
+                deserialized.get().convert(serverCommand);
+                std::cout << serverCommand.command << std::endl;
 
                 break;
             }
