@@ -8,7 +8,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
 
     // Get Handlers and Callbacks
     app.get('/', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 res.render('home');
             }
@@ -20,7 +20,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.get('/about', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 res.render('about');
             }
@@ -32,7 +32,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.get('/login', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 res.render('login', { loggedin: true });
             }
@@ -44,7 +44,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.get('/logout', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 db.run("UPDATE accounts SET session = 'null' WHERE accountname = '" + row.accountname + "';");
                 res.render('logout', { loggedin: true });
@@ -57,7 +57,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.get('/profile', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 res.render('profile', { loggedin: true, username: row.accountname });
             }
@@ -69,7 +69,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.get('/register', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE session = '" + req.cookies.session_id + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE session = ?", [req.cookies.session_id], function(err, row) {
             if (row) {
                 res.render('login', { loggedin: true });
             }
@@ -82,9 +82,9 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
 
     app.get('/register/verify/:salt', function(req, res) {
         var salt = req.params.salt;
-        db.get("SELECT * FROM accounts WHERE salt = '" + salt + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE salt = ?", [salt], function(err, row) {
             if (row) {
-                db.run("UPDATE accounts SET valid = 1 WHERE salt = '" + salt + "';");
+                db.run("UPDATE accounts SET valid = 1 WHERE salt = ?", [salt]);
                 res.render('verify', { flag: true, user: row.accountname });
                 console.log('User at ' + req.headers['x-forwarded-for'] + ' successfully verified the account "' + row.accountname + '"!');
             }
@@ -97,12 +97,12 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
 
     // Post handlers.
     app.post('/login', function(req, res) {
-        db.get("SELECT * FROM accounts WHERE accountname = '" + req.body.login_username + "';", function(err, row) {
+        db.get("SELECT * FROM accounts WHERE accountname = ?", [req.body.login_username], function(err, row) {
             if (row) {
                 if(bcrypt.compareSync(req.body.login_password, row.key)) {
                     console.log("User " + row.accountname + " supplied the correct password for login!");
                     var sid = bcrypt.genSaltSync(1);
-                    db.run("UPDATE accounts SET session = '" + sid + "' WHERE accountname = '" + req.body.login_username +"';");
+                    db.run("UPDATE accounts SET session = ? WHERE accountname = ?", [sid, req.body.login_username]);
                     res.cookie('session_id', sid, {maxAge : 86400000});
                     res.render('login', { loggedin: true });
                     return;
@@ -133,7 +133,7 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
         }
         var key = bcrypt.hashSync(req.body.registration_password_first, salt);
         var query = "INSERT INTO accounts (valid, accountname, email, session, playing, key, salt) " +
-                    "VALUES (0, '" + username + "', '" + email + "', " + null + ", 0, '" + key + "', '" + salt + "');";
+                    "VALUES (0, $username, $email, " + null + ", 0, $key, $salt)";
         db.get("SELECT * FROM accounts WHERE accountname = '" + username + "' OR email = '"  + email + "';", function(err, row) {
             if (row) {
                 res.render('register', { get: true, exists: true, loggedout: true });
@@ -153,7 +153,14 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
                         console.log("Sucessfully sent a verification email to " + email);
                     }
                 });
-                db.run(query);
+                db.run(
+                    query, 
+                    { 
+                        $username: username,
+                        $email: email,
+                        $key: key,
+                        $salt: salt
+                    });
                 res.render('register', { post: true, loggedout: true });
             }
         });
