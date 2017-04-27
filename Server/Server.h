@@ -3,7 +3,7 @@
 // Date:        Jan_31_2016
 // Purpose:     Header for dedicated server class.
 //              This server is a traditional Universal Datagram Protocol
-//              (UDP) Server which will recieve and handle all game
+//              (UDP) Server which will receive and handle all game
 //              packets sent from client.
 
 #ifndef OLDENTIDE_OLDENTIDESERVER_H
@@ -21,12 +21,15 @@
 #include <mutex>
 #include <queue>
 
+// forward declaration so AdminShell and Server can see each other
+class AdminShell;
 
 class Server{
     public:
         Server(int port);
         ~Server();
         void Run();
+        int GetPacketQueueSize();
     private:
         int sockfd;
         SQLConnector * sql;
@@ -37,6 +40,7 @@ class Server{
         std::queue<packet_t> packetQueue;
 
         void WorkerThread(int id);
+        // void StatisticsThread();
         void GenericHandler(msgpack::object_handle *data, sockaddr_in *client);
         void AckHandler(msgpack::object_handle *data, sockaddr_in *client);
         void ConnectHandler(msgpack::object_handle *data, sockaddr_in *client);

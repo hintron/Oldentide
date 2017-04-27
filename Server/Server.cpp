@@ -24,7 +24,7 @@
 Server::Server(int port) {
     sql = new SQLConnector();
     gameState = new GameState(sql);
-    adminshell = new AdminShell(sql, gameState);
+    adminshell = new AdminShell(this, sql, gameState);
 
     // Create server address struct.
     sockaddr_in server;
@@ -55,8 +55,6 @@ Server::~Server() {
 
 void Server::Run() {
     std::thread shell(*adminshell);
-    // TODO: Detach the shell so we don't need to worry about joining it at the end
-    // shell.detach();
 
     // TODO: Do we want a limit on how many packets are in the queue?
     // Or at least emit a warning if the queue size surpasses a certain limit?
@@ -72,6 +70,11 @@ void Server::Run() {
         t.detach(); // Detach the threads so we don't need to join them manually
     }
 
+    // // Set up a statistics thread, to monitor the server
+    // std::thread statThread(&Server::StatisticsThread, this);
+    // statThread.detach(); // Detach the threads so we don't need to join them manually
+
+
     bool listen = true;
     while(listen) {
         sockaddr_in client;
@@ -83,27 +86,44 @@ void Server::Run() {
         // Put it in the packetQueue
         packetQueueMutex.lock();
         packetQueue.push(p);
-        size_t size = packetQueue.size();
         packetQueueMutex.unlock();
-
-        std::cout << "packetQueue size: " << size << std::endl;
     }
 
-    // TODO: Detach instead
     shell.join();
 }
 
+
+// TODO: This can be used to eventually log things to a file
+// // Print out the size of the packetQueue every so often
+// void Server::StatisticsThread() {
+//     while(1){
+//         // Get the size
+//         int size = GetPacketQueueSize();
+//         // Print out the size of the packet queue
+//         std::cout << "packetQueue size: " << size << std::endl;
+//         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+//     }
+// }
+
+int Server::GetPacketQueueSize() {
+    packetQueueMutex.lock();
+    int size = packetQueue.size();
+    packetQueueMutex.unlock();
+    return size;
+}
+
+
+
 void Server::WorkerThread(int id) {
     while(1){
-
         packet_t packet;
 
-
-        // Retrieve a packet from the queue
+        // Check to see if there are any packets to service
         packetQueueMutex.lock();
         if(packetQueue.size() > 0){
-            std::cout << "Worker thread " << id << " is consuming a packet..." << std::endl;
-            // create a copy (TODO: make sure it isn't a reference!)
+            // Retrieve a packet from the queue
+            // std::cout << "Worker thread " << id << std::endl;
+            // create a copy of the packet
             packet = packetQueue.front();
             packetQueue.pop();
             packetQueueMutex.unlock();

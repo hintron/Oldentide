@@ -273,7 +273,6 @@ namespace utils{
     void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut){
         static socklen_t LEN = sizeof(sockaddr_in);
         int n = recvfrom(sockfd, packetBufferOut, PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
-        std::cout << "Received packet " << std::endl;
     }
 
 
@@ -283,8 +282,8 @@ namespace utils{
         *packetTypeOut = utils::GetPacketTypeFromPacket(packetBufferIn);
         uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packetBufferIn);
 
-        std::cout << "Packet type: " << (unsigned int) *packetTypeOut << std::endl;
-        std::cout << "Msgpack Size: " << msgpckSize << std::endl;
+        // std::cout << "Packet type: " << (unsigned int) *packetTypeOut << std::endl;
+        // std::cout << "Msgpack Size: " << msgpckSize << std::endl;
 
         // Check to make sure we don't accidentally access data outside the packet!
         if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
@@ -294,14 +293,14 @@ namespace utils{
 
         // Get msgpack data
         std::string msgpack_data = utils::GetMsgpckDataFromPacket(packetBufferIn);
-        std::cout << "Msgpack data: ";
-        utils::PrintStringHex(&msgpack_data);
+        // std::cout << "Msgpack data: ";
+        // utils::PrintStringHex(&msgpack_data);
 
         // Use MessagePack to deserialize the payload, and return it in dataOut
         msgpack::object_handle dataOut = msgpack::unpack(msgpack_data.data(), msgpack_data.size());
 
-        std::cout << "Msgpack deserialized: ";
-        std::cout << dataOut.get() << std::endl;
+        // std::cout << "Msgpack deserialized: ";
+        // std::cout << dataOut.get() << std::endl;
 
         return dataOut;
     }
@@ -320,17 +319,17 @@ namespace utils{
     // packet type, and sends data in a UDP packet to destIn.
     // Returns the return value of sendto.
     int SendDataTo(int sockfd, std::stringstream *dataIn, uint8_t packetTypeIn, sockaddr_in *destIn){
-        std::cout << "Sending packetType " << (int) packetTypeIn << std::endl;
+        // std::cout << "Sending packetType " << (int) packetTypeIn << std::endl;
         static socklen_t LEN = sizeof(sockaddr_in);
         // Make sure that the buffer is at the 0th position
         dataIn->seekg(0);
         std::string str(dataIn->str());
         // std::cout << "Sending msgpack data:" << std::endl;
-        utils::PrintStringHex(&str);
+        // utils::PrintStringHex(&str);
         // Add in header info - prepend the packet type and messagepack data size
         utils::PrependPacketHeader(&str, packetTypeIn);
         // std::cout << "Sending header + msgpack data:" << std::endl;
-        utils::PrintStringHex(&str);
+        // utils::PrintStringHex(&str);
         // Send the packet
         return sendto(sockfd, str.data(), str.size(), 0, (struct sockaddr *)destIn, LEN);
     }
