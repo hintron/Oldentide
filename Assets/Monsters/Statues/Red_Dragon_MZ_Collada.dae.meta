@@ -82,6 +82,19 @@ ModelImporter:
     4300020: ID70
     4300022: ID76
     4300024: ID82
+    6400000: ID16
+    6400002: ID22
+    6400004: ID28
+    6400006: ID34
+    6400008: ID40
+    6400010: ID46
+    6400012: ID52
+    6400014: ID58
+    6400016: ID64
+    6400018: ID70
+    6400020: ID76
+    6400022: ID82
+    6400024: instance_0
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -111,10 +124,10 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 0.01
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     importBlendShapes: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
