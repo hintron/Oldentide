@@ -11,9 +11,10 @@
 #include <sstream>
 #include <string>
 
-AdminShell::AdminShell(SQLConnector * sql, GameState * gameState) {
+AdminShell::AdminShell(Server * server, SQLConnector * sql, GameState * gameState) {
+    this->server = server;
     this->sql = sql;
-    this->gameState = gameState; 
+    this->gameState = gameState;
     gethostname(serverHostname, HOST_NAME_MAX);
 }
 
@@ -26,7 +27,7 @@ void AdminShell::operator()() {
 }
 
 void AdminShell::Run() {
-    std::string adminCommand; 
+    std::string adminCommand;
     std::cout << "Starting Server Administrator Shell.\n";
     PrintLogo();
     while(true) {
@@ -55,25 +56,28 @@ void AdminShell::Run() {
                     }
                 }
                 if (adminTokens[1] == "npcs") {
-                    std::cout << "NPCSSSSS" << std::endl;    
+                    std::cout << "NPCSSSSS" << std::endl;
+                }
+                if (adminTokens[1] == "packetqueue" || adminTokens[1] == "pq") {
+                    int size = server->GetPacketQueueSize();
+                    std::cout << "Instantaneous packetQueue size: " << size << std::endl;
                 }
                 if (adminTokens[1] == "packets") {
-                    std::cout << "Server Running!\n";
-                    std::cout << "Packet Sizes:\n";
-                    std::cout << "GENERIC: " << sizeof(PACKET_GENERIC) << std::endl;
-                    std::cout << "ACK: " << sizeof(PACKET_ACK) << std::endl;
-                    std::cout << "CONNECT: " << sizeof(PACKET_CONNECT) << std::endl;
-                    std::cout << "DISCONNECT: " << sizeof(PACKET_DISCONNECT) << std::endl;
-                    std::cout << "LISTCHARACTERS: " << sizeof(PACKET_LISTCHARACTERS) << std::endl;
-                    std::cout << "SELECTCHARACTER: " << sizeof(PACKET_SELECTCHARACTER) << std::endl;
-                    std::cout << "DELETECHARACTER: " << sizeof(PACKET_DELETECHARACTER) << std::endl;
-                    std::cout << "CREATECHARACTER: " << sizeof(PACKET_CREATECHARACTER) << std::endl;
-                    std::cout << "INITIALIZEGAME: " << sizeof(PACKET_INITIALIZEGAME) << std::endl;
-                    std::cout << "UPDATEPC: " << sizeof(PACKET_UPDATEPC) << std::endl;
-                    std::cout << "UPDATENPC: " << sizeof(PACKET_UPDATENPC) << std::endl;
-                    std::cout << "SENDPLAYERCOMMAND: " << sizeof(PACKET_SENDPLAYERCOMMAND) << std::endl;
-                    std::cout << "SENDPLAYERACTION: " << sizeof(PACKET_SENDPLAYERACTION) << std::endl;
-                    std::cout << "SENDSERVERACTION: " << sizeof(PACKET_SENDSERVERACTION) << std::endl;
+                    std::cout << "\nMAX Packet Size (w/msgpack):" << PACKET_MAX_SIZE << std::endl;;
+                    std::cout << "GENERIC (" << (int) GENERIC << "): " << sizeof(PacketGeneric) << std::endl;
+                    std::cout << "ACK (" << (int) ACK << "): " << sizeof(PacketAck) << std::endl;
+                    std::cout << "CONNECT (" << (int) CONNECT << "): " << sizeof(PacketConnect) << std::endl;
+                    std::cout << "DISCONNECT (" << (int) DISCONNECT << "): " << sizeof(PacketDisconnect) << std::endl;
+                    std::cout << "LISTCHARACTERS (" << (int) LISTCHARACTERS << "): " << sizeof(PacketListcharacters) << std::endl;
+                    std::cout << "SELECTCHARACTER (" << (int) SELECTCHARACTER << "): " << sizeof(PacketSelectcharacter) << std::endl;
+                    std::cout << "DELETECHARACTER (" << (int) DELETECHARACTER << "): " << sizeof(PacketDeletecharacter) << std::endl;
+                    std::cout << "CREATECHARACTER (" << (int) CREATECHARACTER << "): " << sizeof(PacketCreatecharacter) << std::endl;
+                    std::cout << "INITIALIZEGAME (" << (int) INITIALIZEGAME << "): " << sizeof(PacketInitializegame) << std::endl;
+                    std::cout << "UPDATEPC (" << (int) UPDATEPC << "): " << sizeof(PacketUpdatepc) << std::endl;
+                    std::cout << "UPDATENPC (" << (int) UPDATENPC << "): " << sizeof(PacketUpdatenpc) << std::endl;
+                    std::cout << "SENDPLAYERCOMMAND (" << (int) SENDPLAYERCOMMAND << "): " << sizeof(PacketSendplayercommand) << std::endl;
+                    std::cout << "SENDPLAYERACTION (" << (int) SENDPLAYERACTION << "): " << sizeof(PacketSendplayeraction) << std::endl;
+                    std::cout << "SENDSERVERACTION (" << (int) SENDSERVERACTION << "): " << sizeof(PacketSendserveraction) << std::endl;
                 }
             }
             else {
@@ -93,7 +97,7 @@ void AdminShell::Run() {
 void AdminShell::PrintUsage() {
     std::cout << "Dedicated Server Admin Usage:" << std::endl;
     std::cout << "/shutdown    = Shuts down the server." << std::endl;
-    std::cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs]." << std::endl;
+    std::cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs, accounts, packets, packetqueue(pq)]." << std::endl;
     std::cout << "/db <query>  = Runs a given sql query on the sqlite3 database." << std::endl;
 }
 
@@ -104,7 +108,7 @@ void AdminShell::PrintLogo() {
     std::cout << "|      | |      |    | |___   | \\ |    |      |    |   | |___" << std::endl;
     std::cout << "\\      / |      |   /  |      |  \\|    |      |    |   / |" << std::endl;
     std::cout << " \\____/  |_____ |__/   |____  |   \\    |    __|__  |__/  |____" << std::endl;
-    std::cout << " " << std::endl; 
+    std::cout << " " << std::endl;
     std::cout << "                              |" << std::endl;
     std::cout << "                             / \\" << std::endl;
     std::cout << "                            /\\_/\\" << std::endl;

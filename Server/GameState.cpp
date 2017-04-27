@@ -52,7 +52,7 @@ void GameState::DisconnectSession(int sessionId) {
     return;
 }
 
-void GameState::PlayerCommand(char * command, int sessionId) {
+void GameState::PlayerCommand(std::string command, int sessionId) {
     std::string pCommand(command);
     std::vector<std::string> pCommandTokens = utils::Tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s") {

@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace Oldentide.Networking {
 
 	public enum PTYPE {
-		GENERIC,
-		ACK,
-		CONNECT,
-		DISCONNECT,
-	    GETSALT,
-	    CREATEACCOUNT,
-	    LOGIN,
-	    LISTCHARACTERS,
-	    SELECTCHARACTER,
-	    DELETECHARACTER,
-	    CREATECHARACTER,
-	    INITIALIZEGAME,
-	    UPDATEPC,
-	    UPDATENPC,
-	    SENDPLAYERCOMMAND,
-	    SENDSERVERCOMMAND,
-	    SENDPLAYERACTION,
-	    SENDSERVERACTION,
-	    UNITY,
+	    // Reserve 0 for null/uninitialized
+		GENERIC = 1,
+		ACK = 2,
+		CONNECT = 3,
+		DISCONNECT = 4,
+	    GETSALT = 5,
+	    CREATEACCOUNT = 6,
+	    LOGIN = 7,
+	    LISTCHARACTERS = 8,
+	    SELECTCHARACTER = 9,
+	    DELETECHARACTER = 10,
+	    CREATECHARACTER = 11,
+	    INITIALIZEGAME = 12,
+	    UPDATEPC = 13,
+	    UPDATENPC = 14,
+	    SENDPLAYERCOMMAND = 15,
+	    SENDSERVERCOMMAND = 16,
+	    SENDPLAYERACTION = 17,
+	    SENDSERVERACTION = 18,
+	    UNITY = 19,
 	};
 
 /*
@@ -227,12 +229,23 @@ namespace Oldentide.Networking {
 	};
 */
 
+	// mark MessagePackObjectAttribute
+	[MessagePackObject]
 	public struct PACKET_UNITY {
+	    [Key(0)]
 		public PTYPE packetType;
+	    [Key(1)]
 		public int data1;
+	    [Key(2)]
 		public int data2;
+	    [Key(3)]
 		public int data3;
+	    [Key(4)]
 		public int data4;
+	    [Key(5)]
 		public int data5;
 	};
+
+
+
 }
