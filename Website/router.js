@@ -99,23 +99,25 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     app.post('/login', function(req, res) {
         db.get("SELECT * FROM accounts WHERE accountname = '" + req.body.login_username + "';", function(err, row) {
             if (row) {
-                var key = bcrypt.hashSync(req.body.login_password, row.salt);
-                if (key == row.key) {
-                    console.log("User " + row.accountname + " supplied the correct password for login!");
+				if(bcrypt.compareSync(req.body.login_password, row.key)) {
+					console.log("User " + row.accountname + " supplied the correct password for login!");
                     var sid = bcrypt.genSaltSync(1);
-                    db.run("UPDATE accounts SET session = '" + sid + "' WHERE accountname = '" + req.body.login_username +"';")
+                    db.run("UPDATE accounts SET session = '" + sid + "' WHERE accountname = '" + req.body.login_username +"';");
                     res.cookie('session_id', sid, {maxAge : 86400000});
                     res.render('login', { loggedin: true });
-                }
+					return;
+				}
                 else {
                     console.log("User " + row.accountname + " supplied an incorrect password for login!");
-                    res.render('login', { loggedout: true, incorrect: true });
                 }
             }
-            else {
-                console.log("User " + req.body.login_username + " not found for login...");
-                res.render('login', { loggedout: true, incorrect: true });
-            }
+			else
+			{
+            	console.log("User " + req.body.login_username + " not found for login...");
+			}	
+			//dummy hash compare to harden against timing attacks
+			bcrypt.compareSync("wrongpassword", '$2a$10$8mvBexXt/N2OmVNR39kPXewnOyPG2Hc6MCrAfIjb33EZ.uhvW5lH6');
+            res.render('login', { loggedout: true, incorrect: true });
         });
         console.log('User at ' + req.connection.remoteAddress + ' posted data to the Login page! (Login attempt)');
     });
