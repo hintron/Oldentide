@@ -46,6 +46,13 @@ enum PTYPE {
 #define PACKET_HEADER_SIZE 3
 const uint16_t MSGPCK_MAX_PAYLOAD_SIZE = PACKET_MAX_SIZE - PACKET_HEADER_SIZE;
 
+
+typedef struct {
+    char data[PACKET_MAX_SIZE];
+    sockaddr_in source;
+} packet_t;
+
+
 class PacketGeneric {
 public:
     int32_t packetId;

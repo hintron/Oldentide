@@ -258,14 +258,30 @@ namespace utils{
     // is returned in the sockaddr_in pointer.
     // If packetType is 0, then an error occured.
     msgpack::object_handle ReceiveDataFrom(int sockfd, uint8_t *packetTypeOut, sockaddr_in *sourceOut){
-        static socklen_t LEN = sizeof(sockaddr_in);
+        // Create a temporary internal buffer
         char packet[PACKET_MAX_SIZE];
-        int n = recvfrom(sockfd, packet, PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
+        // Wait for and get the packet and source of the packet
+        ReceivePacketFrom(sockfd, packet, sourceOut);
+        // Extract the packetType and messagepack data
+        return GetDataFromPacket(packet, packetTypeOut);
+    }
 
-        std::cout << "Received packet from " << utils::GetIpAndPortFromSocket(sourceOut) << std::endl;
 
-        *packetTypeOut = utils::GetPacketTypeFromPacket(packet);
-        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packet);
+
+    // Receives a single packet
+    // packetBufferOut should point to PACKET_MAX_SIZE allocated bytes
+    void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut){
+        static socklen_t LEN = sizeof(sockaddr_in);
+        int n = recvfrom(sockfd, packetBufferOut, PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
+        std::cout << "Received packet " << std::endl;
+    }
+
+
+
+    // packetBufferIn must be of length PACKET_MAX_SIZE
+    msgpack::object_handle GetDataFromPacket(char *packetBufferIn, uint8_t *packetTypeOut){
+        *packetTypeOut = utils::GetPacketTypeFromPacket(packetBufferIn);
+        uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packetBufferIn);
 
         std::cout << "Packet type: " << (unsigned int) *packetTypeOut << std::endl;
         std::cout << "Msgpack Size: " << msgpckSize << std::endl;
@@ -277,7 +293,7 @@ namespace utils{
         }
 
         // Get msgpack data
-        std::string msgpack_data = utils::GetMsgpckDataFromPacket(packet);
+        std::string msgpack_data = utils::GetMsgpckDataFromPacket(packetBufferIn);
         std::cout << "Msgpack data: ";
         utils::PrintStringHex(&msgpack_data);
 
@@ -295,6 +311,7 @@ namespace utils{
     // Also, the = operator doesn't seem to work with object_handle, so I need to return it instead of
     // using a pointer.
     // See https://github.com/msgpack/msgpack-c/wiki/v2_0_cpp_unpacker
+
 
 
 

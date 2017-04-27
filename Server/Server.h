@@ -18,6 +18,9 @@
 #include <arpa/inet.h>
 #include <set>
 #include <string>
+#include <mutex>
+#include <queue>
+
 
 class Server{
     public:
@@ -30,6 +33,10 @@ class Server{
         GameState * gameState;
         AdminShell * adminshell;
 
+        std::mutex packetQueueMutex;
+        std::queue<packet_t> packetQueue;
+
+        void WorkerThread(int id);
         void GenericHandler(msgpack::object_handle *data, sockaddr_in *client);
         void AckHandler(msgpack::object_handle *data, sockaddr_in *client);
         void ConnectHandler(msgpack::object_handle *data, sockaddr_in *client);

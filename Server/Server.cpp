@@ -16,6 +16,9 @@
 #include <msgpack.hpp>
 #include <sstream>
 #include "Utils.h"
+#include <queue>
+#include <mutex>
+#include <chrono>
 
 
 Server::Server(int port) {
@@ -52,70 +55,125 @@ Server::~Server() {
 
 void Server::Run() {
     std::thread shell(*adminshell);
+    // TODO: Detach the shell so we don't need to worry about joining it at the end
+    // shell.detach();
+
+    // TODO: Do we want a limit on how many packets are in the queue?
+    // Or at least emit a warning if the queue size surpasses a certain limit?
+    // int MAX_PACKETS = 1000;
+    int NUM_WORKER_THREADS = 10;
+
+    // Initialize all the threads
+    for (int i = 0; i < NUM_WORKER_THREADS; ++i) {
+        // Start a thread on a Server member function
+        // Funky syntax; server object needs to be second param
+        // See http://stackoverflow.com/questions/10673585/start-thread-with-member-function
+        std::thread t(&Server::WorkerThread, this, i);
+        t.detach(); // Detach the threads so we don't need to join them manually
+    }
 
     bool listen = true;
     while(listen) {
         sockaddr_in client;
+        packet_t p;
+
+        // Wait for a packet
+        utils::ReceivePacketFrom(sockfd, p.data, &(p.source));
+
+        // Put it in the packetQueue
+        packetQueueMutex.lock();
+        packetQueue.push(p);
+        size_t size = packetQueue.size();
+        packetQueueMutex.unlock();
+
+        std::cout << "packetQueue size: " << size << std::endl;
+    }
+
+    // TODO: Detach instead
+    shell.join();
+}
+
+void Server::WorkerThread(int id) {
+    while(1){
+
+        packet_t packet;
+
+
+        // Retrieve a packet from the queue
+        packetQueueMutex.lock();
+        if(packetQueue.size() > 0){
+            std::cout << "Worker thread " << id << " is consuming a packet..." << std::endl;
+            // create a copy (TODO: make sure it isn't a reference!)
+            packet = packetQueue.front();
+            packetQueue.pop();
+            packetQueueMutex.unlock();
+        }
+        else{
+            packetQueueMutex.unlock();
+            // Since packetQueue is empty, try again in a few milliseconds
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            continue;
+        }
+
+
         msgpack::object_handle deserialized_data;
         uint8_t packetType;
-        deserialized_data = utils::ReceiveDataFrom(sockfd, &packetType, &client);
+        deserialized_data = utils::GetDataFromPacket(packet.data, &packetType);
 
         switch (packetType) {
             case false:
                 std::cout << "Error receiving packet! Ignoring..." << std::endl;
                 break;
             case GENERIC:
-                GenericHandler(&deserialized_data, &client);
+                GenericHandler(&deserialized_data, &(packet.source));
                 break;
             case ACK:
-                AckHandler(&deserialized_data, &client);
+                AckHandler(&deserialized_data, &(packet.source));
                 break;
             case CONNECT:
-                ConnectHandler(&deserialized_data, &client);
+                ConnectHandler(&deserialized_data, &(packet.source));
                 break;
             case DISCONNECT:
-                DisconnectHandler(&deserialized_data, &client);
+                DisconnectHandler(&deserialized_data, &(packet.source));
                 break;
             case LISTCHARACTERS:
-                ListCharactersHandler(&deserialized_data, &client);
+                ListCharactersHandler(&deserialized_data, &(packet.source));
                 break;
             case SELECTCHARACTER:
-                SelectCharacterHandler(&deserialized_data, &client);
+                SelectCharacterHandler(&deserialized_data, &(packet.source));
                 break;
             case DELETECHARACTER:
-                DeleteCharacterHandler(&deserialized_data, &client);
+                DeleteCharacterHandler(&deserialized_data, &(packet.source));
                 break;
             case CREATECHARACTER:
-                CreateCharacterHandler(&deserialized_data, &client);
+                CreateCharacterHandler(&deserialized_data, &(packet.source));
                 break;
             case INITIALIZEGAME:
-                InitializeGameHandler(&deserialized_data, &client);
+                InitializeGameHandler(&deserialized_data, &(packet.source));
                 break;
             case UPDATEPC:
-                UpdatePcHandler(&deserialized_data, &client);
+                UpdatePcHandler(&deserialized_data, &(packet.source));
                 break;
             case UPDATENPC:
-                UpdateNpcHandler(&deserialized_data, &client);
+                UpdateNpcHandler(&deserialized_data, &(packet.source));
                 break;
             case SENDPLAYERCOMMAND:
-                SendPlayerCommandHandler(&deserialized_data, &client);
+                SendPlayerCommandHandler(&deserialized_data, &(packet.source));
                 break;
             case SENDPLAYERACTION:
-                SendPlayerActionHandler(&deserialized_data, &client);
+                SendPlayerActionHandler(&deserialized_data, &(packet.source));
                 break;
             case SENDSERVERACTION:
-                SendServerActionHandler(&deserialized_data, &client);
+                SendServerActionHandler(&deserialized_data, &(packet.source));
                 break;
             case UNITY:
-                UnityHandler(&deserialized_data, &client);
+                UnityHandler(&deserialized_data, &(packet.source));
                 break;
             default:
                 std::cout << "Received unknown packet of type " << packetType << std::endl;
                 break;
         }
     }
-    shell.join();
-    return;
 }
 
 

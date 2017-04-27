@@ -24,8 +24,15 @@ namespace utils{
     uint16_t GetMsgpckSizeFromPacket(char *);
     std::string GetMsgpckDataFromPacket(char *packetBuffer);
     std::string GetIpAndPortFromSocket(sockaddr_in *socket);
+
+    // Convenience wrapper functions
     msgpack::object_handle ReceiveDataFrom(int sockfd,  uint8_t *packetTypeOut, sockaddr_in *sourceOut);
     int SendDataTo(int sockfd, std::stringstream *dataIn, uint8_t packetTypeIn, sockaddr_in *destIn);
+
+    // More specific functions for the server's packetQueue
+    void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut);
+    msgpack::object_handle GetDataFromPacket(char *packetBufferIn, uint8_t *packetTypeOut);
+
 };
 
 
