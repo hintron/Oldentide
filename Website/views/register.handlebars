@@ -18,12 +18,22 @@
                             <div class="row">
                                 <div class="six columns">
                                     <label for="registration_password_first">Password (min 6)</label>
-                                    <input type="password" id="registration_password_first" name="registration_password_first" placeholder="******" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}">
+                                    <input type="password" id="registration_password_first" name="registration_password_first" placeholder="******" required="required" maxlength="30" pattern=".{6,}">
                                 </div>
                                 <div class="six columns">
                                     <label for="registration_password_second">Confirm (min 6)</label>
-                                    <input type="password" id="registration_password_second" name="registration_password_second" placeholder="******" required="required" maxlength="30" pattern="[A-Za-z0-9]{6,}">
+                                    <input type="password" id="registration_password_second" name="registration_password_second" placeholder="******" required="required" maxlength="30" pattern=".{6,}" oninput="check(this)">
                                 </div>
+                                <script language='javascript' type='text/javascript'>
+                                    function check(input) {
+                                        if (input.value != document.getElementById('registration_password_first').value) {
+                                            input.setCustomValidity('Password Must be Matching.');
+                                        } else {
+                                            // input is valid -- reset the error message
+                                            input.setCustomValidity('');
+                                        }
+                                    }
+                                </script>
                             </div>
                             <input class="button-primary" type="submit" value="Register">
                     </form>

@@ -8,6 +8,7 @@ var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
 var express         = require('express');
 var handlebars      = require('express-handlebars');
+var validator       = require('express-validator');
 var http            = require('http');
 var https           = require('https');
 var mailer          = require('nodemailer');
@@ -56,6 +57,7 @@ app.use(express.static('public'));
 // Enable Body-parser for all requests.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(validator());
 // Enable Cookie-parser for all requests.
 app.use(cookieParser());
 

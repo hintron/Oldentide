@@ -125,49 +125,61 @@ module.exports = function(app, domain, bcrypt, db, emailer) {
     });
 
     app.post('/register', function(req, res) {
-        var username = req.body.registration_username;
-        var email = req.body.registration_email;
-        var salt = bcrypt.genSaltSync(10);
-        while ((salt.split('/').length - 1) > 0) {
-            salt = bcrypt.genSaltSync(10);
-        }
-        var key = bcrypt.hashSync(req.body.registration_password_first, salt);
-        var query = "INSERT INTO accounts (valid, accountname, email, session, playing, key, salt) " +
-                    "VALUES (0, $username, $email, " + null + ", 0, $key, $salt)";
-        db.get("SELECT * FROM accounts WHERE accountname = '" + username + "' OR email = '"  + email + "';", function(err, row) {
-            if (row) {
-                res.render('register', { get: true, exists: true, loggedout: true });
+        req.checkBody('registration_username', "Username can only contain letters and numbers").isAlphanumeric().isLength({min:3});
+        req.checkBody('registration_email', "Email needs to be an email").isEmail();
+        req.checkBody('registration_password_first', "Password needs to be at least 6 characters long").isLength({min:6});
+        req.checkBody('registration_password_first', "Password needs to matches confirmation password").equals(req.body.registration_password_second);
+        req.sanitizeBody('registration_email').normalizeEmail();
+        req.getValidationResult().then(function(result) {
+            if (!result.isEmpty()) {
+                res.status(400).send('There have been validation errors');
+                console.log('Validation error');
+                return;
             }
-            else {
-                emailer.sendMail({
-                    from: '"Oldentide Server", <' + emailer.options.auth.user + '>',
-                    to: email,
-                    subject: "Verify Your Oldentide Account!",
-                    text: ("Hello " + username + ",\r\n\r\nPlease verify your Oldentide account by clicking the following link:\r\n" +
-                            domain + "/register/verify/" + salt + " \r\n\r\nRegards,\r\nOldentide Team")
-                }, function(error, response) {
-                    if (error) {
-                        console.log(error);
-                    }
-                    else {
-                        console.log("Sucessfully sent a verification email to " + email);
-                    }
-                });
-                db.run(
-                    query, 
-                    { 
-                        $username: username,
-                        $email: email,
-                        $key: key,
-                        $salt: salt
+            var username = req.body.registration_username;
+            var email = req.body.registration_email;
+            var salt = bcrypt.genSaltSync(10);
+            while ((salt.split('/').length - 1) > 0) {
+                salt = bcrypt.genSaltSync(10);
+            }
+            var key = bcrypt.hashSync(req.body.registration_password_first, salt);
+            var query = "INSERT INTO accounts (valid, accountname, email, session, playing, key, salt) " +
+                        "VALUES (0, $username, $email, " + null + ", 0, $key, $salt)";
+            db.get("SELECT * FROM accounts WHERE accountname = ? OR email = ?",[username, email], function(err, row) {
+                if (row) {
+                    res.render('register', { get: true, exists: true, loggedout: true });
+                }
+                else {
+                    emailer.sendMail({
+                        from: '"Oldentide Server", <' + emailer.options.auth.user + '>',
+                        to: email,
+                        subject: "Verify Your Oldentide Account!",
+                        text: ("Hello " + username + ",\r\n\r\nPlease verify your Oldentide account by clicking the following link:\r\n" +
+                                domain + "/register/verify/" + salt + " \r\n\r\nRegards,\r\nOldentide Team")
+                    }, function(error, response) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            console.log("Sucessfully sent a verification email to " + email);
+                        }
                     });
-                res.render('register', { post: true, loggedout: true });
-            }
+                    db.run(
+                        query, 
+                        { 
+                            $username: username,
+                            $email: email,
+                            $key: key,
+                            $salt: salt
+                        });
+                    res.render('register', { post: true, loggedout: true });
+                }
+            });
+            console.log('User at ' + req.connection.remoteAddress + ' posted data to the Register page!');
         });
-        console.log('User at ' + req.connection.remoteAddress + ' posted data to the Register page!');
     });
 
-    // Errorr handlers
+    // Error handlers
     app.use(function(req, res) {
         res.status(404);
         res.render('404', { page: req.originalUrl, loggout: true });
