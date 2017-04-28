@@ -23,6 +23,7 @@
     "express": "latest",
     "express-handlebars": "latest",
     "express-session": "latest",
+    "express-validator": "latest",
     "helmet": "^3.5.0",
     "nodemailer": "latest",
     "sqlite3": "latest"
