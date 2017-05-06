@@ -37,7 +37,7 @@ class Server{
         AdminShell * adminshell;
 
         std::mutex packetQueueMutex;
-        std::queue<packet_t> packetQueue;
+        std::queue<packets::packet_t> packetQueue;
 
         void WorkerThread(int id);
         // void StatisticsThread();

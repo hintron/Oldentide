@@ -18,16 +18,12 @@
 #include <netdb.h> // For getnameinfo() and related flags
 #include <msgpack.hpp>
 
+namespace utils {
 
-
-#define MIN_ACCOUNT_NAME_LENGTH 3
-#define MIN_ACCOUNT_NAME_LENGTH_STRING "3"
-#define MAX_ACCOUNT_NAME_LENGTH 30
-#define MAX_ACCOUNT_NAME_LENGTH_STRING "30"
-#define MIN_PASSWORD_LENGTH 8
-#define MAX_PASSWORD_LENGTH 30
-
-namespace utils{
+    const int MIN_ACCOUNT_NAME_LENGTH = 3;
+    const int MAX_ACCOUNT_NAME_LENGTH = 30;
+    const int MIN_PASSWORD_LENGTH = 8;
+    const int MAX_PASSWORD_LENGTH = 30;
 
     // Simple function that separates a string (s) into tokens based on a delimiter (delim).
     std::vector<std::string> Tokenfy(std::string s, char delim) {
@@ -101,7 +97,10 @@ namespace utils{
     // NOTE: In C, adjacent string literals are concatenated (MACRO
     // TODO: Wow. Adding regex stuff adds a full three seconds to the compile time... What's the deal?
     bool SanitizeAlphanumeric(char *string) {
-        std::regex check_alpha_regex("^\\w{" MIN_ACCOUNT_NAME_LENGTH_STRING "," MAX_ACCOUNT_NAME_LENGTH_STRING "}$");
+        std::stringstream ss;
+        ss << "^\\w{" << MIN_ACCOUNT_NAME_LENGTH << "," << MAX_ACCOUNT_NAME_LENGTH << "}$";
+        std::string regex_string();
+        std::regex check_alpha_regex( ss.str() );
         if (!regex_match(string, check_alpha_regex)) {
             return false;
         }
@@ -194,8 +193,8 @@ namespace utils{
     // TODO: Make this more efficient by using memcpy instead of insert?
     void PrependPacketHeader(std::string *str, uint8_t packetType){
         uint16_t size = str->size();
-        if(size > MSGPCK_MAX_PAYLOAD_SIZE){
-            std::cout << "ERROR: MessagePack data is larger than " << MSGPCK_MAX_PAYLOAD_SIZE << " bytes!!!!" << std::endl;
+        if(size > packets::MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "ERROR: MessagePack data is larger than " << packets::MSGPCK_MAX_PAYLOAD_SIZE << " bytes!!!!" << std::endl;
         }
 
         std::string size_str = std::string((char *)&size,2);
@@ -216,8 +215,8 @@ namespace utils{
         // TODO: Make it so that there are no unaligned accesses -
         // i.e. no short access starting at arr[1] (RISC machines - ARM, etc)
         uint16_t *shorty_array = (uint16_t *)(&packet_buffer[1]);
-        if(shorty_array[0] > MSGPCK_MAX_PAYLOAD_SIZE){
-            std::cout << "ERROR: Msgpck Size is too large (> " << MSGPCK_MAX_PAYLOAD_SIZE << ")to be correct!" << std::endl;
+        if(shorty_array[0] > packets::MSGPCK_MAX_PAYLOAD_SIZE){
+            std::cout << "ERROR: Msgpck Size is too large (> " << packets::MSGPCK_MAX_PAYLOAD_SIZE << ")to be correct!" << std::endl;
         }
 
         return shorty_array[0];
@@ -229,13 +228,13 @@ namespace utils{
         uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packetBuffer);
 
         // Check to make sure we don't accidentally access data outside the packet!
-        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+        if(msgpckSize > packets::MSGPCK_MAX_PAYLOAD_SIZE){
             std::cout << "Msgpck Size is too large to be correct! Returning empty string" << std::endl;
             return std::string();
         }
 
         // Return the msgpck payload, which starts at index 3 and is msgpckSize in length
-        return std::string(packetBuffer+PACKET_HEADER_SIZE, msgpckSize);
+        return std::string(packetBuffer+packets::PACKET_HEADER_SIZE, msgpckSize);
     };
 
 
@@ -259,7 +258,7 @@ namespace utils{
     // If packetType is 0, then an error occured.
     msgpack::object_handle ReceiveDataFrom(int sockfd, uint8_t *packetTypeOut, sockaddr_in *sourceOut){
         // Create a temporary internal buffer
-        char packet[PACKET_MAX_SIZE];
+        char packet[packets::PACKET_MAX_SIZE];
         // Wait for and get the packet and source of the packet
         ReceivePacketFrom(sockfd, packet, sourceOut);
         // Extract the packetType and messagepack data
@@ -272,7 +271,7 @@ namespace utils{
     // packetBufferOut should point to PACKET_MAX_SIZE allocated bytes
     void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut){
         static socklen_t LEN = sizeof(sockaddr_in);
-        int n = recvfrom(sockfd, packetBufferOut, PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
+        int n = recvfrom(sockfd, packetBufferOut, packets::PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
     }
 
 
@@ -286,7 +285,7 @@ namespace utils{
         // std::cout << "Msgpack Size: " << msgpckSize << std::endl;
 
         // Check to make sure we don't accidentally access data outside the packet!
-        if(msgpckSize > MSGPCK_MAX_PAYLOAD_SIZE){
+        if(msgpckSize > packets::MSGPCK_MAX_PAYLOAD_SIZE){
             std::cout << "Msgpack Size is too large to be correct! Ignoring packet and continuing to avoid buffer overflow..." << std::endl;
             *packetTypeOut = 0;
         }
