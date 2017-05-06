@@ -74,134 +74,127 @@ namespace Oldentide.Networking {
 	    // public int errorNumber;
 	};
 
-	// public class PacketSelectcharacter {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string byteacter;
-	// };
+	public class PacketSelectcharacter {
+	    [Key(0)]
+	    public int packetId;
+	    [Key(1)]
+	    public int sessionId;
+	    [Key(2)]
+	    public string character;
+	};
 
-	// public class PacketDeletecharacter {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string byteacter;
-	// };
+	public class PacketDeletecharacter {
+	    [Key(0)]
+	    public int packetId;
+	    [Key(1)]
+	    public int sessionId;
+	    [Key(2)]
+	    public string character;
+	};
 
-	// public class PacketCreatecharacter {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string firstName;
-	//     string lastName;
-	//     string race;
-	//     string gender;
-	//     string profession;
-	//     // TODO: Create an attributes map -> map<string, int> attributes
-	//     int strength;
-	//     int constitution;
-	//     int intelligence;
-	//     int dexterity;
-	//     int axe;
-	//     int dagger;
-	//     int unarmed;
-	//     int hammer;
-	//     int polearm;
-	//     int spear;
-	//     int staff;
-	//     int sword;
-	//     int archery;
-	//     int crossbow;
-	//     int sling;
-	//     int thrown;
-	//     int armor;
-	//     int dualWeapon;
-	//     int shield;
-	//     int bardic;
-	//     int conjuring;
-	//     int druidic;
-	//     int illusion;
-	//     int necromancy;
-	//     int sorcery;
-	//     int shamanic;
-	//     int spellcraft;
-	//     int summoning;
-	//     int focus;
-	//     int armorsmithing;
-	//     int tailoring;
-	//     int fletching;
-	//     int weaponsmithing;
-	//     int alchemy;
-	//     int lapidary;
-	//     int calligraphy;
-	//     int enchanting;
-	//     int herbalism;
-	//     int hunting;
-	//     int mining;
-	//     int bargaining;
-	//     int camping;
-	//     int firstAid;
-	//     int lore;
-	//     int pickLocks;
-	//     int scouting;
-	//     int search;
-	//     int stealth;
-	//     int traps;
-	//     int aeolandis;
-	//     int hieroform;
-	//     int highGundis;
-	//     int oldPraxic;
-	//     int praxic;
-	//     int runic;
-	// };
+	public class PacketCreatecharacter {
+	    [Key(0)]
+	    public int packetId;
+	    [Key(1)]
+	    public int sessionId;
+	    [Key(2)]
+	    public string firstName;
+	    [Key(3)]
+	    public string lastName;
+	    [Key(4)]
+	    public string race;
+	    [Key(5)]
+	    public string gender;
+	    [Key(6)]
+	    public string profession;
+	    // c++ map -> c # SortedDictionary
+	    // c++ unordered_map -> c # Dictionary
+	    // msgpack shouldn't care about the order though for maps
+	    [Key(7)]
+	    public Dictionary<string, int> attributes;
+	    // TODO: Create an attributes map -> map<string, int> attributes
+	};
 
-	// public class PacketInitializegame {
-	//     public int packetId;
-	//     public int sessionId;
-	// };
+	public class PacketInitializegame {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+	};
 
-	// public class PacketUpdatepc {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string firstName;
-	//     string lastName;
-	//     string race;
-	//     string gender;
-	//     string profession;
-	//     int level;
-	//     int hp;
-	//     int bp;
-	//     int mp;
-	//     int ep;
-	//     int x;
-	//     int y;
-	//     int z;
-	//     float direction;
-	// };
+	public class PacketUpdatepc {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+        [Key(2)]
+        public string firstName;
+        [Key(3)]
+        public string lastName;
+        [Key(4)]
+        public string race;
+        [Key(5)]
+        public string gender;
+        [Key(6)]
+        public string profession;
+        [Key(7)]
+        public int level;
+        [Key(8)]
+        public int hp;
+        [Key(9)]
+        public int bp;
+        [Key(10)]
+        public int mp;
+        [Key(11)]
+        public int ep;
+        [Key(12)]
+        public int x;
+        [Key(13)]
+        public int y;
+        [Key(14)]
+        public int z;
+        [Key(15)]
+	    public float direction;
+	};
 
-	// public class PacketUpdatenpc {
-	//     public int packetId;
-	//     public int sessionId;
-	// };
+	public class PacketUpdatenpc {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+	};
 
-	// public class PacketSendplayercommand {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string command;
-	// };
+	public class PacketSendplayercommand {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+        [Key(2)]
+        public string command;
+    };
 
-	// public class PacketSendservercommand {
-	//     public int packetId;
-	//     public int sessionId;
-	//     string command;
-	// };
+    public class PacketSendservercommand {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+        [Key(2)]
+	    public string command;
+	};
 
-	// public class PacketSendplayeraction {
-	//     public int packetId;
-	//     public int sessionId;
-	// };
+	public class PacketSendplayeraction {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+	};
 
-	// public class PacketSendserveraction {
-	//     public int packetId;
-	//     public int sessionId;
-	// };
+	public class PacketSendserveraction {
+        [Key(0)]
+        public int packetId;
+        [Key(1)]
+        public int sessionId;
+	};
 
 	// mark MessagePackObjectAttribute
 	[MessagePackObject]

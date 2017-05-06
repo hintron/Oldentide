@@ -142,7 +142,7 @@ void Server::WorkerThread(int id) {
 
         switch (packetType) {
             case false:
-                std::cout << "Error receiving packet! Ignoring..." << std::endl;
+                utils::SendErrorTo(sockfd, std::string("Invalid packetType. Ignoring packet."), &(packet.source));
                 break;
             case packets::GENERIC:
                 GenericHandler(&deserialized_data, &(packet.source));
@@ -190,7 +190,9 @@ void Server::WorkerThread(int id) {
                 UnityHandler(&deserialized_data, &(packet.source));
                 break;
             default:
-                std::cout << "Received unknown packet of type " << packetType << std::endl;
+                std::stringstream errSs;
+                errSs << "Received unknown packet of type " << packetType;
+                utils::SendErrorTo(sockfd, errSs.str(), &(packet.source));
                 break;
         }
     }
@@ -257,14 +259,13 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
     try {
         deserialized_data->get().convert(packet);
     } catch (const std::exception& e) {
-        std::cout << "Failed to convert/cast msgpack object! Exiting... " << e.what() << std::endl;
+        // std::cout << "Failed to convert/cast msgpack object! Exiting... " << e.what() << std::endl;
         utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
         return;
     }
 
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
-        std::cout << "Invalid session. Not doing anything" << std::endl;
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
@@ -292,7 +293,7 @@ void Server::SelectCharacterHandler(msgpack::object_handle * deserialized_data, 
     packets::Selectcharacter packet;
     deserialized_data->get().convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
-        std::cout << "Invalid session. Not doing anything" << std::endl;
+        utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
     std::cout << "TODO: Need to select character " << packet.character << std::endl;
@@ -308,7 +309,7 @@ void Server::CreateCharacterHandler(msgpack::object_handle * deserialized_data, 
     packets::Createcharacter packet;
     deserialized_data->get().convert(packet);
     if(!gameState->VerifySession(packet.sessionId)){
-        std::cout << "Invalid session. Not doing anything" << std::endl;
+        utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
 
@@ -330,9 +331,14 @@ void Server::UpdateNpcHandler(msgpack::object_handle * deserialized_data, sockad
 
 void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Sendplayercommand packet;
-    deserialized_data->get().convert(packet);
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
     if(!gameState->VerifySession(packet.sessionId)){
-        std::cout << "Invalid session. Not doing anything" << std::endl;
+        utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
     std::cout << "SendPlayerCommandHandler!" << std::endl;

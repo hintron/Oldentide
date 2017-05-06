@@ -77,8 +77,12 @@ public class NetworkInterface : MonoBehaviour {
 			Debug.Log("M press!");
 		}
 		if(Input.GetKeyDown(KeyCode.L)){
-			StartCoroutine(ListCharacters());
+			StartCoroutine(ListCharactersAction());
 			Debug.Log("L press!");
+		}
+		if(Input.GetKeyDown(KeyCode.I)){
+			StartCoroutine(SendPlayerCommandAction("/s Hello, Oldentide!!!"));
+			Debug.Log("I press!");
 		}
 	}
 
@@ -121,8 +125,7 @@ public class NetworkInterface : MonoBehaviour {
 	}
 
 
-	IEnumerator ListCharacters(){
-		Debug.Log("ListCharacters()!");
+	IEnumerator ListCharactersAction(){
 		PacketListcharacters pp = new PacketListcharacters();
 		pp.sessionId = session;
 		pp.packetId = packetNumber;
@@ -147,15 +150,44 @@ public class NetworkInterface : MonoBehaviour {
 			}
 			Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
-			// TODO: Print out the character list
+			// Print out the character list
 			foreach (string element in data.characterArray) {
 				Debug.Log(element);
         	}
 		});
 
+		yield return null;
+	}
+
+	IEnumerator SendPlayerCommandAction(string command){
+		Debug.Log("SendPlayerCommandAction!");
+		PacketSendplayercommand pp = new PacketSendplayercommand();
+		pp.sessionId = session;
+		pp.packetId = packetNumber;
+		pp.command = command;
+		packetNumber++;
+
+		byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
+		SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.SENDPLAYERCOMMAND, sendMsgpackData);
+
+		// Wait for the response
+		ReceiveDataFrom(delegate(byte[] msgpackDataReceived, Oldentide.Networking.PTYPE packetType) {
+			if(packetType == Oldentide.Networking.PTYPE.ERROR){
+				var errData = MessagePackSerializer.Deserialize<PacketError>(msgpackDataReceived);
+				Debug.Log("ERROR: " + errData.errorMsg);
+				return;
+			}
+			var data = MessagePackSerializer.Deserialize<PacketSendplayercommand>(msgpackDataReceived);
+			if(data.sessionId != session){
+				Debug.Log("Invalid session! Ignoring packet " + packetType);
+				return;
+			}
+			Debug.Log("SENDPLAYERCOMMAND response: " + data.command);
+		});
 
 		yield return null;
 	}
+
 
 
 	////
