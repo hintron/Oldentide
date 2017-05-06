@@ -98,23 +98,19 @@ public class NetworkInterface : MonoBehaviour {
 		Debug.Log("Sent CONNECT packet! Receiving packet...");
 
 		// Wait for the response
-		ReceiveDataFrom(delegate(string msg) {
-			Debug.Log("Receive data return values: " + msg + "!");
+		ReceiveDataFrom(delegate(byte[] msgpackDataReceived, Oldentide.Networking.PTYPE packetType) {
+			Debug.Log("Server responded with packet " + packetType);
 
-			// // Oldentide.Networking.PTYPE packetType =
-			// // Debug.Log("Server responded with packet " + packetType);
+			var data = MessagePackSerializer.Deserialize<PacketConnect>(msgpackDataReceived);
+			Debug.Log("Connect packet response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
-			// var data = MessagePackSerializer.Deserialize<PacketConnect>(receivedMsgpackData);
-			// Debug.Log("Connect packet response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
-
-			// if(data.sessionId != session){
-			// 	Debug.Log("Setting new session to " + data.sessionId);
-			// 	session = data.sessionId;
-			// }
-			// else {
-			// 	Debug.Log("Session is already set to " + session);
-			// }
-			// return 1;
+			if(data.sessionId != session){
+				Debug.Log("Setting new session to " + data.sessionId);
+				session = data.sessionId;
+			}
+			else {
+				Debug.Log("Session is already set to " + session);
+			}
 		});
 
 		Debug.Log("After ReceiveAsync");
@@ -137,13 +133,14 @@ public class NetworkInterface : MonoBehaviour {
 	// Create a class to pass data to ReceiveDataFromCallback
 	public class CallbackParams{
 		public byte[] buffer;
-		public Action<string> callback;
+		public Action<byte[], Oldentide.Networking.PTYPE> callback;
 		// Note: Action<...> is a no-return delegate; Func<..., retType> has a return type
 		// public Func<string, int> callback;
 	}
 
 	// Wrapper function for BeginReceiveFrom() that deals with
-	void ReceiveDataFrom(Action<string> callback) {
+	// The callback params include the msgpack data and the packetType
+	void ReceiveDataFrom(Action<byte[], Oldentide.Networking.PTYPE> callback) {
 		// byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
 		IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
 		EndPoint senderRemote = (EndPoint)sender;
@@ -182,13 +179,12 @@ public class NetworkInterface : MonoBehaviour {
 		Debug.Log("Receiving msgpack data: ");
 		PrintHexString(data);
 
-		// Uncomment to prove that this callback can block and Unity still works
-		System.Threading.Thread.Sleep(10000);
-
 		// Return execution back to the original caller, passing back the data
-		so2.callback("Wazzup! Just finished sending a packet!");
+		so2.callback(data, packetType);
 	}
 
+	// Use the following to prove that a callback can block and Unity still works
+	// System.Threading.Thread.Sleep(10000);
 
 	// IEnumerator ListCharacters(){
 	// 	Debug.Log("ListCharacters()!");
