@@ -144,49 +144,49 @@ void Server::WorkerThread(int id) {
             case false:
                 std::cout << "Error receiving packet! Ignoring..." << std::endl;
                 break;
-            case GENERIC:
+            case PTYPE::GENERIC:
                 GenericHandler(&deserialized_data, &(packet.source));
                 break;
-            case ACK:
+            case PTYPE::ACK:
                 AckHandler(&deserialized_data, &(packet.source));
                 break;
-            case CONNECT:
+            case PTYPE::CONNECT:
                 ConnectHandler(&deserialized_data, &(packet.source));
                 break;
-            case DISCONNECT:
+            case PTYPE::DISCONNECT:
                 DisconnectHandler(&deserialized_data, &(packet.source));
                 break;
-            case LISTCHARACTERS:
+            case PTYPE::LISTCHARACTERS:
                 ListCharactersHandler(&deserialized_data, &(packet.source));
                 break;
-            case SELECTCHARACTER:
+            case PTYPE::SELECTCHARACTER:
                 SelectCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case DELETECHARACTER:
+            case PTYPE::DELETECHARACTER:
                 DeleteCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case CREATECHARACTER:
+            case PTYPE::CREATECHARACTER:
                 CreateCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case INITIALIZEGAME:
+            case PTYPE::INITIALIZEGAME:
                 InitializeGameHandler(&deserialized_data, &(packet.source));
                 break;
-            case UPDATEPC:
+            case PTYPE::UPDATEPC:
                 UpdatePcHandler(&deserialized_data, &(packet.source));
                 break;
-            case UPDATENPC:
+            case PTYPE::UPDATENPC:
                 UpdateNpcHandler(&deserialized_data, &(packet.source));
                 break;
-            case SENDPLAYERCOMMAND:
+            case PTYPE::SENDPLAYERCOMMAND:
                 SendPlayerCommandHandler(&deserialized_data, &(packet.source));
                 break;
-            case SENDPLAYERACTION:
+            case PTYPE::SENDPLAYERACTION:
                 SendPlayerActionHandler(&deserialized_data, &(packet.source));
                 break;
-            case SENDSERVERACTION:
+            case PTYPE::SENDSERVERACTION:
                 SendServerActionHandler(&deserialized_data, &(packet.source));
                 break;
-            case UNITY:
+            case PTYPE::UNITY:
                 UnityHandler(&deserialized_data, &(packet.source));
                 break;
             default:
@@ -228,12 +228,13 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
 
     PacketConnect returnPacket;
     returnPacket.sessionId = gameState->GenerateSession(packet.sessionId);
+    returnPacket.packetId = 0;
     // Use MessagePack to serialize data
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
 
     // Send the packet
-    utils::SendDataTo(sockfd, &buffer, CONNECT, client);
+    utils::SendDataTo(sockfd, &buffer, PTYPE::CONNECT, client);
 
     std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
 }
@@ -252,7 +253,23 @@ void Server::DisconnectHandler(msgpack::object_handle * deserialized_data, socka
 
 void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     PacketListcharacters packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this is a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        std::cout << "Failed to convert/cast msgpack object! Exiting... " << e.what() << std::endl;
+        // Return error packet
+        PacketError returnPacket;
+        // Since we couldn't convert/cast msgpack data, we don't know what sessionId or packetId it had
+        returnPacket.sessionId = 0;
+        returnPacket.packetId = 0;
+        returnPacket.errorMsg = std::string("Failed to convert/cast msgpack object!");
+        std::stringstream buffer;
+        msgpack::pack(buffer, returnPacket);
+        utils::SendDataTo(sockfd, &buffer, PTYPE::ERROR, client);
+        return;
+    }
+
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         std::cout << "Invalid session. Not doing anything" << std::endl;
@@ -275,7 +292,7 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
     // Send the packet
-    utils::SendDataTo(sockfd, &buffer, LISTCHARACTERS, client);
+    utils::SendDataTo(sockfd, &buffer, PTYPE::LISTCHARACTERS, client);
 }
 
 void Server::SelectCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
@@ -348,7 +365,7 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
 
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    utils::SendDataTo(sockfd, &buffer, SENDSERVERCOMMAND, client);
+    utils::SendDataTo(sockfd, &buffer, PTYPE::SENDSERVERCOMMAND, client);
 }
 
 void Server::SendPlayerActionHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
@@ -362,25 +379,4 @@ void Server::SendServerActionHandler(msgpack::object_handle * deserialized_data,
 
 void Server::UnityHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     std::cout << "UnityHandler!" << std::endl;
-
-//     std::cout << "0x" << std::hex << packet->data1 << std::endl;
-//     std::cout << "0x" << std::hex << packet->data2 << std::endl;
-//     std::cout << "0x" << std::hex << packet->data3 << std::endl;
-//     std::cout << "0x" << std::hex << packet->data4 << std::endl;
-//     std::cout << "0x" << std::hex << packet->data5 << std::endl;
-//     std::cout << "------------------------" << std::endl;
-//     PacketUnity retPacket;
-//     retPacket.data1 = packet->data1;
-//     retPacket.data2 = packet->data2;
-//     retPacket.data3 = packet->data3;
-//     retPacket.data4 = packet->data4;
-//     retPacket.data5 = packet->data5;
-//     std::cout << "retPacket: " << std::endl;
-//     std::cout << "0x" << std::hex << retPacket.data1 << std::endl;
-//     std::cout << "0x" << std::hex << retPacket.data2 << std::endl;
-//     std::cout << "0x" << std::hex << retPacket.data3 << std::endl;
-//     std::cout << "0x" << std::hex << retPacket.data4 << std::endl;
-//     std::cout << "0x" << std::hex << retPacket.data5 << std::endl;
-//     std::cout << "----------------------------------------------" << std::endl;
-//     sendto(sockfd, (void *)&retPacket, sizeof(PACKET_UNITY), 0, (struct sockaddr *)client, CLIENT_LEN);
 }

@@ -76,12 +76,16 @@ public class NetworkInterface : MonoBehaviour {
 			StartCoroutine(ConnectToServer());
 			Debug.Log("M press!");
 		}
-		// if(Input.GetKeyDown(KeyCode.L)){
-		// 	StartCoroutine(ListCharacters());
-		// 	Debug.Log("L press!");
-		// }
+		if(Input.GetKeyDown(KeyCode.L)){
+			StartCoroutine(ListCharacters());
+			Debug.Log("L press!");
+		}
 	}
 
+
+	// TODO: We need a way of canceling pending callbacks that are waiting for a packet,
+	// or else the stale callbacks will consume the new return packets that were meant for a
+	// newer request.
 
 	IEnumerator ConnectToServer(){
 		Debug.Log("Sending a single CONNECT packet via message pack!!");
@@ -113,11 +117,50 @@ public class NetworkInterface : MonoBehaviour {
 			}
 		});
 
-		Debug.Log("After ReceiveAsync");
+		yield return null;
+	}
+
+
+	IEnumerator ListCharacters(){
+		Debug.Log("ListCharacters()!");
+		PacketListcharacters pp = new PacketListcharacters();
+		pp.sessionId = session;
+		pp.packetId = packetNumber;
+		// Set to empty array, NOT null. This makes a difference in messagepack
+		pp.characterArray = new string [0];
+		packetNumber++;
+
+		byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
+		SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.LISTCHARACTERS, sendMsgpackData);
+
+		// Wait for the response
+		ReceiveDataFrom(delegate(byte[] msgpackDataReceived, Oldentide.Networking.PTYPE packetType) {
+			if(packetType == Oldentide.Networking.PTYPE.ERROR){
+				var errData = MessagePackSerializer.Deserialize<PacketError>(msgpackDataReceived);
+				Debug.Log("ERROR: " + errData.errorMsg);
+				return;
+			}
+			var data = MessagePackSerializer.Deserialize<PacketListcharacters>(msgpackDataReceived);
+			if(data.sessionId != session){
+				Debug.Log("Invalid session! Ignoring packet " + packetType);
+				return;
+			}
+			Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
+
+			// TODO: Print out the character list
+			foreach (string element in data.characterArray) {
+				Debug.Log(element);
+        	}
+		});
+
 
 		yield return null;
 	}
 
+
+	////
+	/// Util functions
+	//
 
 	// Everything below here is analogous to the Utils C++ class in Server - wrappers to
 	// the (UDP) socket functions that will be used multiple times
@@ -186,88 +229,6 @@ public class NetworkInterface : MonoBehaviour {
 	// Use the following to prove that a callback can block and Unity still works
 	// System.Threading.Thread.Sleep(10000);
 
-	// IEnumerator ListCharacters(){
-	// 	Debug.Log("ListCharacters()!");
-		// PacketListcharacters pp = new PacketListcharacters();
-		// pp.sessionId = session;
-		// pp.packetId = packetNumber;
-		// pp.characterArray = null;
-		// packetNumber++;
-
-		// byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
-		// SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.LISTCHARACTERS, sendMsgpackData);
-
-		// // Wait for the response
-		// byte[] receivedMsgpackData;
-		// Oldentide.Networking.PTYPE packetType = ReceiveDataFrom(out receivedMsgpackData);
-		// Debug.Log("Server responded with packet " + packetType);
-		// var data = MessagePackSerializer.Deserialize<PacketListcharacters>(receivedMsgpackData);
-		// Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
-
-		// // TODO: Print out the character list
-		// Debug.Log(data.characterArray);
-
-	// 	yield return null;
-	// }
-
-
-	////
-	/// Packet handlers
-	//
-
-	// void ConnectHandler(byte [] msgpackData) {
-	// 	var data = MessagePackSerializer.Deserialize<PacketConnect>(msgpackData);
-	// 	Debug.Log("Connect handler! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
-
-	// 	if(data.sessionId != session){
-	// 		Debug.Log("Setting new session to " + data.sessionId);
-	// 		session = data.sessionId;
-	// 	}
-	// 	else {
-	// 		Debug.Log("Session is already set to " + session);
-	// 	}
-
-	// 	// Send a Unity packet, just for kicks
-	// 	PacketUnity pp = new PacketUnity();
-	// 	// pp.packetType = Oldentide.Networking.PTYPE.UNITY;
-	// 	pp.sessionId = data.sessionId;
-	// 	pp.packetId = packetNumber;
-	// 	packetNumber++;
-	// 	pp.data1 = 1;
-	// 	pp.data2 = 8;
-	// 	pp.data3 = 16;
-	// 	pp.data4 = 64;
-	// 	pp.data5 = 255;
-
-	// 	byte [] msgpackDataToSendUnity = MessagePackSerializer.Serialize(pp);
-	// 	SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.UNITY, msgpackDataToSendUnity);
-
-	// 	// // Wait for a response
-	// 	// byte[] receivedMsgpackDataUnity;
-	// 	// Oldentide.Networking.PTYPE packetType = ReceiveDataFrom(out receivedMsgpackDataUnity);
-
-	// 	// if(packetType == Oldentide.Networking.PTYPE.UNITY){
-	// 	// 	UnityHandler(receivedMsgpackDataUnity);
-	// 	// }
-	// 	// else {
-	// 	// 	Debug.Log("Unknown packet received instead of unity packet...: " + packetType);
-	// 	// }
-
-
-	// }
-
-
-
-	// void UnityHandler(byte [] msgpackData) {
-	// 	var data = MessagePackSerializer.Deserialize<PacketUnity>(msgpackData);
-	// 	Debug.Log("Unity handler! Data1: " + data.data1 + "; Data2: " + data.data2 + "; data3: " + data.data3 + ";");
-	// }
-
-
-	////
-	/// Util functions
-	//
-
 	void SendDataTo(Socket clientSocket, IPEndPoint serverEndPoint, Oldentide.Networking.PTYPE packetType, byte [] msgpackData){
 		byte[] packetToSend = new byte[msgpackData.Length + HEADER_SIZE];
 
@@ -293,26 +254,5 @@ public class NetworkInterface : MonoBehaviour {
 		}
 		Debug.Log(hexstring);
 	}
-
-	// public byte [] StructureToByteArray(object obj){
-	// 	int len = Marshal.SizeOf(obj);
-	// 	byte [] arr = new byte[len];
-	// 	IntPtr ptr = Marshal.AllocHGlobal(len);
-	// 	Marshal.StructureToPtr(obj, ptr, true);
-	// 	Marshal.Copy(ptr, arr, 0, len);
-	// 	Marshal.FreeHGlobal(ptr);
-	// 	return arr;
-	// }
-
-
-	// public void ByteArrayToStructure(byte [] bytearray, ref object obj){
-	// 	int len = Marshal.SizeOf(obj);
-	// 	IntPtr i = Marshal.AllocHGlobal(len);
-	// 	Marshal.Copy(bytearray,0, i,len);
-	// 	obj = Marshal.PtrToStructure(i, obj.GetType());
-	// 	Marshal.FreeHGlobal(i);
-	// }
-
-
 
 }

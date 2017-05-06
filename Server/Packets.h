@@ -10,13 +10,14 @@
 
 // Currently, we can have up to 255 packet types
 // Enumerate list of packet types (One-hot encoded)
-enum PTYPE {
+// TODO: Create some kind of packet that can sync the client and server packet expectations?
+enum class PTYPE {
     // Reserve 0 for null/uninitialized
     GENERIC = 1,
     ACK = 2,
     CONNECT = 3,
     DISCONNECT = 4,
-    // GETSALT = 5,
+    ERROR = 5,
     // CREATEACCOUNT = 6,
     // LOGIN = 7,
     LISTCHARACTERS = 8,
@@ -34,7 +35,7 @@ enum PTYPE {
 };
 
 
-// Use this to send enums over messagepack - currently not needed
+// Use this to send enums with no specific number mappings over messagepack - currently not needed
 // MSGPACK_ADD_ENUM(PTYPE);
 
 // Define packet maximums
@@ -80,6 +81,17 @@ public:
     int32_t packetId;
     int32_t sessionId;
     MSGPACK_DEFINE(packetId, sessionId);
+};
+
+
+class PacketError {
+public:
+    int32_t packetId;
+    int32_t sessionId;
+    std::string errorMsg;
+    // TODO: Implement error number system
+    // int32_t errorNumber;
+    MSGPACK_DEFINE(packetId, sessionId, errorMsg);
 };
 
 class PacketListcharacters {

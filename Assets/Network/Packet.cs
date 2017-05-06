@@ -10,7 +10,7 @@ namespace Oldentide.Networking {
 		ACK = 2,
 		CONNECT = 3,
 		DISCONNECT = 4,
-	    // GETSALT = 5,
+	    ERROR = 5,
 	    // CREATEACCOUNT = 6,
 	    // LOGIN = 7,
 	    LISTCHARACTERS = 8,
@@ -59,6 +59,19 @@ namespace Oldentide.Networking {
 	    public int sessionId;
 	    [Key(2)]
 	    public string [] characterArray;
+	};
+
+	[MessagePackObject]
+	public class PacketError {
+	    [Key(0)]
+	    public int packetId;
+	    [Key(1)]
+	    public int sessionId;
+	    [Key(2)]
+	    public string errorMsg;
+	    // TODO: Implement error number system
+	    // [Key(3)]
+	    // public int errorNumber;
 	};
 
 	// public class PacketSelectcharacter {

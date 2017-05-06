@@ -64,20 +64,21 @@ void AdminShell::Run() {
                 }
                 if (adminTokens[1] == "packets") {
                     std::cout << "\nMAX Packet Size (w/msgpack):" << PACKET_MAX_SIZE << std::endl;;
-                    std::cout << "GENERIC (" << (int) GENERIC << "): " << sizeof(PacketGeneric) << std::endl;
-                    std::cout << "ACK (" << (int) ACK << "): " << sizeof(PacketAck) << std::endl;
-                    std::cout << "CONNECT (" << (int) CONNECT << "): " << sizeof(PacketConnect) << std::endl;
-                    std::cout << "DISCONNECT (" << (int) DISCONNECT << "): " << sizeof(PacketDisconnect) << std::endl;
-                    std::cout << "LISTCHARACTERS (" << (int) LISTCHARACTERS << "): " << sizeof(PacketListcharacters) << std::endl;
-                    std::cout << "SELECTCHARACTER (" << (int) SELECTCHARACTER << "): " << sizeof(PacketSelectcharacter) << std::endl;
-                    std::cout << "DELETECHARACTER (" << (int) DELETECHARACTER << "): " << sizeof(PacketDeletecharacter) << std::endl;
-                    std::cout << "CREATECHARACTER (" << (int) CREATECHARACTER << "): " << sizeof(PacketCreatecharacter) << std::endl;
-                    std::cout << "INITIALIZEGAME (" << (int) INITIALIZEGAME << "): " << sizeof(PacketInitializegame) << std::endl;
-                    std::cout << "UPDATEPC (" << (int) UPDATEPC << "): " << sizeof(PacketUpdatepc) << std::endl;
-                    std::cout << "UPDATENPC (" << (int) UPDATENPC << "): " << sizeof(PacketUpdatenpc) << std::endl;
-                    std::cout << "SENDPLAYERCOMMAND (" << (int) SENDPLAYERCOMMAND << "): " << sizeof(PacketSendplayercommand) << std::endl;
-                    std::cout << "SENDPLAYERACTION (" << (int) SENDPLAYERACTION << "): " << sizeof(PacketSendplayeraction) << std::endl;
-                    std::cout << "SENDSERVERACTION (" << (int) SENDSERVERACTION << "): " << sizeof(PacketSendserveraction) << std::endl;
+                    std::cout << "GENERIC (" << (int) PTYPE::GENERIC << "): " << sizeof(PacketGeneric) << std::endl;
+                    std::cout << "ACK (" << (int) PTYPE::ACK << "): " << sizeof(PacketAck) << std::endl;
+                    std::cout << "CONNECT (" << (int) PTYPE::CONNECT << "): " << sizeof(PacketConnect) << std::endl;
+                    std::cout << "DISCONNECT (" << (int) PTYPE::DISCONNECT << "): " << sizeof(PacketDisconnect) << std::endl;
+                    std::cout << "ERROR (" << (int) PTYPE::ERROR << "): " << sizeof(PacketError) << std::endl;
+                    std::cout << "LISTCHARACTERS (" << (int) PTYPE::LISTCHARACTERS << "): " << sizeof(PacketListcharacters) << std::endl;
+                    std::cout << "SELECTCHARACTER (" << (int) PTYPE::SELECTCHARACTER << "): " << sizeof(PacketSelectcharacter) << std::endl;
+                    std::cout << "DELETECHARACTER (" << (int) PTYPE::DELETECHARACTER << "): " << sizeof(PacketDeletecharacter) << std::endl;
+                    std::cout << "CREATECHARACTER (" << (int) PTYPE::CREATECHARACTER << "): " << sizeof(PacketCreatecharacter) << std::endl;
+                    std::cout << "INITIALIZEGAME (" << (int) PTYPE::INITIALIZEGAME << "): " << sizeof(PacketInitializegame) << std::endl;
+                    std::cout << "UPDATEPC (" << (int) PTYPE::UPDATEPC << "): " << sizeof(PacketUpdatepc) << std::endl;
+                    std::cout << "UPDATENPC (" << (int) PTYPE::UPDATENPC << "): " << sizeof(PacketUpdatenpc) << std::endl;
+                    std::cout << "SENDPLAYERCOMMAND (" << (int) PTYPE::SENDPLAYERCOMMAND << "): " << sizeof(PacketSendplayercommand) << std::endl;
+                    std::cout << "SENDPLAYERACTION (" << (int) PTYPE::SENDPLAYERACTION << "): " << sizeof(PacketSendplayeraction) << std::endl;
+                    std::cout << "SENDSERVERACTION (" << (int) PTYPE::SENDSERVERACTION << "): " << sizeof(PacketSendserveraction) << std::endl;
                 }
             }
             else {
