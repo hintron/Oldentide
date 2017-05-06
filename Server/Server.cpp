@@ -144,49 +144,49 @@ void Server::WorkerThread(int id) {
             case false:
                 std::cout << "Error receiving packet! Ignoring..." << std::endl;
                 break;
-            case packets::PTYPE::GENERIC:
+            case packets::GENERIC:
                 GenericHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::ACK:
+            case packets::ACK:
                 AckHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::CONNECT:
+            case packets::CONNECT:
                 ConnectHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::DISCONNECT:
+            case packets::DISCONNECT:
                 DisconnectHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::LISTCHARACTERS:
+            case packets::LISTCHARACTERS:
                 ListCharactersHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::SELECTCHARACTER:
+            case packets::SELECTCHARACTER:
                 SelectCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::DELETECHARACTER:
+            case packets::DELETECHARACTER:
                 DeleteCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::CREATECHARACTER:
+            case packets::CREATECHARACTER:
                 CreateCharacterHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::INITIALIZEGAME:
+            case packets::INITIALIZEGAME:
                 InitializeGameHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::UPDATEPC:
+            case packets::UPDATEPC:
                 UpdatePcHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::UPDATENPC:
+            case packets::UPDATENPC:
                 UpdateNpcHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::SENDPLAYERCOMMAND:
+            case packets::SENDPLAYERCOMMAND:
                 SendPlayerCommandHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::SENDPLAYERACTION:
+            case packets::SENDPLAYERACTION:
                 SendPlayerActionHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::SENDSERVERACTION:
+            case packets::SENDSERVERACTION:
                 SendServerActionHandler(&deserialized_data, &(packet.source));
                 break;
-            case packets::PTYPE::UNITY:
+            case packets::UNITY:
                 UnityHandler(&deserialized_data, &(packet.source));
                 break;
             default:
@@ -234,7 +234,7 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
     msgpack::pack(buffer, returnPacket);
 
     // Send the packet
-    utils::SendDataTo(sockfd, &buffer, packets::PTYPE::CONNECT, client);
+    utils::SendDataTo(sockfd, &buffer, packets::CONNECT, client);
 
     std::cout << "\nNew connection started, session id " << returnPacket.sessionId << " sent to client!" << std::endl;
 }
@@ -266,7 +266,7 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
         returnPacket.errorMsg = std::string("Failed to convert/cast msgpack object!");
         std::stringstream buffer;
         msgpack::pack(buffer, returnPacket);
-        utils::SendDataTo(sockfd, &buffer, packets::PTYPE::ERROR, client);
+        utils::SendDataTo(sockfd, &buffer, packets::ERROR, client);
         return;
     }
 
@@ -292,7 +292,7 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
     // Send the packet
-    utils::SendDataTo(sockfd, &buffer, packets::PTYPE::LISTCHARACTERS, client);
+    utils::SendDataTo(sockfd, &buffer, packets::LISTCHARACTERS, client);
 }
 
 void Server::SelectCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
@@ -365,7 +365,7 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
 
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    utils::SendDataTo(sockfd, &buffer, packets::PTYPE::SENDSERVERCOMMAND, client);
+    utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, client);
 }
 
 void Server::SendPlayerActionHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {

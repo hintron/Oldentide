@@ -66,7 +66,7 @@ int main(int argc, char * argv[]) {
                 std::string response;
                 getline (std::cin, response);
                 if ((response.compare("y") == 0) || (response.compare("Y") == 0) || (response.compare("") == 0)) {
-                    PacketConnect packet;
+                    packets::Connect packet;
                     packet.packetId = packetNumber;
                     packetNumber++;
                     packet.sessionId = session;
@@ -74,7 +74,7 @@ int main(int argc, char * argv[]) {
                     // Use MessagePack to serialize data
                     std::stringstream buffer;
                     msgpack::pack(buffer, packet);
-                    utils::SendDataTo(sockfd, &buffer, CONNECT, &servaddr);
+                    utils::SendDataTo(sockfd, &buffer, packets::CONNECT, &servaddr);
 
                     sockaddr_in servret;
                     uint8_t packetType;
@@ -83,13 +83,13 @@ int main(int argc, char * argv[]) {
                     std::cout << "Received a packet from " << utils::GetIpAndPortFromSocket(&servret) << std::endl;
 
                     // We are assuming that the return packet will always be on type CONNECT
-                    if(packetType != CONNECT){
+                    if(packetType != packets::CONNECT){
                         std::cout << "ERROR: Received packet other than CONNECT!! " << std::endl;
                         break;
                     }
 
                     // Use MessagePack to Deserialize the data
-                    PacketConnect returnConnectPacket;
+                    packets::Connect returnConnectPacket;
                     returnData.get().convert(returnConnectPacket);
 
                     std::cout << "Connected! Given the session id: " << returnConnectPacket.sessionId << std::endl;
@@ -115,20 +115,20 @@ int main(int argc, char * argv[]) {
 
                 while(hasNoCharacter) {
                     // Request a list of characters
-                    PacketListcharacters p;
+                    packets::Listcharacters p;
                     p.packetId = packetNumber;
                     packetNumber++;
                     p.sessionId = session;
 
                     std::stringstream buffer;
                     msgpack::pack(buffer, p);
-                    utils::SendDataTo(sockfd, &buffer, LISTCHARACTERS, &servaddr);
+                    utils::SendDataTo(sockfd, &buffer, packets::LISTCHARACTERS, &servaddr);
 
                     // Wait for the response
                     sockaddr_in servret;
                     uint8_t packetType;
                     msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
-                    PacketListcharacters characterList;
+                    packets::Listcharacters characterList;
                     deserialized.get().convert(characterList);
 
                     std::cout << "Number of available characters: " << characterList.characters.size() << std::endl;
@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
                         std::string lastName;
                         std::getline(std::cin, lastName);
 
-                        PacketCreatecharacter newCharacter;
+                        packets::Createcharacter newCharacter;
                         newCharacter.packetId = packetNumber;
                         packetNumber++;
                         newCharacter.sessionId = session;
@@ -151,7 +151,7 @@ int main(int argc, char * argv[]) {
 
                         std::stringstream buffer2;
                         msgpack::pack(buffer2, newCharacter);
-                        utils::SendDataTo(sockfd, &buffer, CREATECHARACTER, &servaddr);
+                        utils::SendDataTo(sockfd, &buffer, packets::CREATECHARACTER, &servaddr);
 
                         // After creating the new character, loop back to the top
                         // and send a new request for the list of players.
@@ -172,7 +172,7 @@ int main(int argc, char * argv[]) {
                 getline(std::cin, name);
                 std::cout << "TODO: Attempting to select character " << name << ": " << std::endl;
 
-                PacketSelectcharacter characterToSelect;
+                packets::Selectcharacter characterToSelect;
                 characterToSelect.packetId = packetNumber;
                 packetNumber++;
                 characterToSelect.sessionId = session;
@@ -180,7 +180,7 @@ int main(int argc, char * argv[]) {
 
                 std::stringstream buffer;
                 msgpack::pack(buffer, characterToSelect);
-                utils::SendDataTo(sockfd, &buffer, SELECTCHARACTER, &servaddr);
+                utils::SendDataTo(sockfd, &buffer, packets::SELECTCHARACTER, &servaddr);
 
                 clientState = 3;
                 break;
@@ -200,7 +200,7 @@ int main(int argc, char * argv[]) {
                 // if (utils::Tokenfy(command, ' ')[0] == "/s") {
                 // }
 
-                PacketSendplayercommand PlayerCommand;
+                packets::Sendplayercommand PlayerCommand;
                 PlayerCommand.packetId = packetNumber;
                 packetNumber++;
                 PlayerCommand.sessionId = session;
@@ -209,13 +209,13 @@ int main(int argc, char * argv[]) {
 
                 std::stringstream buffer;
                 msgpack::pack(buffer, PlayerCommand);
-                utils::SendDataTo(sockfd, &buffer, SENDPLAYERCOMMAND, &servaddr);
+                utils::SendDataTo(sockfd, &buffer, packets::SENDPLAYERCOMMAND, &servaddr);
 
 
                 sockaddr_in servret;
                 uint8_t packetType;
                 msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
-                PacketSendservercommand serverCommand;
+                packets::Sendservercommand serverCommand;
                 deserialized.get().convert(serverCommand);
                 std::cout << serverCommand.command << std::endl;
 
