@@ -74,6 +74,7 @@ namespace Oldentide.Networking {
 	    // public int errorNumber;
 	};
 
+    [MessagePackObject]
 	public class PacketSelectcharacter {
 	    [Key(0)]
 	    public int packetId;
@@ -83,6 +84,7 @@ namespace Oldentide.Networking {
 	    public string character;
 	};
 
+    [MessagePackObject]
 	public class PacketDeletecharacter {
 	    [Key(0)]
 	    public int packetId;
@@ -92,6 +94,7 @@ namespace Oldentide.Networking {
 	    public string character;
 	};
 
+    [MessagePackObject]
 	public class PacketCreatecharacter {
 	    [Key(0)]
 	    public int packetId;
@@ -115,6 +118,7 @@ namespace Oldentide.Networking {
 	    // TODO: Create an attributes map -> map<string, int> attributes
 	};
 
+    [MessagePackObject]
 	public class PacketInitializegame {
         [Key(0)]
         public int packetId;
@@ -122,6 +126,7 @@ namespace Oldentide.Networking {
         public int sessionId;
 	};
 
+    [MessagePackObject]
 	public class PacketUpdatepc {
         [Key(0)]
         public int packetId;
@@ -157,6 +162,7 @@ namespace Oldentide.Networking {
 	    public float direction;
 	};
 
+    [MessagePackObject]
 	public class PacketUpdatenpc {
         [Key(0)]
         public int packetId;
@@ -164,6 +170,7 @@ namespace Oldentide.Networking {
         public int sessionId;
 	};
 
+    [MessagePackObject]
 	public class PacketSendplayercommand {
         [Key(0)]
         public int packetId;
@@ -173,6 +180,7 @@ namespace Oldentide.Networking {
         public string command;
     };
 
+    [MessagePackObject]
     public class PacketSendservercommand {
         [Key(0)]
         public int packetId;
@@ -182,6 +190,7 @@ namespace Oldentide.Networking {
 	    public string command;
 	};
 
+    [MessagePackObject]
 	public class PacketSendplayeraction {
         [Key(0)]
         public int packetId;
@@ -189,6 +198,7 @@ namespace Oldentide.Networking {
         public int sessionId;
 	};
 
+    [MessagePackObject]
 	public class PacketSendserveraction {
         [Key(0)]
         public int packetId;
