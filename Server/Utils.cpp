@@ -333,8 +333,18 @@ namespace utils {
         return sendto(sockfd, str.data(), str.size(), 0, (struct sockaddr *)destIn, LEN);
     }
 
-
-
+    // TODO: Pass in string pointer? Will it make any difference?
+    void SendErrorTo(int sockfd, std::string errorMsg, sockaddr_in *destIn){
+        // Return error packet
+        PacketError returnPacket;
+        // Since we couldn't convert/cast msgpack data, we don't know what sessionId or packetId it had
+        returnPacket.sessionId = 0;
+        returnPacket.packetId = 0;
+        returnPacket.errorMsg = errorMsg;
+        std::stringstream buffer;
+        msgpack::pack(buffer, returnPacket);
+        utils::SendDataTo(sockfd, &buffer, PTYPE::ERROR, destIn);
+    }
 
 
 

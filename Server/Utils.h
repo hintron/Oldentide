@@ -32,6 +32,7 @@ namespace utils{
     // More specific functions for the server's packetQueue
     void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut);
     msgpack::object_handle GetDataFromPacket(char *packetBufferIn, uint8_t *packetTypeOut);
+    void SendErrorTo(int sockfd, std::string errorMsg, sockaddr_in *destIn);
 
 };
 

@@ -258,21 +258,14 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
         deserialized_data->get().convert(packet);
     } catch (const std::exception& e) {
         std::cout << "Failed to convert/cast msgpack object! Exiting... " << e.what() << std::endl;
-        // Return error packet
-        packets::Error returnPacket;
-        // Since we couldn't convert/cast msgpack data, we don't know what sessionId or packetId it had
-        returnPacket.sessionId = 0;
-        returnPacket.packetId = 0;
-        returnPacket.errorMsg = std::string("Failed to convert/cast msgpack object!");
-        std::stringstream buffer;
-        msgpack::pack(buffer, returnPacket);
-        utils::SendDataTo(sockfd, &buffer, packets::ERROR, client);
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
         return;
     }
 
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         std::cout << "Invalid session. Not doing anything" << std::endl;
+        utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
     std::string account = gameState->GetSessionAccountName(packet.sessionId);
