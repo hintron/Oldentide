@@ -50,7 +50,6 @@ public class NetworkInterface : MonoBehaviour {
 		catch (Exception e) {
 			Debug.Log("Winsock error: " + e.ToString());
 		}
-
 	}
 
 
@@ -98,79 +97,97 @@ public class NetworkInterface : MonoBehaviour {
 
 		Debug.Log("Sent CONNECT packet! Receiving packet...");
 
-		// http://stackoverflow.com/questions/3356400/operator-with-events
-		// http://stackoverflow.com/questions/6866347/lambda-anonymous-function-as-a-parameter
+		// Wait for the response
+		ReceiveDataFrom(delegate(string msg) {
+			Debug.Log("Receive data return values: " + msg + "!");
 
+			// // Oldentide.Networking.PTYPE packetType =
+			// // Debug.Log("Server responded with packet " + packetType);
 
-		// TODO: Somehow be able to pass a callback function in, so the msgpack and ReceiveFrom() code
-		// can be completely transparent and only in a single spot
+			// var data = MessagePackSerializer.Deserialize<PACKET_CONNECT>(receivedMsgpackData);
+			// Debug.Log("Connect packet response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
-		SocketAsyncEventArgs e = new SocketAsyncEventArgs();
-		e.Completed += new EventHandler<SocketAsyncEventArgs>(PacketReceivedCallback); // set callback
-		e.SetBuffer(new byte[PACKET_MAX_SIZE], 0, PACKET_MAX_SIZE); // set buffer, offset, count
-		e.RemoteEndPoint = (EndPoint) new IPEndPoint(IPAddress.Any, 0); // set endpoint
-		clientSocket.ReceiveFromAsync(e);
+			// if(data.sessionId != session){
+			// 	Debug.Log("Setting new session to " + data.sessionId);
+			// 	session = data.sessionId;
+			// }
+			// else {
+			// 	Debug.Log("Session is already set to " + session);
+			// }
+			// return 1;
+		});
 
-
-		// TODO: If server doesn't respond with packets, even though it doesn't block,
-		// Unity will end up freezing afterwards when you try to stop
 		Debug.Log("After ReceiveAsync");
-
-
-		// clientSocket.ReceiveFrom(packetToReceive, ref senderRemote);
-
-		// // Wait for the response
-		// byte[] receivedMsgpackData;
-		// ReceiveDataFrom(out receivedMsgpackData);
-
-		// // Oldentide.Networking.PTYPE packetType =
-		// // Debug.Log("Server responded with packet " + packetType);
-
-		// var data = MessagePackSerializer.Deserialize<PACKET_CONNECT>(receivedMsgpackData);
-		// Debug.Log("Connect packet response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
-
-		// if(data.sessionId != session){
-		// 	Debug.Log("Setting new session to " + data.sessionId);
-		// 	session = data.sessionId;
-		// }
-		// else {
-		// 	Debug.Log("Session is already set to " + session);
-		// }
 
 		yield return null;
 	}
 
 
+	// Everything below here is analogous to the Utils C++ class in Server - wrappers to
+	// the (UDP) socket functions that will be used multiple times
 
-	// TODO: There needs to be a way to pass in a callback function, so all the internal stuff is taken care of
-	void PacketReceivedCallback(object sender, SocketAsyncEventArgs e) {
-		Debug.Log("Received Callback!");
+	// Gameplan: Use a delegate function, so the user can pass in their own callback function
+	// That way, we can hide the complexities of the other stuff
 
-		// Debug.Log(sender);
-		Debug.Log(((Socket)sender).LocalEndPoint.ToString());
-		// Debug.Log(((Socket)sender).RemoteEndPoint.ToString());
-		// Debug.Log(e);
+	// How to use delegates and async callbacks:
+	// http://stackoverflow.com/questions/2082615/pass-method-as-parameter-using-c-sharp
+	// http://stackoverflow.com/questions/6866347/lambda-anonymous-function-as-a-parameter
+	// https://docs.microsoft.com/en-us/dotnet/articles/csharp/programming-guide/statements-expressions-operators/anonymous-functions
 
-		Debug.Log("Buffer data:");
-		PrintHexString(e.Buffer);
+	// Create a class to pass data to ReceiveDataFromCallback
+	public class CallbackParams{
+		public byte[] buffer;
+		public Action<string> callback;
+		// Note: Action<...> is a no-return delegate; Func<..., retType> has a return type
+		// public Func<string, int> callback;
+	}
+
+	// Wrapper function for BeginReceiveFrom() that deals with
+	void ReceiveDataFrom(Action<string> callback) {
+		// byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
+		IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+		EndPoint senderRemote = (EndPoint)sender;
+
+		// Use BeginReceiveFrom and EndReceiveFrom:
+		// https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.beginreceivefrom(v=vs.110).aspx
+		// http://stackoverflow.com/questions/7860398/c-sharp-stateobject-class-location
+
+		CallbackParams so2 = new CallbackParams();
+		so2.buffer = new byte[PACKET_MAX_SIZE];
+		so2.callback = callback;
+		clientSocket.BeginReceiveFrom(so2.buffer, 0, PACKET_MAX_SIZE, 0, ref senderRemote, new AsyncCallback(ReceiveDataFromCallback), so2);
+	}
+
+	void ReceiveDataFromCallback(IAsyncResult result){
+		// Get the params passed to this callback
+		CallbackParams so2 = (CallbackParams) result.AsyncState;
+
+		// // ???? I'm not quite sure why EndReceiveFrom() is even necessary
+		// // It seems to work without it just fine
+		// // see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.endreceivefrom(v=vs.110).aspx
+		// IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+		// EndPoint senderRemote = (EndPoint)sender;
+		// // Block and wait for a packet to be put in so2.buffer
+		// int read = clientSocket.EndReceiveFrom(result, ref senderRemote);
+		// Debug.Log("Got packet, read " + read + " bytes");
 
 		// Get the packet type
-		Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) e.Buffer[0];
+		Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) so2.buffer[0];
 		// Get the length of the msgpack data
-		ushort msgpackLength = BitConverter.ToUInt16(e.Buffer, 1);
+		ushort msgpackLength = BitConverter.ToUInt16(so2.buffer, 1);
 		// Copy the msgpack data into the packet
-		byte [] data = new byte[msgpackLength];
-		Array.Copy(e.Buffer, HEADER_SIZE, data, 0, msgpackLength);
-
-		Debug.Log("Packet type: " + packetType);
+		byte[] data = new byte[msgpackLength];
+		Array.Copy(so2.buffer, HEADER_SIZE, data, 0, msgpackLength);
 
 		Debug.Log("Receiving msgpack data: ");
 		PrintHexString(data);
 
-		// TODO: From here, how do we combat the forces of callback hell??
+		// Uncomment to prove that this callback can block and Unity still works
+		System.Threading.Thread.Sleep(10000);
+
+		// Return execution back to the original caller, passing back the data
+		so2.callback("Wazzup! Just finished sending a packet!");
 	}
-
-
 
 
 	// IEnumerator ListCharacters(){
@@ -270,28 +287,6 @@ public class NetworkInterface : MonoBehaviour {
 		Debug.Log("Sending packet data: ");
 		PrintHexString(packetToSend);
 		clientSocket.SendTo(packetToSend, serverEndPoint);
-	}
-
-
-   Oldentide.Networking.PTYPE ReceiveDataFrom(out byte[] data){
-		byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
-		IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-		EndPoint senderRemote = (EndPoint)sender;
-		clientSocket.ReceiveFrom(packetToReceive, ref senderRemote);
-
-
-		// Get the packet type
-		Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) packetToReceive[0];
-		// Get the length of the msgpack data
-		ushort msgpackLength = BitConverter.ToUInt16(packetToReceive, 1);
-		// Copy the msgpack data into the packet
-		data = new byte[msgpackLength];
-		Array.Copy(packetToReceive, HEADER_SIZE, data, 0, msgpackLength);
-
-		Debug.Log("Receiving msgpack data: ");
-		PrintHexString(data);
-
-		return packetType;
 	}
 
 	public void PrintHexString(byte [] bytearray){
