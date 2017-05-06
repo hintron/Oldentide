@@ -28,7 +28,7 @@ namespace Oldentide.Networking {
 	};
 
 	[MessagePackObject]
-	public unsafe struct PACKET_ACK {
+	public class PacketAck {
 	    [Key(0)]
 	    public int packetId;
 	    [Key(1)]
@@ -36,7 +36,7 @@ namespace Oldentide.Networking {
 	};
 
 	[MessagePackObject]
-	public unsafe struct PACKET_CONNECT {
+	public class PacketConnect {
 	    [Key(0)]
 	    public int packetId;
 	    [Key(1)]
@@ -44,48 +44,44 @@ namespace Oldentide.Networking {
 	};
 
 	[MessagePackObject]
-	public unsafe struct PACKET_DISCONNECT {
+	public class PacketDisconnect {
 	    [Key(0)]
 	    public int packetId;
 	    [Key(1)]
 	    public int sessionId;
 	};
 
-	// public unsafe struct PACKET_LISTCHARACTERS {
+	[MessagePackObject]
+	public class PacketListcharacters {
+	    [Key(0)]
+	    public int packetId;
+	    [Key(1)]
+	    public int sessionId;
+	    [Key(2)]
+	    public string [] characterArray;
+	};
+
+	// public class PacketSelectcharacter {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte byteacter0[25];
-	//     fixed byte byteacter1[25];
-	//     fixed byte byteacter2[25];
-	//     fixed byte byteacter3[25];
-	//     fixed byte byteacter4[25];
-	//     fixed byte byteacter5[25];
-	//     fixed byte byteacter6[25];
-	//     fixed byte byteacter7[25];
-	//     fixed byte byteacter8[25];
-	//     fixed byte byteacter9[25];
+	//     string byteacter;
 	// };
 
-	// public unsafe struct PACKET_SELECTCHARACTER {
+	// public class PacketDeletecharacter {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte byteacter[25];
+	//     string byteacter;
 	// };
 
-	// public unsafe struct PACKET_DELETECHARACTER {
+	// public class PacketCreatecharacter {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte byteacter[25];
-	// };
-
-	// public unsafe struct PACKET_CREATECHARACTER {
-	//     public int packetId;
-	//     public int sessionId;
-	//     fixed byte firstName[25];
-	//     fixed byte lastName[25];
-	//     fixed byte race[25];
-	//     fixed byte gender[25];
-	//     fixed byte profession[25];
+	//     string firstName;
+	//     string lastName;
+	//     string race;
+	//     string gender;
+	//     string profession;
+	//     // TODO: Create an attributes map -> map<string, int> attributes
 	//     int strength;
 	//     int constitution;
 	//     int intelligence;
@@ -143,19 +139,19 @@ namespace Oldentide.Networking {
 	//     int runic;
 	// };
 
-	// public unsafe struct PACKET_INITIALIZEGAME {
+	// public class PacketInitializegame {
 	//     public int packetId;
 	//     public int sessionId;
 	// };
 
-	// public unsafe struct PACKET_UPDATEPC {
+	// public class PacketUpdatepc {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte firstName[25];
-	//     fixed byte lastName[25];
-	//     fixed byte race[25];
-	//     fixed byte gender[25];
-	//     fixed byte profession[25];
+	//     string firstName;
+	//     string lastName;
+	//     string race;
+	//     string gender;
+	//     string profession;
 	//     int level;
 	//     int hp;
 	//     int bp;
@@ -167,36 +163,36 @@ namespace Oldentide.Networking {
 	//     float direction;
 	// };
 
-	// public unsafe struct PACKET_UPDATENPC {
+	// public class PacketUpdatenpc {
 	//     public int packetId;
 	//     public int sessionId;
 	// };
 
-	// public unsafe struct PACKET_SENDPLAYERCOMMAND {
+	// public class PacketSendplayercommand {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte command[500];
+	//     string command;
 	// };
 
-	// public unsafe struct PACKET_SENDSERVERCOMMAND {
+	// public class PacketSendservercommand {
 	//     public int packetId;
 	//     public int sessionId;
-	//     fixed byte command[500];
+	//     string command;
 	// };
 
-	// public unsafe struct PACKET_SENDPLAYERACTION {
+	// public class PacketSendplayeraction {
 	//     public int packetId;
 	//     public int sessionId;
 	// };
 
-	// public unsafe struct PACKET_SENDSERVERACTION {
+	// public class PacketSendserveraction {
 	//     public int packetId;
 	//     public int sessionId;
 	// };
 
 	// mark MessagePackObjectAttribute
 	[MessagePackObject]
-	public struct PACKET_UNITY {
+	public class PacketUnity {
 	    [Key(0)]
 	    public int packetId;
 	    [Key(1)]

@@ -86,7 +86,7 @@ public class NetworkInterface : MonoBehaviour {
 	IEnumerator ConnectToServer(){
 		Debug.Log("Sending a single CONNECT packet via message pack!!");
 
-		PACKET_CONNECT pp;
+		PacketConnect pp = new PacketConnect();
 		pp.sessionId = session;
 		pp.packetId = packetNumber;
 		packetNumber++;
@@ -104,7 +104,7 @@ public class NetworkInterface : MonoBehaviour {
 			// // Oldentide.Networking.PTYPE packetType =
 			// // Debug.Log("Server responded with packet " + packetType);
 
-			// var data = MessagePackSerializer.Deserialize<PACKET_CONNECT>(receivedMsgpackData);
+			// var data = MessagePackSerializer.Deserialize<PacketConnect>(receivedMsgpackData);
 			// Debug.Log("Connect packet response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
 			// if(data.sessionId != session){
@@ -192,7 +192,7 @@ public class NetworkInterface : MonoBehaviour {
 
 	// IEnumerator ListCharacters(){
 	// 	Debug.Log("ListCharacters()!");
-		// PACKET_LISTCHARACTERS pp;
+		// PacketListcharacters pp = new PacketListcharacters();
 		// pp.sessionId = session;
 		// pp.packetId = packetNumber;
 		// pp.characterArray = null;
@@ -205,7 +205,7 @@ public class NetworkInterface : MonoBehaviour {
 		// byte[] receivedMsgpackData;
 		// Oldentide.Networking.PTYPE packetType = ReceiveDataFrom(out receivedMsgpackData);
 		// Debug.Log("Server responded with packet " + packetType);
-		// var data = MessagePackSerializer.Deserialize<PACKET_LISTCHARACTERS>(receivedMsgpackData);
+		// var data = MessagePackSerializer.Deserialize<PacketListcharacters>(receivedMsgpackData);
 		// Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
 		// // TODO: Print out the character list
@@ -220,7 +220,7 @@ public class NetworkInterface : MonoBehaviour {
 	//
 
 	// void ConnectHandler(byte [] msgpackData) {
-	// 	var data = MessagePackSerializer.Deserialize<PACKET_CONNECT>(msgpackData);
+	// 	var data = MessagePackSerializer.Deserialize<PacketConnect>(msgpackData);
 	// 	Debug.Log("Connect handler! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
 	// 	if(data.sessionId != session){
@@ -232,7 +232,7 @@ public class NetworkInterface : MonoBehaviour {
 	// 	}
 
 	// 	// Send a Unity packet, just for kicks
-	// 	PACKET_UNITY pp;
+	// 	PacketUnity pp = new PacketUnity();
 	// 	// pp.packetType = Oldentide.Networking.PTYPE.UNITY;
 	// 	pp.sessionId = data.sessionId;
 	// 	pp.packetId = packetNumber;
@@ -263,7 +263,7 @@ public class NetworkInterface : MonoBehaviour {
 
 
 	// void UnityHandler(byte [] msgpackData) {
-	// 	var data = MessagePackSerializer.Deserialize<PACKET_UNITY>(msgpackData);
+	// 	var data = MessagePackSerializer.Deserialize<PacketUnity>(msgpackData);
 	// 	Debug.Log("Unity handler! Data1: " + data.data1 + "; Data2: " + data.data2 + "; data3: " + data.data3 + ";");
 	// }
 
