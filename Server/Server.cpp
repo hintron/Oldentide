@@ -380,7 +380,6 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
     }
-    std::cout << "SendPlayerCommandHandler!" << std::endl;
 
     // TODO: Get active session stuff working
     // if (gameState->VerifyActiveSession(packet.sessionId)) {
@@ -391,7 +390,7 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
     // }
 
     std::stringstream server_response_s;
-    server_response_s << "Command sent successfully";
+    server_response_s << "Command successfully received";
 
     packets::Sendplayercommand returnPacket;
     returnPacket.sessionId = packet.sessionId;

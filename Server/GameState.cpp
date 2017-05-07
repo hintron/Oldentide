@@ -68,7 +68,7 @@ void GameState::PlayerCommand(std::string pCommand, int sessionId) {
         std::cout << "Detected an out of character command!" << std::endl;
     }
     else if (pCommandTokens[0] == "/h") {
-        std::cout << "Detected a help channel command!" << std::endl;
+        // std::cout << "Detected a help channel command!" << std::endl;
         // TODO: Prevent users from doing buffer overflow attacks
         // Tell the server to send out a broadcast
         server->BroadcastToConnections(pCommand.substr(3,std::string::npos), std::to_string(sessionId));
