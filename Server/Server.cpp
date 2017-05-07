@@ -4,6 +4,8 @@
 // Purpose:     Dedicated server class.
 
 #include "Server.h"
+#include "AdminShell.h"
+#include "GameState.h"
 #include <cstring>
 #include <iostream>
 #include <iterator>
@@ -23,7 +25,7 @@
 
 Server::Server(int port) {
     sql = new SQLConnector();
-    gameState = new GameState(sql);
+    gameState = new GameState(this, sql);
     adminshell = new AdminShell(this, sql, gameState);
 
     // Create server address struct.
@@ -114,17 +116,31 @@ int Server::GetPacketQueueSize() {
     return size;
 }
 
-void Server::BroadcastToConnections(std::string msg){
-    std::cout << "Broadcasting to sessions:" << std::endl;
+void Server::BroadcastToConnections(std::string msg, std::string user){
     // For each connected client, send a SendServerCommand packet!
+    bool isAdmin = false;
+    std::string broadcast;
+    if(user == "admin"){
+        isAdmin = true;
+        broadcast = ">>>BROADCAST Oldentide Admin: " + msg + " <<<";
+    }
+    else {
+        broadcast = ">>>BROADCAST Client " + user + ": " + msg + " <<<";
+        // Print the broadcast so the server admin can see it as well
+        std::cout << broadcast << std::endl;
+    }
+    // std::cout << "Broadcasting to sessions:" << std::endl;
     for (std::map<int, sockaddr_in>::iterator it = activeConnections.begin(); it != activeConnections.end(); ++it){
-        // TODO: Put down who broadcast the message
-        std::cout << it->first << std::endl;
+        // Don't broadcast to the originator of the message
+        if(!isAdmin && it->first == std::stoi(user)){
+            continue;
+        }
+        // std::cout << it->first;
 
         packets::Sendservercommand packet;
         packet.sessionId = it->first;
         packet.packetId = 0; // n/a
-        packet.command = msg;
+        packet.command = broadcast;
         std::stringstream buffer;
         msgpack::pack(buffer, packet);
         utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, &(it->second));
@@ -375,10 +391,7 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
     // }
 
     std::stringstream server_response_s;
-    server_response_s << "Server says " << packet.sessionId << " session sent message: " << packet.command;
-
-    std::cout << server_response_s.str() << std::endl;
-
+    server_response_s << "Command sent successfully";
 
     packets::Sendplayercommand returnPacket;
     returnPacket.sessionId = packet.sessionId;

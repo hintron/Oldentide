@@ -17,9 +17,11 @@
 #include <vector>
 #include <map>
 
+class Server;
+
 class GameState{
     public:
-        GameState(SQLConnector * sql);
+        GameState(Server * server, SQLConnector * sql);
         ~GameState();
         bool VerifySession(int sessionId);
         bool VerifyActiveSession(int sessionId);
@@ -33,6 +35,7 @@ class GameState{
 
     private:
         SQLConnector * sql;
+        Server * server;
         std::set<Player> players;
         std::set<Npc> npcs;
         std::set<int> sessions;

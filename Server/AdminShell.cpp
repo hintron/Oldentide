@@ -5,6 +5,7 @@
 //              the server.  This class will handle all server admin commands.
 
 #include "AdminShell.h"
+#include "Server.h"
 #include "Utils.h"
 #include "Packets.h"
 #include <iostream>
@@ -92,10 +93,7 @@ void AdminShell::Run() {
         }
         // Broadcast to all currently connected players
         else if (adminTokens[0] == "/h") {
-            std::cout << "Broadcasting to all players in the server: " << (adminCommand.c_str()+3) << std::endl;
-
-            // TODO: For each connected client, send a sendservercommand packet
-            server->BroadcastToConnections(std::string(adminCommand.c_str()+3));
+            server->BroadcastToConnections(std::string(adminCommand.c_str()+3), std::string("admin"));
         }
         else {
             PrintUsage();

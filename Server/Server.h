@@ -9,8 +9,6 @@
 #ifndef OLDENTIDE_OLDENTIDESERVER_H
 #define OLDENTIDE_OLDENTIDESERVER_H
 
-#include "AdminShell.h"
-#include "GameState.h"
 #include "Npc.h"
 #include "Packets.h"
 #include "Player.h"
@@ -23,6 +21,7 @@
 
 // forward declaration so AdminShell and Server can see each other
 class AdminShell;
+class GameState;
 
 class Server{
     public:
@@ -30,7 +29,7 @@ class Server{
         ~Server();
         void Run();
         int GetPacketQueueSize();
-        void BroadcastToConnections(std::string);
+        void BroadcastToConnections(std::string, std::string);
     private:
         int sockfd;
         SQLConnector * sql;

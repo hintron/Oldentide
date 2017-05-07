@@ -7,6 +7,7 @@
 //              perform the bulk of database interactions.
 
 #include "GameState.h"
+#include "Server.h"
 #include "Utils.h"
 #include <iterator>
 #include <iostream>
@@ -17,8 +18,9 @@
 #define MAX_MESSAGE_LENGTH 500
 
 
-GameState::GameState(SQLConnector * input) {
-    sql = input;
+GameState::GameState(Server * server, SQLConnector * sql) {
+    this->server = server;
+    this->sql = sql;
     curSession = 1;
 }
 
@@ -52,8 +54,7 @@ void GameState::DisconnectSession(int sessionId) {
     return;
 }
 
-void GameState::PlayerCommand(std::string command, int sessionId) {
-    std::string pCommand(command);
+void GameState::PlayerCommand(std::string pCommand, int sessionId) {
     std::vector<std::string> pCommandTokens = utils::Tokenfy(pCommand, ' ');
     if (pCommandTokens[0] == "/s") {
         std::cout << "Detected a say command!" << std::endl;
@@ -68,11 +69,14 @@ void GameState::PlayerCommand(std::string command, int sessionId) {
     }
     else if (pCommandTokens[0] == "/h") {
         std::cout << "Detected a help channel command!" << std::endl;
+        // TODO: Prevent users from doing buffer overflow attacks
+        // Tell the server to send out a broadcast
+        server->BroadcastToConnections(pCommand.substr(3,std::string::npos), std::to_string(sessionId));
     }
     else if (pCommandTokens[0] == "/w") {
         std::cout << "Detected a whisper command!" << std::endl;
     }
-    std::cout << "Full player command: " << command << std::endl;
+    // std::cout << "Full player command: " << pCommand << std::endl;
 }
 
 void GameState::SelectPlayer(int sessionId) {

@@ -7,9 +7,8 @@
 #ifndef OLDENTIDE_ADMINSHELL_H
 #define OLDENTIDE_ADMINSHELL_H
 
-#include "Server.h"
-#include "SQLConnector.h"
 #include "GameState.h"
+#include "SQLConnector.h"
 #include <limits.h>
 #include <unistd.h>
 #include <vector>
