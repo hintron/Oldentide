@@ -18,6 +18,76 @@
 #include "Utils.h"
 #include <msgpack.hpp>
 #include <sstream>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+
+
+std::condition_variable isNotEmpty;
+std::mutex packetQueueMutex;
+std::queue<packets::packet_t> packetQueue; // Queue for all other packets in main thread
+// std::mutex packetQueueSpecialMutex;
+// std::queue<packets::packet_t> packetQueueSpecial; // Queue for server broadcasts
+
+void PacketListener(int sockfd){
+    sockaddr_in servret;
+    uint8_t packetType;
+    packets::packet_t p;
+
+    while(1) {
+        // Block and wait for a packet
+        utils::ReceivePacketFrom(sockfd, p.data, &(p.source));
+
+        msgpack::object_handle deserialized_data;
+        uint8_t packetType;
+        deserialized_data = utils::GetDataFromPacket(p.data, &packetType);
+
+        // Do a quick packet check
+        if(packetType == packets::SENDSERVERCOMMAND){
+            // For now, skip the queue and service the server broadcast packet immediately
+            packets::Sendservercommand data;
+            deserialized_data.get().convert(data);
+            std::cout << data.command << std::endl;
+
+            // TODO: Break this out into it's own thread, so that it doesn't mess with getting the other packets
+            // TODO: Put it in the special server broadcast packet queue
+            // packetQueueSpecialMutex.lock();
+            // packetQueueSpecial.push(p);
+            // packetQueueSpecialMutex.unlock();
+        }
+        else {
+            // Copy the packet into the packet queue
+            packetQueueMutex.lock();
+            packetQueue.push(p);
+            packetQueueMutex.unlock();
+            // Let the main thread know that there is a packet ready now
+            isNotEmpty.notify_one();
+        }
+    }
+}
+
+
+// A helper function for waiting on a packet from the packet queue
+// It blocks while waiting for the packetQueue to get filled up by
+// the PacketListener thread.
+// Yes, I know, it looks ugly, but it works for now
+packets::packet_t WaitOnPacketQueue(){
+    // The following 2 lines will lock, release lock, and block thread
+    // until notify_one() is called after a packet arrives
+    // http://en.cppreference.com/w/cpp/thread/condition_variable/wait
+    std::unique_lock<std::mutex> ul(packetQueueMutex);
+    isNotEmpty.wait(ul);
+    // Wait until the packet queue has something in it
+
+    // Now we own the lock again
+    // Consume packet
+    packets::packet_t retPacket = packetQueue.front();
+    packetQueue.pop();
+    packetQueueMutex.unlock();
+    return retPacket;
+}
+
+
 
 int main(int argc, char * argv[]) {
 
@@ -27,7 +97,6 @@ int main(int argc, char * argv[]) {
     int session = 0;
     int packetNumber = 1;
     bool running = true;
-    std::string userAccount;
 
     // TODO: Parameter checking
     // Have parameter checking and exit gracefully if server address and port aren't specified
@@ -56,6 +125,10 @@ int main(int argc, char * argv[]) {
     servaddr.sin_addr.s_addr = inet_addr(server_address);
     servaddr.sin_port = htons(port);
 
+    // Spin off a thread that continually waits for packets and puts them in a queue
+    std::thread t(PacketListener, sockfd);
+    t.detach(); // Detach the threads so we don't need to join them manually
+
     int clientState = 0;
 
     while (running) {
@@ -76,12 +149,13 @@ int main(int argc, char * argv[]) {
                     msgpack::pack(buffer, packet);
                     utils::SendDataTo(sockfd, &buffer, packets::CONNECT, &servaddr);
 
-                    sockaddr_in servret;
+                    // Wait for a response
+                    packets::packet_t retPacket = WaitOnPacketQueue();
+
+                    std::cout << "Received a packet from " << utils::GetIpAndPortFromSocket(&retPacket.source) << std::endl;
+
                     uint8_t packetType;
-                    msgpack::object_handle returnData = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
-
-                    std::cout << "Received a packet from " << utils::GetIpAndPortFromSocket(&servret) << std::endl;
-
+                    msgpack::object_handle returnData = utils::GetDataFromPacket(retPacket.data, &packetType);
                     // We are assuming that the return packet will always be on type CONNECT
                     if(packetType != packets::CONNECT){
                         std::cout << "ERROR: Received packet other than CONNECT!! " << std::endl;
@@ -125,9 +199,9 @@ int main(int argc, char * argv[]) {
                     utils::SendDataTo(sockfd, &buffer, packets::LISTCHARACTERS, &servaddr);
 
                     // Wait for the response
-                    sockaddr_in servret;
+                    packets::packet_t retPacket = WaitOnPacketQueue();
                     uint8_t packetType;
-                    msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
+                    msgpack::object_handle deserialized = utils::GetDataFromPacket(retPacket.data, &packetType);
                     packets::Listcharacters characterList;
                     deserialized.get().convert(characterList);
 
@@ -188,8 +262,7 @@ int main(int argc, char * argv[]) {
             // In game...
             case 3: {
                 std::cout << "Send commands to the server!" << std::endl;
-                // TODO: Get user account value
-                std::cout << userAccount << ": ";
+
                 std::string command;
                 getline(std::cin, command);
                 if (command.empty()) {
@@ -200,27 +273,28 @@ int main(int argc, char * argv[]) {
                 // if (utils::Tokenfy(command, ' ')[0] == "/s") {
                 // }
 
-                packets::Sendplayercommand PlayerCommand;
-                PlayerCommand.packetId = packetNumber;
+                packets::Sendplayercommand playerCommand;
+                playerCommand.packetId = packetNumber;
                 packetNumber++;
-                PlayerCommand.sessionId = session;
-                // PlayerCommand.command = std::string("/s " + command);
-                PlayerCommand.command = std::string(command);
+                playerCommand.sessionId = session;
+                // playerCommand.command = std::string("/s " + command);
+                playerCommand.command = std::string(command);
 
                 std::stringstream buffer;
-                msgpack::pack(buffer, PlayerCommand);
+                msgpack::pack(buffer, playerCommand);
                 utils::SendDataTo(sockfd, &buffer, packets::SENDPLAYERCOMMAND, &servaddr);
 
 
-                sockaddr_in servret;
+                packets::packet_t retPacket = WaitOnPacketQueue();
                 uint8_t packetType;
-                msgpack::object_handle deserialized = utils::ReceiveDataFrom(sockfd, &packetType, &servret);
-                packets::Sendservercommand serverCommand;
-                deserialized.get().convert(serverCommand);
-                std::cout << serverCommand.command << std::endl;
+                msgpack::object_handle deserialized = utils::GetDataFromPacket(retPacket.data, &packetType);
+                packets::Sendplayercommand playerCommandResponse;
+                deserialized.get().convert(playerCommandResponse);
+                std::cout << playerCommandResponse.command << std::endl;
 
                 break;
             }
         }
     }
 }
+

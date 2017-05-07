@@ -77,7 +77,6 @@ void Server::Run() {
 
     bool listen = true;
     while(listen) {
-        sockaddr_in client;
         packets::packet_t p;
 
         // Wait for a packet
@@ -94,6 +93,9 @@ void Server::Run() {
 
 
 // TODO: This can be used to eventually log things to a file
+// OR, this thread could be in charge of sending PING requests to all
+// actively connected users, and if a ACK request is not sent in a timely
+// fashion (10 seconds?), then they are considered disconnected.
 // // Print out the size of the packetQueue every so often
 // void Server::StatisticsThread() {
 //     while(1){
@@ -110,6 +112,23 @@ int Server::GetPacketQueueSize() {
     int size = packetQueue.size();
     packetQueueMutex.unlock();
     return size;
+}
+
+void Server::BroadcastToConnections(std::string msg){
+    std::cout << "Broadcasting to sessions:" << std::endl;
+    // For each connected client, send a SendServerCommand packet!
+    for (std::map<int, sockaddr_in>::iterator it = activeConnections.begin(); it != activeConnections.end(); ++it){
+        // TODO: Put down who broadcast the message
+        std::cout << it->first << std::endl;
+
+        packets::Sendservercommand packet;
+        packet.sessionId = it->first;
+        packet.packetId = 0; // n/a
+        packet.command = msg;
+        std::stringstream buffer;
+        msgpack::pack(buffer, packet);
+        utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, &(it->second));
+    }
 }
 
 
@@ -226,10 +245,14 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
     packets::Connect packet;
     deserialized_data->get().convert(packet);
 
-    // No need to check for session validity with connect requests
+    // Generate the new sessionId
+    int newSession = gameState->GenerateSession(packet.sessionId);
+    // Save a copy of the connection information
+    activeConnections[newSession] = *client;
+    // TODO: Figure out a way to disconnect clients if unresponsive
 
     packets::Connect returnPacket;
-    returnPacket.sessionId = gameState->GenerateSession(packet.sessionId);
+    returnPacket.sessionId = newSession;
     returnPacket.packetId = 0;
     // Use MessagePack to serialize data
     std::stringstream buffer;
@@ -357,14 +380,14 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
     std::cout << server_response_s.str() << std::endl;
 
 
-    packets::Sendservercommand returnPacket;
+    packets::Sendplayercommand returnPacket;
     returnPacket.sessionId = packet.sessionId;
     returnPacket.packetId = packet.packetId;
     returnPacket.command = server_response_s.str();
 
     std::stringstream buffer;
     msgpack::pack(buffer, returnPacket);
-    utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, client);
+    utils::SendDataTo(sockfd, &buffer, packets::SENDPLAYERCOMMAND, client);
 }
 
 void Server::SendPlayerActionHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {

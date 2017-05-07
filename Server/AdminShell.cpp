@@ -77,6 +77,7 @@ void AdminShell::Run() {
                     std::cout << "UPDATEPC (" << (int) packets::UPDATEPC << "): " << sizeof(packets::Updatepc) << std::endl;
                     std::cout << "UPDATENPC (" << (int) packets::UPDATENPC << "): " << sizeof(packets::Updatenpc) << std::endl;
                     std::cout << "SENDPLAYERCOMMAND (" << (int) packets::SENDPLAYERCOMMAND << "): " << sizeof(packets::Sendplayercommand) << std::endl;
+                    std::cout << "SENDSERVERCOMMAND (" << (int) packets::SENDSERVERCOMMAND << "): " << sizeof(packets::Sendservercommand) << std::endl;
                     std::cout << "SENDPLAYERACTION (" << (int) packets::SENDPLAYERACTION << "): " << sizeof(packets::Sendplayeraction) << std::endl;
                     std::cout << "SENDSERVERACTION (" << (int) packets::SENDSERVERACTION << "): " << sizeof(packets::Sendserveraction) << std::endl;
                 }
@@ -88,6 +89,13 @@ void AdminShell::Run() {
         else if (adminTokens[0] == "/db") {
             std::string cmd = adminCommand.erase(0,4);
             sql->Execute(cmd);
+        }
+        // Broadcast to all currently connected players
+        else if (adminTokens[0] == "/h") {
+            std::cout << "Broadcasting to all players in the server: " << (adminCommand.c_str()+3) << std::endl;
+
+            // TODO: For each connected client, send a sendservercommand packet
+            server->BroadcastToConnections(std::string(adminCommand.c_str()+3));
         }
         else {
             PrintUsage();

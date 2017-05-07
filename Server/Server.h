@@ -30,6 +30,7 @@ class Server{
         ~Server();
         void Run();
         int GetPacketQueueSize();
+        void BroadcastToConnections(std::string);
     private:
         int sockfd;
         SQLConnector * sql;
@@ -38,6 +39,8 @@ class Server{
 
         std::mutex packetQueueMutex;
         std::queue<packets::packet_t> packetQueue;
+        // Session to socket mapping
+        std::map<int, sockaddr_in> activeConnections;
 
         void WorkerThread(int id);
         // void StatisticsThread();
