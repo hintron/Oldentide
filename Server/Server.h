@@ -30,6 +30,7 @@ class Server{
         void Run();
         int GetPacketQueueSize();
         void BroadcastToConnections(std::string, std::string);
+        void SendMessageToConnection(std::string, std::string, std::string);
     private:
         int sockfd;
         SQLConnector * sql;

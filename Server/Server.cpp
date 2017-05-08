@@ -149,6 +149,50 @@ void Server::BroadcastToConnections(std::string msg, std::string user){
 
 
 
+
+void Server::SendMessageToConnection(std::string msg, std::string fromUser, std::string toUser){
+    bool isAdmin = false;
+    std::string formattedMsg;
+
+    // Format the message
+    if(fromUser == "admin"){
+        formattedMsg = ">>>MESSAGE Oldentide Admin: " + msg + " <<<";
+    }
+    else {
+        formattedMsg = ">>>MESSAGE Client " + fromUser + ": " + msg + " <<<";
+    }
+
+    // Figure out who to send the message to
+    if(toUser == "admin"){
+        // If message is sent to the admin, simply print to the admin shell
+        isAdmin = true;
+        std::cout << formattedMsg << std::endl;
+    }
+    else {
+        // user should be an int
+        int sessionId = std::stoi(toUser);
+        std::map<int, sockaddr_in>::iterator connection = activeConnections.find(sessionId);
+
+        if(connection == activeConnections.end()) {
+            std::cout << "Could not deliver message to session '" << toUser << "'': does not exist" << std::endl;
+            // TODO: Send "could not deliver" error message?
+            return;
+        }
+
+        // Send the message to the user
+        packets::Sendservercommand packet;
+        packet.sessionId = sessionId;
+        packet.packetId = 0; // n/a
+        packet.command = formattedMsg;
+        std::stringstream buffer;
+        msgpack::pack(buffer, packet);
+        utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, &(connection->second));
+
+    }
+}
+
+
+
 void Server::WorkerThread(int id) {
     while(1){
         packets::packet_t packet;
