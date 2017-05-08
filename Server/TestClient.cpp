@@ -240,28 +240,28 @@ int main(int argc, char * argv[]) {
                         }
                     }
                 } // End has no character while loop
-                std::cout << "Please select a character: " << std::endl;
 
-                std::string name;
-                getline(std::cin, name);
-                std::cout << "TODO: Attempting to select character " << name << ": " << std::endl;
+                // std::cout << "Please select a character: " << std::endl;
+                // std::string name;
+                // getline(std::cin, name);
+                // std::cout << "TODO: Attempting to select character " << name << ": " << std::endl;
 
-                packets::Selectcharacter characterToSelect;
-                characterToSelect.packetId = packetNumber;
-                packetNumber++;
-                characterToSelect.sessionId = session;
-                characterToSelect.character = name;
+                // packets::Selectcharacter characterToSelect;
+                // characterToSelect.packetId = packetNumber;
+                // packetNumber++;
+                // characterToSelect.sessionId = session;
+                // characterToSelect.character = name;
 
-                std::stringstream buffer;
-                msgpack::pack(buffer, characterToSelect);
-                utils::SendDataTo(sockfd, &buffer, packets::SELECTCHARACTER, &servaddr);
+                // std::stringstream buffer;
+                // msgpack::pack(buffer, characterToSelect);
+                // utils::SendDataTo(sockfd, &buffer, packets::SELECTCHARACTER, &servaddr);
 
                 clientState = 3;
+                std::cout << "Now, send commands to the server!" << std::endl;
                 break;
             }
             // In game...
             case 3: {
-                std::cout << "Send commands to the server!" << std::endl;
 
                 std::string command;
                 getline(std::cin, command);

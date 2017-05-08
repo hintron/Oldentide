@@ -98,7 +98,8 @@ void AdminShell::Run() {
         // e.g. /s 1 What's up, Client 1?
         // e.g. /s admin What's up, admin?
         else if (adminTokens[0] == "/s") {
-            server->SendMessageToConnection(std::string(adminCommand.c_str()+3+adminTokens[1].length()), std::string("admin"), std::string(adminTokens[1]));
+            const char *msgPointer = adminCommand.c_str()+adminTokens[0].length()+1+adminTokens[1].length()+1;
+            server->SendMessageToConnection(std::string(msgPointer), std::string("admin"), std::string(adminTokens[1]));
         }
         else {
             PrintUsage();

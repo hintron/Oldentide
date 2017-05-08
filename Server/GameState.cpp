@@ -56,10 +56,15 @@ void GameState::DisconnectSession(int sessionId) {
 
 void GameState::PlayerCommand(std::string pCommand, int sessionId) {
     std::vector<std::string> pCommandTokens = utils::Tokenfy(pCommand, ' ');
+    // e.g. /s 1 What's up, Client 1?
+    // e.g. /s admin What's up, admin?
     if (pCommandTokens[0] == "/s") {
-        std::cout << "Detected a say command!" << std::endl;
+        // std::cout << "Detected a say command!" << std::endl;
         // Save the incoming message and return the assigned message number
-        std::string saying = pCommand.substr(3,std::string::npos);
+        // std::string saying = pCommand.substr(3,std::string::npos);
+        const char *msgPointer = pCommand.c_str()+pCommandTokens[0].length()+1+pCommandTokens[1].length()+1;
+
+        server->SendMessageToConnection(std::string(msgPointer), std::to_string(sessionId), std::string(pCommandTokens[1]));
     }
     else if (pCommandTokens[0] == "/y") {
         std::cout << "Detected a yell command!" << std::endl;

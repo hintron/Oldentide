@@ -29,8 +29,8 @@ class Server{
         ~Server();
         void Run();
         int GetPacketQueueSize();
-        void BroadcastToConnections(std::string, std::string);
-        void SendMessageToConnection(std::string, std::string, std::string);
+        void BroadcastToConnections(std::string msg, std::string fromUser);
+        void SendMessageToConnection(std::string msg, std::string fromUser, std::string toUser);
     private:
         int sockfd;
         SQLConnector * sql;
