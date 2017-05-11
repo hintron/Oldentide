@@ -94,7 +94,7 @@ public class NetworkInterface : MonoBehaviour {
         try {
             // Continually block and wait for a packet to come in from the server
             while(listenForPackets){
-                // // Wait for the response
+                // Wait for the response
                 byte[] receivedMsgpackData;
                 Oldentide.Networking.PTYPE packetType = ReceiveDataFrom(out receivedMsgpackData);
 
@@ -107,7 +107,12 @@ public class NetworkInterface : MonoBehaviour {
                     }
                     case Oldentide.Networking.PTYPE.SENDSERVERCOMMAND: {
                         var data = MessagePackSerializer.Deserialize<PacketSendservercommand>(receivedMsgpackData);
-                        Debug.Log(data.command);
+                        if(data.sessionId == session){
+                            Debug.Log(data.command);
+                        }
+                        else {
+                            Debug.Log("Invalid session! Ignoring SENDSERVERCOMMAND packet...");
+                        }
                         break;
                     }
                     default: {
@@ -132,7 +137,6 @@ public class NetworkInterface : MonoBehaviour {
             Debug.Log("Thread abort exception! Shutting down thread...");
             // TODO: Anything to do here? Close a socket?
         }
-
 
         Debug.Log("Leaving PacketListener!");
     }
@@ -170,22 +174,6 @@ public class NetworkInterface : MonoBehaviour {
 
         return data;
     }
-
-
-    // For the MessagePack library, using:
-    // https://github.com/neuecc/MessagePack-CSharp
-    // instead of:
-    // https://github.com/msgpack/msgpack-cli
-
-    // To install, simply download the Unity zip from the releases page:
-    // https://github.com/neuecc/MessagePack-CSharp/releases
-    // Unzip it into a folder NOT under Oldentide/
-    // (don't want unity automatically ingesting the files just yet)
-    // In the Unity editor, click Assets -> Import Package
-    // Select the MessagePack .unitypackage file and click import.
-    // e.g. ...\MessagePack.Unity.1.2.0\MessagePack.Unity.1.2.0.unitypackage"
-    // Now all the MessagePack files are loaded into the project!
-    // To use it in code, put "using MessagePack" at the top of any C# files
 
 
     // Update is called once per frame
@@ -330,13 +318,10 @@ public class NetworkInterface : MonoBehaviour {
 
     Oldentide.Networking.PTYPE ReceiveDataFrom(out byte[] data){
         byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        // TODO: Only accept packets from the server
-        // EndPoint serverRemote = (EndPoint)serverEndPoint;
 
-        EndPoint senderRemote = (EndPoint)sender;
+        // Only accept packets from the server
+        EndPoint senderRemote = (EndPoint)serverEndPoint;
         clientSocket.ReceiveFrom(packetToReceive, ref senderRemote);
-
 
         // Get the packet type
         Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) packetToReceive[0];
@@ -378,5 +363,20 @@ public class NetworkInterface : MonoBehaviour {
         }
         Debug.Log(hexstring);
     }
+
+    // For the MessagePack library, using:
+    // https://github.com/neuecc/MessagePack-CSharp
+    // instead of:
+    // https://github.com/msgpack/msgpack-cli
+
+    // To install, simply download the Unity zip from the releases page:
+    // https://github.com/neuecc/MessagePack-CSharp/releases
+    // Unzip it into a folder NOT under Oldentide/
+    // (don't want unity automatically ingesting the files just yet)
+    // In the Unity editor, click Assets -> Import Package
+    // Select the MessagePack .unitypackage file and click import.
+    // e.g. ...\MessagePack.Unity.1.2.0\MessagePack.Unity.1.2.0.unitypackage"
+    // Now all the MessagePack files are loaded into the project!
+    // To use it in code, put "using MessagePack" at the top of any C# files
 
 }
