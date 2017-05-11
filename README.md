@@ -11,7 +11,7 @@
 **Principal Author**: Joseph DeVictoria<br>
 **Contributing Authors**: Scott Heidbrink, Michael Hinton, Adam Johnson, John Weber.<br>
 **Client Platform**: [Unity 5.6.0p1](https://unity3d.com/unity/qa/patch-releases/5.6.0p1) (As of 4/18/2017)<br>
-**Languages**: C++, SQLite3<br>
+**Languages**: C++, C#, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
 **Wiki**: [Github Wiki](https://github.com/Oldentide/Oldentide/wiki)<br>
 **Tasks**: [Gihub Wiki Task List](https://github.com/Oldentide/Oldentide/wiki/Tasks)<br>
