@@ -27,6 +27,15 @@ namespace Oldentide.Networking {
 	    UNITY = 19,
 	};
 
+	// Create a single class for a packet
+	public class Packet_t {
+		public byte [] data;
+		public PTYPE type;
+	}
+
+
+
+
 	[MessagePackObject]
 	public class PacketAck {
 	    [Key(0)]
