@@ -18,6 +18,8 @@ public class PlayerControls : MonoBehaviour {
 	private bool settingsMenuFlag;
 	public GameObject exitMenu;
 	private bool exitMenuFlag;
+	public GameObject messagesMenu;
+	private bool messagesMenuFlag;
 
 	// Use this for initialization
 	void Start () {
@@ -35,8 +37,10 @@ public class PlayerControls : MonoBehaviour {
 		settingsMenu.SetActive(settingsMenuFlag);
 		exitMenuFlag = false;
 		exitMenu.SetActive(exitMenuFlag);
+		messagesMenuFlag = false;
+		messagesMenu.SetActive(exitMenuFlag);
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown("c")) {
@@ -121,6 +125,18 @@ public class PlayerControls : MonoBehaviour {
 				exitMenuFlag = true;
 			}
 			exitMenu.SetActive(exitMenuFlag);
+		}
+
+		if (Input.GetKeyDown(KeyCode.Alpha0)) {
+			if (messagesMenuFlag) {
+				Debug.Log("Messages menu closed.");
+				messagesMenuFlag = false;
+			}
+			else {
+				Debug.Log("Messages menu opened.");
+				messagesMenuFlag = true;
+			}
+			messagesMenu.SetActive(messagesMenuFlag);
 		}
 	}
 }

@@ -9,11 +9,17 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MessagePack;
+using UnityEngine.UI;
+
 
 public class NetworkInterface : MonoBehaviour {
 
     public string serverIp = "goblin.oldentide.com";
     public int serverPort = 1337;
+
+    public InputField messageInput;
+    public Text messages;
+
     IPEndPoint serverEndPoint;
     IPEndPoint clientEndPoint;
     Socket clientSocket;
@@ -25,7 +31,7 @@ public class NetworkInterface : MonoBehaviour {
     int session = 0;
 
     // Set this to false to false to stop the thread, or else it will keep running
-    public bool listenForPackets = true;
+    bool listenForPackets = true;
 
 
     // This is the number of bytes that the oldentide header is
@@ -34,6 +40,10 @@ public class NetworkInterface : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+         messageInput.Select();
+         messageInput.ActivateInputField();
+
+
         // Set up Server End Point for sending packets.
         IPHostEntry serverHostEntry = Dns.GetHostEntry(serverIp);
         IPAddress serverIpAddress = serverHostEntry.AddressList[0];
@@ -109,6 +119,7 @@ public class NetworkInterface : MonoBehaviour {
                         var data = MessagePackSerializer.Deserialize<PacketSendservercommand>(receivedMsgpackData);
                         if(data.sessionId == session){
                             Debug.Log(data.command);
+                            messages.text += "\n" + data.command;
                         }
                         else {
                             Debug.Log("Invalid session! Ignoring SENDSERVERCOMMAND packet...");
@@ -179,20 +190,30 @@ public class NetworkInterface : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // TODO: For each thread, store it in a global list so we can properly abort all of them on exit?
-        if(Input.GetKeyDown(KeyCode.M)){
+        if(Input.GetKeyDown(KeyCode.Alpha7)){
             Thread connectThread = new Thread(ConnectToServer);
             connectThread.Start();
-            Debug.Log("M press!");
+            Debug.Log("Connecting to server");
         }
-        if(Input.GetKeyDown(KeyCode.L)){
+        if(Input.GetKeyDown(KeyCode.Alpha8)){
             Thread listCharsThread = new Thread(ListCharactersAction);
             listCharsThread.Start();
-            Debug.Log("L press!");
+            Debug.Log("Listing characters");
         }
-        if(Input.GetKeyDown(KeyCode.I)){
+        if(Input.GetKeyDown(KeyCode.Alpha9)){
+            // TODO: Get the text input and send it
+
             Thread broadcastThread = new Thread(BroadcastAction);
             broadcastThread.Start("/h Hello, Oldentide!!! This is broadcasting from the unity client!");
-            Debug.Log("I press!");
+            Debug.Log("Sending broadcast");
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha6)){
+            // messageInput.Select();
+            // messageInput.ActivateInputField();
+            // messageInput.text = "sdf";
+            // Debug.Log("Selecting text input");
+            Debug.Log(messageInput.enabled);
         }
     }
 
