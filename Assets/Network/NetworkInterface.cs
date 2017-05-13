@@ -39,10 +39,6 @@ public class NetworkInterface : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-         messageInput.Select();
-         messageInput.ActivateInputField();
-
-
         // Set up Server End Point for sending packets.
         IPHostEntry serverHostEntry = Dns.GetHostEntry(serverIp);
         IPAddress serverIpAddress = serverHostEntry.AddressList[0];
@@ -67,6 +63,15 @@ public class NetworkInterface : MonoBehaviour {
             Debug.Log("Winsock error: " + e.ToString());
         }
 
+
+
+        // TODO: Get this to work!!!
+        // // Submit the user command
+        // messageInput.OnSubmit.AddListener(delegate(BaseEventData eventData) {
+        //     Debug.Log("Sending command...");
+        //     BroadcastAction(messageInput.text);
+        //     messageInput.text = "";
+        // });
     }
 
 
@@ -79,8 +84,11 @@ public class NetworkInterface : MonoBehaviour {
             ListCharactersAction();
         }
         if(Input.GetKeyDown(KeyCode.Alpha9)){
-            // TODO: Get the text input and send it
-            BroadcastAction("/h Hello, Oldentide!!!");
+            Debug.Log("Sending command...");
+            // Get the text input and send it
+            BroadcastAction(messageInput.text);
+            // Clear the input
+            messageInput.text = "";
         }
 
         // if(Input.GetKeyDown(KeyCode.Alpha6)){
