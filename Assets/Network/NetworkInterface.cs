@@ -83,7 +83,7 @@ public class NetworkInterface : MonoBehaviour {
         if(Input.GetKeyDown(KeyCode.Alpha8)){
             ListCharactersAction();
         }
-        if(Input.GetKeyDown(KeyCode.Alpha9)){
+        if(Input.GetKeyDown(KeyCode.Return)){
             Debug.Log("Sending command...");
             // Get the text input and send it
             BroadcastAction(messageInput.text);
