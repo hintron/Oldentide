@@ -24,15 +24,14 @@ public class NetworkInterface : MonoBehaviour {
     IPEndPoint clientEndPoint;
     Socket clientSocket;
 
-    Thread packetListenerThread;
     Queue<byte []> packetQueue = new Queue<byte []>();
 
     int packetNumber = 1;
     int session = 0;
 
-    // Set this to false to false to stop the thread, or else it will keep running
+    // Set this to false to stop the thread, or else it will keep running
     bool listenForPackets = true;
-
+    bool waitingForPacket = false;
 
     // This is the number of bytes that the oldentide header is
     const int HEADER_SIZE = 3;
@@ -68,51 +67,57 @@ public class NetworkInterface : MonoBehaviour {
             Debug.Log("Winsock error: " + e.ToString());
         }
 
-        Debug.Log("Starting PacketListener thread!");
-
-        packetListenerThread = new Thread(PacketListener);
-        packetListenerThread.Start();
-
-        Debug.Log("The Main() thread calls this after starting the new InstanceCaller thread.");
-    }
-
-    void OnApplicationQuit() {
-        Debug.Log("Application ending after " + Time.time + " seconds");
-        // Kill the PacketListener thread
-        // If we don't do this, the thread will keep running even when you
-        // stop the play button in the unity editor and can freeze things
-        listenForPackets = false;
-        Debug.Log("Closing socket...");
-        // Close the socket the is most likely blocking right now
-        // This should stop it
-        clientSocket.Close();
-        Debug.Log("Aborting thread...");
-        packetListenerThread.Abort();
     }
 
 
-    // MGH NOTES:
-    // The problem is that the Unity thread can never block at any point.
-    // If it does, then everything freezes.
+    // Update is called once per frame
+    void Update() {
+        if(Input.GetKeyDown(KeyCode.Alpha7)){
+            Debug.Log("Connecting to server");
+            StartCoroutine(ConnectToServer());
+        }
+        // if(Input.GetKeyDown(KeyCode.Alpha8)){
+        //     Thread listCharsThread = new Thread(ListCharactersAction);
+        //     listCharsThread.Start();
+        //     Debug.Log("Listing characters");
+        // }
+        if(Input.GetKeyDown(KeyCode.Alpha9)){
+            // TODO: Get the text input and send it
+            Debug.Log("Sending broadcast");
+            StartCoroutine(BroadcastAction("/h Hello, Oldentide!!!"));
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha6)){
+            // messageInput.Select();
+            // messageInput.ActivateInputField();
+            // messageInput.text = "sdf";
+            // Debug.Log("Selecting text input");
+            Debug.Log(messageInput.enabled);
+        }
 
 
-    // The method that will be called when the thread is started.
-    private void PacketListener() {
 
-        Debug.Log("Starting PacketListener!");
 
-        try {
-            // Continually block and wait for a packet to come in from the server
-            while(listenForPackets){
-                // Wait for the response
-                byte[] receivedMsgpackData;
-                Oldentide.Networking.PTYPE packetType = ReceiveDataFrom(out receivedMsgpackData);
+
+        // Continually wait for a packet to come in from the server
+        // If we are already waiting for a packet, give control back to unity
+        if(listenForPackets && !waitingForPacket){
+            Debug.Log("Start waiting for a packet!");
+            waitingForPacket = true;
+            // Wait for the response asynchronously with a callback
+            ReceiveDataFrom(delegate(byte[] receivedMsgpackData, Oldentide.Networking.PTYPE packetType) {
+                // Allow the main thread to listen to another packet
+                waitingForPacket = false;
+
+                Debug.Log("Server responded with packet " + packetType);
 
                 // Service the server-generated quick packets here, and forward the others to the main thread via the queue
                 switch(packetType) {
                     case Oldentide.Networking.PTYPE.ERROR: {
                         var data = MessagePackSerializer.Deserialize<PacketError>(receivedMsgpackData);
                         Debug.Log("ERROR: " + data.errorMsg);
+                        messages.text += "ERROR: " + data.errorMsg;
+
                         break;
                     }
                     case Oldentide.Networking.PTYPE.SENDSERVERCOMMAND: {
@@ -129,10 +134,11 @@ public class NetworkInterface : MonoBehaviour {
                     default: {
                         Debug.Log("Received packet " + packetType);
 
-                        // TODO: Add packet type to the queue, use a packet_t?
+                        // // TODO: Add packet type to the queue, use a packet_t?
                         lock(packetQueue){
                             // Add it to the packet queue
                             packetQueue.Enqueue(receivedMsgpackData);
+                            Debug.Log("Adding packet to the queue...");
                             // unlock, notify one
                             Monitor.Pulse(packetQueue);
                         }
@@ -141,16 +147,31 @@ public class NetworkInterface : MonoBehaviour {
 
                         break;
                     }
-                }
-            }
-        }
-        catch (ThreadAbortException ex) {
-            Debug.Log("Thread abort exception! Shutting down thread...");
-            // TODO: Anything to do here? Close a socket?
-        }
+                } // End packetType switch
 
-        Debug.Log("Leaving PacketListener!");
+            }); // End ReceiveDataFrom
+
+
+            Debug.Log("Leaving PacketListener callback!");
+        } // End packetListener while loop
+
+    } // End update
+
+    void OnApplicationQuit() {
+        Debug.Log("Application ending after " + Time.time + " seconds");
+        listenForPackets = false;
+        Debug.Log("Closing socket...");
+        // Close the socket the is most likely blocking right now
+        // This should stop it
+        clientSocket.Close();
     }
+
+
+    // MGH NOTES:
+    // The problem is that the main Unity thread can never block at any point.
+    // If it does, then everything freezes.
+
+
 
 
     // This function accesses the packet queue
@@ -187,43 +208,13 @@ public class NetworkInterface : MonoBehaviour {
     }
 
 
-    // Update is called once per frame
-    void Update() {
-        // TODO: For each thread, store it in a global list so we can properly abort all of them on exit?
-        if(Input.GetKeyDown(KeyCode.Alpha7)){
-            Thread connectThread = new Thread(ConnectToServer);
-            connectThread.Start();
-            Debug.Log("Connecting to server");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha8)){
-            Thread listCharsThread = new Thread(ListCharactersAction);
-            listCharsThread.Start();
-            Debug.Log("Listing characters");
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha9)){
-            // TODO: Get the text input and send it
-
-            Thread broadcastThread = new Thread(BroadcastAction);
-            broadcastThread.Start("/h Hello, Oldentide!!! This is broadcasting from the unity client!");
-            Debug.Log("Sending broadcast");
-        }
-
-        if(Input.GetKeyDown(KeyCode.Alpha6)){
-            // messageInput.Select();
-            // messageInput.ActivateInputField();
-            // messageInput.text = "sdf";
-            // Debug.Log("Selecting text input");
-            Debug.Log(messageInput.enabled);
-        }
-    }
-
 
     // TODO: We need a way of canceling pending callbacks that are waiting for a packet,
     // or else the stale callbacks will consume the new return packets that were meant for a
     // newer request.
 
-    void ConnectToServer(){
-        Debug.Log("Starting new thread and sending a single CONNECT packet via message pack!!");
+    IEnumerator ConnectToServer(){
+        Debug.Log("sending a single CONNECT packet via message pack!!");
 
         PacketConnect pp = new PacketConnect();
         pp.sessionId = session;
@@ -240,7 +231,7 @@ public class NetworkInterface : MonoBehaviour {
         byte [] msgpackDataReceived = WaitOnPacketQueue();
         if(msgpackDataReceived == null){
             Debug.Log("Packet Queue data is null! Must have timed out. Returning...");
-            return;
+            yield return null;
         }
 
         Debug.Log("Setting session...");
@@ -255,43 +246,45 @@ public class NetworkInterface : MonoBehaviour {
         else {
             Debug.Log("Session is already set to " + session);
         }
+
+        yield return null;
     }
 
 
-    void ListCharactersAction(){
-        PacketListcharacters pp = new PacketListcharacters();
-        pp.sessionId = session;
-        pp.packetId = packetNumber;
-        // Set to empty array, NOT null. This makes a difference in messagepack
-        pp.characterArray = new string [0];
-        packetNumber++;
+    // void ListCharactersAction(){
+    //     PacketListcharacters pp = new PacketListcharacters();
+    //     pp.sessionId = session;
+    //     pp.packetId = packetNumber;
+    //     // Set to empty array, NOT null. This makes a difference in messagepack
+    //     pp.characterArray = new string [0];
+    //     packetNumber++;
 
-        byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
-        SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.LISTCHARACTERS, sendMsgpackData);
+    //     byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
+    //     SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.LISTCHARACTERS, sendMsgpackData);
 
-        // Wait for the response
-        byte [] msgpackDataReceived = WaitOnPacketQueue();
-        // TODO: Also check packet type, return if not expected
-        if(msgpackDataReceived == null){
-            Debug.Log("Packet Queue data is null! Must have timed out. Returning...");
-            return;
-        }
+    //     // Wait for the response
+    //     byte [] msgpackDataReceived = WaitOnPacketQueue();
+    //     // TODO: Also check packet type, return if not expected
+    //     if(msgpackDataReceived == null){
+    //         Debug.Log("Packet Queue data is null! Must have timed out. Returning...");
+    //         return;
+    //     }
 
-        var data = MessagePackSerializer.Deserialize<PacketListcharacters>(msgpackDataReceived);
-        if(data.sessionId != session){
-            Debug.Log("Invalid session! Ignoring packet response");
-            return;
-        }
+    //     var data = MessagePackSerializer.Deserialize<PacketListcharacters>(msgpackDataReceived);
+    //     if(data.sessionId != session){
+    //         Debug.Log("Invalid session! Ignoring packet response");
+    //         return;
+    //     }
 
-        Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
+    //     Debug.Log("ListCharacter response! sessionId: " + data.sessionId + " ; packetId: " + data.packetId);
 
-        // Print out the character list
-        foreach (string element in data.characterArray) {
-            Debug.Log(element);
-        }
-    }
+    //     // Print out the character list
+    //     foreach (string element in data.characterArray) {
+    //         Debug.Log(element);
+    //     }
+    // }
 
-    void BroadcastAction(object command){
+    IEnumerator BroadcastAction(object command){
         Debug.Log("SendPlayerCommandAction!");
         PacketSendplayercommand pp = new PacketSendplayercommand();
         pp.sessionId = session;
@@ -308,14 +301,16 @@ public class NetworkInterface : MonoBehaviour {
         // TODO: Also check packet type, return if not expected
         if(msgpackDataReceived == null){
             Debug.Log("Packet Queue data is null! Must have timed out. Returning...");
-            return;
+            yield return null;
         }
         var data = MessagePackSerializer.Deserialize<PacketSendplayercommand>(msgpackDataReceived);
         if(data.sessionId != session){
             Debug.Log("Invalid session! Ignoring packet response");
-            return;
+            yield return null;
         }
         Debug.Log("SENDPLAYERCOMMAND response: " + data.command);
+
+        yield return null;
     }
 
 
@@ -337,26 +332,83 @@ public class NetworkInterface : MonoBehaviour {
 
 
 
-    Oldentide.Networking.PTYPE ReceiveDataFrom(out byte[] data){
-        byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
 
-        // Only accept packets from the server
-        EndPoint senderRemote = (EndPoint)serverEndPoint;
-        clientSocket.ReceiveFrom(packetToReceive, ref senderRemote);
+
+    // Create a class to pass data to ReceiveDataFromCallback
+    public class CallbackParams{
+        public byte[] buffer;
+        public Action<byte[], Oldentide.Networking.PTYPE> callback;
+        // Note: Action<...> is a no-return delegate; Func<..., retType> has a return type
+        // public Func<string, int> callback;
+    }
+
+    // Wrapper function for BeginReceiveFrom() that deals with
+    // The callback params include the msgpack data and the packetType
+    void ReceiveDataFrom(Action<byte[], Oldentide.Networking.PTYPE> callback) {
+        // byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        EndPoint senderRemote = (EndPoint)sender;
+
+        // Use BeginReceiveFrom and EndReceiveFrom:
+        // https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.beginreceivefrom(v=vs.110).aspx
+        // http://stackoverflow.com/questions/7860398/c-sharp-stateobject-class-location
+
+        CallbackParams so2 = new CallbackParams();
+        so2.buffer = new byte[PACKET_MAX_SIZE];
+        so2.callback = callback;
+        clientSocket.BeginReceiveFrom(so2.buffer, 0, PACKET_MAX_SIZE, 0, ref senderRemote, new AsyncCallback(ReceiveDataFromCallback), so2);
+    }
+
+    void ReceiveDataFromCallback(IAsyncResult result){
+        // Get the params passed to this callback
+        CallbackParams so2 = (CallbackParams) result.AsyncState;
+
+        // // ???? I'm not quite sure why EndReceiveFrom() is even necessary
+        // // It seems to work without it just fine
+        // // see https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.endreceivefrom(v=vs.110).aspx
+        // IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        // EndPoint senderRemote = (EndPoint)sender;
+        // // Block and wait for a packet to be put in so2.buffer
+        // int read = clientSocket.EndReceiveFrom(result, ref senderRemote);
+        // Debug.Log("Got packet, read " + read + " bytes");
 
         // Get the packet type
-        Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) packetToReceive[0];
+        Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) so2.buffer[0];
         // Get the length of the msgpack data
-        ushort msgpackLength = BitConverter.ToUInt16(packetToReceive, 1);
+        ushort msgpackLength = BitConverter.ToUInt16(so2.buffer, 1);
         // Copy the msgpack data into the packet
-        data = new byte[msgpackLength];
-        Array.Copy(packetToReceive, HEADER_SIZE, data, 0, msgpackLength);
+        byte[] data = new byte[msgpackLength];
+        Array.Copy(so2.buffer, HEADER_SIZE, data, 0, msgpackLength);
 
-        // Debug.Log("Receiving msgpack data: ");
-        // PrintHexString(data);
+        Debug.Log("Receiving msgpack data: ");
+        PrintHexString(data);
 
-        return packetType;
+        // Return execution back to the original caller, passing back the data
+        so2.callback(data, packetType);
     }
+
+
+
+    // Oldentide.Networking.PTYPE ReceiveDataFrom(out byte[] data){
+    //     byte[] packetToReceive = new byte[PACKET_MAX_SIZE];
+
+    //     // Only accept packets from the server
+    //     EndPoint senderRemote = (EndPoint)serverEndPoint;
+    //     clientSocket.ReceiveFrom(packetToReceive, ref senderRemote);
+
+    //     // Get the packet type
+    //     Oldentide.Networking.PTYPE packetType = (Oldentide.Networking.PTYPE) packetToReceive[0];
+    //     // Get the length of the msgpack data
+    //     ushort msgpackLength = BitConverter.ToUInt16(packetToReceive, 1);
+    //     // Copy the msgpack data into the packet
+    //     data = new byte[msgpackLength];
+    //     Array.Copy(packetToReceive, HEADER_SIZE, data, 0, msgpackLength);
+
+    //     // Debug.Log("Receiving msgpack data: ");
+    //     // PrintHexString(data);
+
+    //     return packetType;
+    // }
 
 
     void SendDataTo(Socket clientSocket, IPEndPoint serverEndPoint, Oldentide.Networking.PTYPE packetType, byte [] msgpackData){
