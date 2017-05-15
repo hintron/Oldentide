@@ -170,12 +170,23 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
     }
     else {
         // user should be an int
-        int sessionId = std::stoi(toUser);
+        int sessionId;
+        try {
+            sessionId = std::stoi(toUser);
+        } catch (const std::exception& e) {
+            std::string err("Failed to convert '" + toUser + "'' to a valid sessionId! Ignoring SendMessageToConnection() request from '" + fromUser + "'");
+            std::cout << err << std::endl;
+            // utils::SendErrorTo(sockfd, err, client);
+            return;
+        }
+
+
         std::map<int, sockaddr_in>::iterator connection = activeConnections.find(sessionId);
 
         if(connection == activeConnections.end()) {
-            std::cout << "Could not deliver message to session '" << toUser << "'': does not exist" << std::endl;
+            std::cout << "Could not deliver message to session '" << toUser << ": does not exist" << std::endl;
             // TODO: Send "could not deliver" error message?
+            // utils::SendErrorTo(sockfd, err, client);
             return;
         }
 
