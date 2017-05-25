@@ -18,6 +18,7 @@
 #include <string>
 #include <mutex>
 #include <queue>
+#include <condition_variable>
 
 // forward declaration so AdminShell and Server can see each other
 class AdminShell;
@@ -36,11 +37,20 @@ class Server{
         SQLConnector * sql;
         GameState * gameState;
         AdminShell * adminshell;
-
         std::mutex packetQueueMutex;
         std::queue<packets::packet_t> packetQueue;
         // Session to socket mapping
         std::map<int, sockaddr_in> activeConnections;
+
+        // TODO: Wrap all globals accessed in WorkerThread with mutexes
+        // std::mutex sockfdMutex;
+        // std::mutex sqlMutex;
+        // std::mutex gameStateMutex;
+        // std::mutex adminShellMutex;
+        // std::mutex activeConnectionsMutex;
+
+        std::condition_variable packetQueueSyncVar;
+
 
         void WorkerThread(int id);
         // void StatisticsThread();

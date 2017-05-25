@@ -58,10 +58,8 @@ Server::~Server() {
 void Server::Run() {
     std::thread shell(*adminshell);
 
-    // TODO: Do we want a limit on how many packets are in the queue?
-    // Or at least emit a warning if the queue size surpasses a certain limit?
-    // int MAX_PACKETS = 1000;
-    int NUM_WORKER_THREADS = 10;
+    // TODO: There should be 1 active thread per logical core to prevent thrashing
+    int NUM_WORKER_THREADS = 4;
 
     // Initialize all the threads
     for (int i = 0; i < NUM_WORKER_THREADS; ++i) {
@@ -76,7 +74,6 @@ void Server::Run() {
     // std::thread statThread(&Server::StatisticsThread, this);
     // statThread.detach(); // Detach the threads so we don't need to join them manually
 
-
     bool listen = true;
     while(listen) {
         packets::packet_t p;
@@ -88,6 +85,9 @@ void Server::Run() {
         packetQueueMutex.lock();
         packetQueue.push(p);
         packetQueueMutex.unlock();
+        // Use a condition variable to notify the next worker thread to wake up
+        // https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore
+        packetQueueSyncVar.notify_one();
     }
 
     shell.join();
@@ -149,7 +149,7 @@ void Server::BroadcastToConnections(std::string msg, std::string user){
 
 
 
-
+// TODO: Wrap globals with mutexes (activeConnections)
 void Server::SendMessageToConnection(std::string msg, std::string fromUser, std::string toUser){
     bool isAdmin = false;
     std::string formattedMsg;
@@ -208,23 +208,17 @@ void Server::WorkerThread(int id) {
     while(1){
         packets::packet_t packet;
 
-        // Check to see if there are any packets to service
-        packetQueueMutex.lock();
-        if(packetQueue.size() > 0){
-            // Retrieve a packet from the queue
-            // std::cout << "Worker thread " << id << std::endl;
-            // create a copy of the packet
-            packet = packetQueue.front();
-            packetQueue.pop();
-            packetQueueMutex.unlock();
-        }
-        else{
-            packetQueueMutex.unlock();
-            // Since packetQueue is empty, try again in a few milliseconds
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
-            continue;
-        }
-
+        // The following 2 lines will lock, release lock, and block thread
+        // until notify_one() is called after a packet arrives
+        // http://en.cppreference.com/w/cpp/thread/condition_variable/wait
+        std::unique_lock<std::mutex> ul(packetQueueMutex);
+        packetQueueSyncVar.wait(ul);
+        // std::cout << "Worker thread " << id << " handling the request!" << std::endl;
+        // Retrieve a packet from the queue
+        // create a copy of the packet
+        packet = packetQueue.front();
+        packetQueue.pop();
+        packetQueueMutex.unlock();
 
         msgpack::object_handle deserialized_data;
         uint8_t packetType;
