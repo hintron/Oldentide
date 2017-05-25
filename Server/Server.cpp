@@ -22,6 +22,7 @@
 #include <mutex>
 #include <chrono>
 
+// TODO: Create a helper function to reduce try/catch code with messagepack
 
 Server::Server(int port) {
     sql = new SQLConnector();
@@ -285,7 +286,14 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void Server::GenericHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Generic packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
     std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
@@ -297,7 +305,14 @@ void Server::GenericHandler(msgpack::object_handle * deserialized_data, sockaddr
 // Respond to any packet that does not have an associated server action.  Those other packets will be acked by response.
 void Server::AckHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Ack packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
     std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
@@ -309,7 +324,14 @@ void Server::AckHandler(msgpack::object_handle * deserialized_data, sockaddr_in 
 // Connect a host to the server by generating a session for it, and adding it to the gamestate sessions.
 void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Connect packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
 
     // Generate the new sessionId
     gameStateMutex.lock();
@@ -337,7 +359,14 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
 // Remove the session for a given user, effectively disconnecting it from the server.
 void Server::DisconnectHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Disconnect packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
     std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
@@ -349,11 +378,10 @@ void Server::DisconnectHandler(msgpack::object_handle * deserialized_data, socka
 
 void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Listcharacters packet;
-    // Wrap this is a try catch, so bad cast doesn't crash the whole server
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
     try {
         deserialized_data->get().convert(packet);
     } catch (const std::exception& e) {
-        // std::cout << "Failed to convert/cast msgpack object! Exiting... " << e.what() << std::endl;
         utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
         return;
     }
@@ -386,7 +414,14 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
 
 void Server::SelectCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Selectcharacter packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
     std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
@@ -403,7 +438,14 @@ void Server::DeleteCharacterHandler(msgpack::object_handle * deserialized_data, 
 
 void Server::CreateCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Createcharacter packet;
-    deserialized_data->get().convert(packet);
+    // Wrap this in a try catch, so bad cast doesn't crash the whole server
+    try {
+        deserialized_data->get().convert(packet);
+    } catch (const std::exception& e) {
+        utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
+        return;
+    }
+
     std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
