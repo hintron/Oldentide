@@ -94,6 +94,84 @@ void Server::Run() {
 }
 
 
+void Server::WorkerThread(int id) {
+    while(1){
+        packets::packet_t packet;
+
+        // The following 2 lines will lock, release lock, and block thread
+        // until notify_one() is called after a packet arrives
+        // http://en.cppreference.com/w/cpp/thread/condition_variable/wait
+        std::unique_lock<std::mutex> ul(packetQueueMutex);
+        packetQueueSyncVar.wait(ul);
+        // std::cout << "Worker thread " << id << " handling the request!" << std::endl;
+        // Retrieve a packet from the queue
+        // create a copy of the packet
+        packet = packetQueue.front();
+        packetQueue.pop();
+        packetQueueMutex.unlock();
+
+        msgpack::object_handle deserialized_data;
+        uint8_t packetType;
+        deserialized_data = utils::GetDataFromPacket(packet.data, &packetType);
+
+        switch (packetType) {
+            case false:
+                utils::SendErrorTo(sockfd, std::string("Invalid packetType. Ignoring packet."), &(packet.source));
+                break;
+            case packets::GENERIC:
+                GenericHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::ACK:
+                AckHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::CONNECT:
+                ConnectHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::DISCONNECT:
+                DisconnectHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::LISTCHARACTERS:
+                ListCharactersHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::SELECTCHARACTER:
+                SelectCharacterHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::DELETECHARACTER:
+                DeleteCharacterHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::CREATECHARACTER:
+                CreateCharacterHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::INITIALIZEGAME:
+                InitializeGameHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::UPDATEPC:
+                UpdatePcHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::UPDATENPC:
+                UpdateNpcHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::SENDPLAYERCOMMAND:
+                SendPlayerCommandHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::SENDPLAYERACTION:
+                SendPlayerActionHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::SENDSERVERACTION:
+                SendServerActionHandler(&deserialized_data, &(packet.source));
+                break;
+            case packets::UNITY:
+                UnityHandler(&deserialized_data, &(packet.source));
+                break;
+            default:
+                std::stringstream errSs;
+                errSs << "Received unknown packet of type " << packetType;
+                utils::SendErrorTo(sockfd, errSs.str(), &(packet.source));
+                break;
+        }
+    }
+}
+
 // TODO: This can be used to eventually log things to a file
 // OR, this thread could be in charge of sending PING requests to all
 // actively connected users, and if a ACK request is not sent in a timely
@@ -203,84 +281,6 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
 }
 
 
-
-void Server::WorkerThread(int id) {
-    while(1){
-        packets::packet_t packet;
-
-        // The following 2 lines will lock, release lock, and block thread
-        // until notify_one() is called after a packet arrives
-        // http://en.cppreference.com/w/cpp/thread/condition_variable/wait
-        std::unique_lock<std::mutex> ul(packetQueueMutex);
-        packetQueueSyncVar.wait(ul);
-        // std::cout << "Worker thread " << id << " handling the request!" << std::endl;
-        // Retrieve a packet from the queue
-        // create a copy of the packet
-        packet = packetQueue.front();
-        packetQueue.pop();
-        packetQueueMutex.unlock();
-
-        msgpack::object_handle deserialized_data;
-        uint8_t packetType;
-        deserialized_data = utils::GetDataFromPacket(packet.data, &packetType);
-
-        switch (packetType) {
-            case false:
-                utils::SendErrorTo(sockfd, std::string("Invalid packetType. Ignoring packet."), &(packet.source));
-                break;
-            case packets::GENERIC:
-                GenericHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::ACK:
-                AckHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::CONNECT:
-                ConnectHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::DISCONNECT:
-                DisconnectHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::LISTCHARACTERS:
-                ListCharactersHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::SELECTCHARACTER:
-                SelectCharacterHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::DELETECHARACTER:
-                DeleteCharacterHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::CREATECHARACTER:
-                CreateCharacterHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::INITIALIZEGAME:
-                InitializeGameHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::UPDATEPC:
-                UpdatePcHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::UPDATENPC:
-                UpdateNpcHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::SENDPLAYERCOMMAND:
-                SendPlayerCommandHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::SENDPLAYERACTION:
-                SendPlayerActionHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::SENDSERVERACTION:
-                SendServerActionHandler(&deserialized_data, &(packet.source));
-                break;
-            case packets::UNITY:
-                UnityHandler(&deserialized_data, &(packet.source));
-                break;
-            default:
-                std::stringstream errSs;
-                errSs << "Received unknown packet of type " << packetType;
-                utils::SendErrorTo(sockfd, errSs.str(), &(packet.source));
-                break;
-        }
-    }
-}
 
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
