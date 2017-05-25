@@ -37,20 +37,18 @@ class Server{
         SQLConnector * sql;
         GameState * gameState;
         AdminShell * adminshell;
-        std::mutex packetQueueMutex;
         std::queue<packets::packet_t> packetQueue;
         // Session to socket mapping
         std::map<int, sockaddr_in> activeConnections;
 
-        // TODO: Wrap all globals accessed in WorkerThread with mutexes
-        // std::mutex sockfdMutex;
-        // std::mutex sqlMutex;
-        // std::mutex gameStateMutex;
-        // std::mutex adminShellMutex;
-        // std::mutex activeConnectionsMutex;
+        // Wrap all globals accessed in WorkerThread with mutexes
+        std::mutex gameStateMutex;
+        std::mutex packetQueueMutex;
+        std::mutex activeConnectionsMutex;
+        // NOTE: Sockets are atomic, so they are thread safe
+        // https://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-the-same-socket-valid
 
         std::condition_variable packetQueueSyncVar;
-
 
         void WorkerThread(int id);
         // void StatisticsThread();

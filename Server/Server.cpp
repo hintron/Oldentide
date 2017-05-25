@@ -208,6 +208,9 @@ void Server::BroadcastToConnections(std::string msg, std::string user){
         std::cout << broadcast << std::endl;
     }
     // std::cout << "Broadcasting to sessions:" << std::endl;
+
+
+    std::lock_guard<std::mutex> lk(activeConnectionsMutex);
     for (std::map<int, sockaddr_in>::iterator it = activeConnections.begin(); it != activeConnections.end(); ++it){
         // Don't broadcast to the originator of the message
         if(!isAdmin && it->first == std::stoi(user)){
@@ -226,8 +229,6 @@ void Server::BroadcastToConnections(std::string msg, std::string user){
 }
 
 
-
-// TODO: Wrap globals with mutexes (activeConnections)
 void Server::SendMessageToConnection(std::string msg, std::string fromUser, std::string toUser){
     bool isAdmin = false;
     std::string formattedMsg;
@@ -258,9 +259,8 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
             return;
         }
 
-
+        std::lock_guard<std::mutex> lk(activeConnectionsMutex);
         std::map<int, sockaddr_in>::iterator connection = activeConnections.find(sessionId);
-
         if(connection == activeConnections.end()) {
             std::cout << "Could not deliver message to session '" << toUser << ": does not exist" << std::endl;
             // TODO: Send "could not deliver" error message?
@@ -276,7 +276,6 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
         std::stringstream buffer;
         msgpack::pack(buffer, packet);
         utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, &(connection->second));
-
     }
 }
 
@@ -287,6 +286,7 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
 void Server::GenericHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Generic packet;
     deserialized_data->get().convert(packet);
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         std::cout << "Invalid session. Not doing anything" << std::endl;
@@ -298,6 +298,7 @@ void Server::GenericHandler(msgpack::object_handle * deserialized_data, sockaddr
 void Server::AckHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Ack packet;
     deserialized_data->get().convert(packet);
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         std::cout << "Invalid session. Not doing anything" << std::endl;
@@ -311,9 +312,13 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
     deserialized_data->get().convert(packet);
 
     // Generate the new sessionId
+    gameStateMutex.lock();
     int newSession = gameState->GenerateSession(packet.sessionId);
+    gameStateMutex.unlock();
     // Save a copy of the connection information
+    activeConnectionsMutex.lock();
     activeConnections[newSession] = *client;
+    activeConnectionsMutex.unlock();
     // TODO: Figure out a way to disconnect clients if unresponsive
 
     packets::Connect returnPacket;
@@ -333,6 +338,7 @@ void Server::ConnectHandler(msgpack::object_handle * deserialized_data, sockaddr
 void Server::DisconnectHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Disconnect packet;
     deserialized_data->get().convert(packet);
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         std::cout << "Invalid session. Not doing anything" << std::endl;
@@ -352,6 +358,7 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
         return;
     }
 
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         // Quit early if invalid session
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
@@ -380,6 +387,7 @@ void Server::ListCharactersHandler(msgpack::object_handle * deserialized_data, s
 void Server::SelectCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Selectcharacter packet;
     deserialized_data->get().convert(packet);
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
@@ -396,6 +404,7 @@ void Server::DeleteCharacterHandler(msgpack::object_handle * deserialized_data, 
 void Server::CreateCharacterHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     packets::Createcharacter packet;
     deserialized_data->get().convert(packet);
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
@@ -425,6 +434,7 @@ void Server::SendPlayerCommandHandler(msgpack::object_handle * deserialized_data
         utils::SendErrorTo(sockfd, std::string("Failed to convert/cast msgpack object"), client);
         return;
     }
+    std::lock_guard<std::mutex> lk(gameStateMutex);
     if(!gameState->VerifySession(packet.sessionId)){
         utils::SendErrorTo(sockfd, std::string("Invalid session"), client);
         return;
