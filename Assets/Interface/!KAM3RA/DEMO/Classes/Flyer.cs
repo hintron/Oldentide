@@ -15,7 +15,7 @@ public class Flyer : Kart
 	protected override void Start() 
 	{
 		base.Start();	
-		prop = transform.FindChild("Prop").gameObject;
+		prop = transform.Find("Prop").gameObject;
 	}
 	protected override void Update()
 	{

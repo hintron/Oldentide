@@ -56,10 +56,10 @@ public class Kart : Actor
 		saveNameTag					= nameTag;
 		foreach (Transform t in transform) if (t.name.IndexOf("Wheel")==0) wheels.Add(new Wheel(t.gameObject));
 		foreach (Wheel m in wheels) m.InitCollider();
-		steeringWheel 				= transform.FindChild("SteeringWheel").gameObject;
-		seat 		  				= transform.FindChild("Seat").gameObject;
-		seatExit 	  				= transform.FindChild("SeatExit").gameObject;
-		exhaust 					= transform.FindChild("Exhaust").GetComponent<ParticleSystem>();
+		steeringWheel 				= transform.Find("SteeringWheel").gameObject;
+		seat 		  				= transform.Find("Seat").gameObject;
+		seatExit 	  				= transform.Find("SeatExit").gameObject;
+		exhaust 					= transform.Find("Exhaust").GetComponent<ParticleSystem>();
 		exhaust.gameObject.SetActive(false);
 		collider.enabled 		 	= false;
 		minSpeed 				 	= 0f;
