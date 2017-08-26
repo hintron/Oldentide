@@ -57,7 +57,12 @@ void AdminShell::Run() {
                     }
                 }
                 if (adminTokens[1] == "npcs") {
-                    std::cout << "NPCSSSSS" << std::endl;
+                    std::cout << "NPCS" << std::endl;
+                    std::set<Npc> npcs = gameState->getNPCs();
+                    for (std::set<Npc>::iterator it = npcs.begin(); it != npcs.end(); ++it) {
+                        Npc temp = *it;
+                        std::cout << temp.GetId() << std::endl;
+                    }
                 }
                 if (adminTokens[1] == "packetqueue" || adminTokens[1] == "pq") {
                     int size = server->GetPacketQueueSize();
@@ -101,6 +106,10 @@ void AdminShell::Run() {
             const char *msgPointer = adminCommand.c_str()+adminTokens[0].length()+1+adminTokens[1].length()+1;
             server->SendMessageToConnection(std::string(msgPointer), std::string("admin"), std::string(adminTokens[1]));
         }
+        else if (adminTokens[0] == "/create") {
+            // TODO Actually instantiate a game character server side
+            // server->BroadcastToConnections(std::string(adminCommand.c_str()+3), std::string("admin"));
+        }
         else {
             PrintUsage();
         }
@@ -109,9 +118,12 @@ void AdminShell::Run() {
 
 void AdminShell::PrintUsage() {
     std::cout << "Dedicated Server Admin Usage:" << std::endl;
-    std::cout << "/shutdown    = Shuts down the server." << std::endl;
-    std::cout << "/list <var>  = Lists all entities of given <var> on server, where <var> is [players, npcs, accounts, packets, packetqueue(pq)]." << std::endl;
-    std::cout << "/db <query>  = Runs a given sql query on the sqlite3 database." << std::endl;
+    std::cout << "/shutdown              = Shuts down the server." << std::endl;
+    std::cout << "/list <var>            = Lists all entities of given <var> on server, where <var> is [players, npcs, accounts, packets, packetqueue(pq)]." << std::endl;
+    std::cout << "/db <query>            = Runs a given sql query on the sqlite3 database." << std::endl;
+    std::cout << "/h <message>           = Broadcasts a message to all users." << std::endl;
+    std::cout << "/h <client> <message>  = Broadcasts a message to all users." << std::endl;
+    std::cout << "/create <gameObjectType> <id> = Manually creates a game object." << std::endl;
 }
 
 void AdminShell::PrintLogo() {
