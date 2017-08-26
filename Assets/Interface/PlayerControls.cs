@@ -103,7 +103,7 @@ public class PlayerControls : MonoBehaviour {
 			partyMenu.SetActive(partyMenuFlag);
 		}
 
-		if (Input.GetKeyDown("q")) {
+		if (Input.GetKeyDown("`")) {
 			if (settingsMenuFlag) {
 				Debug.Log("Settings menu closed.");
 				settingsMenuFlag = false;
@@ -127,7 +127,7 @@ public class PlayerControls : MonoBehaviour {
 			exitMenu.SetActive(exitMenuFlag);
 		}
 
-		if (Input.GetKeyDown(KeyCode.Alpha0)) {
+		if (Input.GetKeyDown("/")) {
 			if (messagesMenuFlag) {
 				Debug.Log("Messages menu closed.");
 				messagesMenuFlag = false;
@@ -138,5 +138,10 @@ public class PlayerControls : MonoBehaviour {
 			}
 			messagesMenu.SetActive(messagesMenuFlag);
 		}
+	}
+
+	public void QuitGameClick() {
+		Application.Quit();
+		Debug.Log("Player quit the game!");
 	}
 }
