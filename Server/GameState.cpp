@@ -122,3 +122,7 @@ std::string GameState::GetSessionAccountName(int sessionId) {
 std::set<Player> GameState::getPlayers() {
     return players;
 }
+
+std::set<Npc> GameState::getNPCs() {
+  return npcs;
+}

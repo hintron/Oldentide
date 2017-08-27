@@ -32,6 +32,7 @@ class GameState{
         void SetSessionAccountName(char * accountName, int sessionId);
         std::string GetSessionAccountName(int sessionId);
         std::set<Player> getPlayers();
+        std::set<Npc> getNPCs();
 
     private:
         SQLConnector * sql;
