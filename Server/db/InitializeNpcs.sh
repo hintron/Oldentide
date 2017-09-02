@@ -14,6 +14,7 @@ tail -n +2 "Npcs.csv" > "Npcs.init"
 
 # Import to sqlite3
 sqlite3 Oldentide.db <<EOF
+delete from npcs;
 .headers on
 .mode csv
 .import Npcs.init npcs
