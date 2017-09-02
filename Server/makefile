@@ -6,7 +6,8 @@ mkdir :
 	mkdir -p bin db
 
 database : mkdir
-	sqlite3 db/Oldentide.db < InitializeDb.sql
+	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
+    bash db/InitializeNpcs.sh
 
 server : mkdir msgpack
 	g++ -g Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp -std=c++11 -ldl -lpthread -lsqlite3 -o bin/Server
