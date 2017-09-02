@@ -212,6 +212,22 @@ std::vector<std::string> SQLConnector::GetPlayerList(std::string account) {
     return players;
 }
 
+std::set<Npc> SQLConnector::PopulateNpcList() {
+    std::set<Npc> npcs;
+    std::stringstream query;
+    char *errorMessage = NULL;
+    query << "SELECT * FROM npcs";
+    sqls = sqlite3_exec(database, query.str().c_str(), ExecuteCallback, (void*)&npcs, &errorMessage);
+    if (sqls != SQLITE_OK) {
+        std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
+    }
+    if (errorMessage) {
+        std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
+        sqlite3_free(errorMessage);
+    }
+    return npcs;
+}
+
 // Return the salt for the passed account
 bool SQLConnector::GetAccountSalt(char *accountName, char *saltStringHex) {
     // Sanitize the account name before preceeding
@@ -292,5 +308,10 @@ static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColNam
 static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
     std::vector<std::string> * playerList = (std::vector<std::string> *)players;
     playerList->push_back(std::string(argv[0]).append(" ").append(std::string(argv[1])));
+    return 0;
+}
+
+static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
+    std::set<Npc> * npcset = (std::set<Npc> *)npcs;
     return 0;
 }

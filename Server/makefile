@@ -19,7 +19,10 @@ unittest : mkdir
 	g++ -g UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp -std=c++11 -ldl -lpthread -lsqlite3 -o bin/UnitTest
 
 clean :
-	rm -f bin/Server bin/Client bin/UnitTest
+	sudo rm -rf msgpack-c/;
+	sudo rm -rf /usr/local/include/msgpack*;
+	sudo rm -f bin/Server bin/Client bin/UnitTest;
+	sudo rm -f /usr/local/lib/libmsgpackc.so.2.0.0;
 
 # TODO: It appears that msgpack-c is a header-only library. This means that once the header files are in place,
 # I could probably delete the msgpack-c/ folder to keep things tidy.
@@ -29,7 +32,7 @@ clean :
 msgpck_build :
 	@if [ -d "msgpack-c" ]; \
 	then \
-		echo "msgpack-c should already be built. If not, run \"make clean-m\" and then \"make msgpack\""; \
+		echo "msgpack-c should already be built. If not, run \"make clean\" and then \"make msgpack\""; \
 	else \
 		echo "Downloading msgpack-c..."; \
 		git clone https://github.com/msgpack/msgpack-c.git; \
@@ -49,10 +52,5 @@ msgpack msgpck : msgpck_build
 		cd msgpack-c; \
 		sudo make install; \
 	fi
-
-# Uninstalls msgpack - deletes repo and removes headers from /usr/local/include/
-clean-m :
-	sudo rm -rf msgpack-c/;
-	sudo rm -rf /usr/local/include/msgpack*;
 
 .PHONY: All, Clean

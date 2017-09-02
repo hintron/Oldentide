@@ -7,9 +7,11 @@
 #define OLDENTIDE_SQLCONNECTOR_H
 
 #include "Player.h"
+#include "Npc.h"
 #include <string>
 #include <sqlite3.h>
 #include <vector>
+#include <set>
 
 class SQLConnector{
     public:
@@ -20,6 +22,7 @@ class SQLConnector{
         bool InsertPlayer(Player newPlayer);
         void ListAccounts();
         std::vector<std::string> GetPlayerList(std::string account);
+        std::set<Npc> PopulateNpcList();
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
     private:
@@ -33,5 +36,6 @@ class SQLConnector{
 static int ExecuteCallback(void *, int, char **, char **);
 static int ReturnStringCallback(void *, int, char **, char **);
 static int ParsePlayerList(void *, int, char **, char **);
+static int ParseNpcs(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H
