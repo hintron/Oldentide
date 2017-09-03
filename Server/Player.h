@@ -87,9 +87,9 @@ class Player : public Character {
            int search, int stealth, int traps, int aeolandis, int hieroform, int highGundis, 
            int oldPraxic, int praxic, int runic, std::string name, std::string lastname, 
            std::string guild, std::string race, std::string gender, std::string face, 
-           std::string skin, std::string zone, int level, int hp, int maxHp, int bp, int maxBp, 
+           std::string skin, int level, int hp, int maxHp, int bp, int maxBp, 
            int mp, int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence, 
-           int dexterity, float x, float y, float z, float pitch, float yaw);
+           int dexterity, std::string zone, float x, float y, float z, float pitch, float yaw);
            
     ~Player();
 

@@ -87,7 +87,7 @@ bool SQLConnector::InsertPlayer(Player p) {
     query << "chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, righthand, ";
     query << "lefthand, zone, x, y, z, pitch, yaw) VALUES (";
     query << "'" << p.GetAccount() << "', ";
-    query << "'" << p.GetName() << "', ";
+    query << "'" << p.GetFirstName() << "', ";
     query << "'" << p.GetLastname() << "', ";
     query << "'" << p.GetRace() << "', ";
     query << "'" << p.GetGender() << "', ";
@@ -312,6 +312,6 @@ static int ParsePlayerList(void * players, int argc, char ** argv, char ** azCol
 
 static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
     std::set<Npc> * npcset = (std::set<Npc> *)npcs;
-    npcset->insert(Npc temp(argv));
+    //npcset->insert(Npc temp(argv));
     return 0;
 }

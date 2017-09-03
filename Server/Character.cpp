@@ -12,9 +12,12 @@
 
 Character::Character(std::string firstname, std::string lastname, std::string guild, 
                      std::string race, std::string gender, std::string face, std::string skin,
-                     std::string zone, int level, int hp, int maxHp, int bp, int maxBp, int mp,
-                     int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence,
-                     int dexterity, float x, float y, float z, float pitch, float yaw) {
+                     int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep,
+                     int maxEp, int strength, int constitution, int intelligence, int dexterity,
+                     std::string head, std::string chest, std::string arms, std::string hands, 
+                     std::string legs, std::string feet, std::string cloak, std::string ringone,
+                     std::string ringtwo, std::string righthand, std::string lefthand,
+                     std::string zone, float x, float y, float z, float pitch, float yaw) {
     SetFirstName(firstname);
     SetLastname(lastname);
     SetGuild(guild);
@@ -23,18 +26,18 @@ Character::Character(std::string firstname, std::string lastname, std::string gu
     SetFace(face);
     SetSkin(skin);
     SetZone(zone);
-    SetHead("head");
-    SetChest("chest");
-    SetArms("arms");
-    SetHands("hands");
-    SetLegs("legs");
-    SetFeet("feet");
-    SetCloak("cloak");
-    SetNecklace("necklace");
-    SetRingOne("ringOne");
-    SetRingTwo("ringTwo");
-    SetRightHand("rightHand");
-    SetLeftHand("leftHand");
+    SetHead(head);
+    SetChest(chest);
+    SetArms(arms);
+    SetHands(hands);
+    SetLegs(legs);
+    SetFeet(feet);
+    SetCloak(cloak);
+    SetNecklace(necklace);
+    SetRingOne(ringOne);
+    SetRingTwo(ringTwo);
+    SetRightHand(rightHand);
+    SetLeftHand(leftHand);
     SetLevel(level);
     SetHp(hp);
     SetMaxHp(maxHp);
