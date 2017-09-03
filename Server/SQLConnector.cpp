@@ -217,7 +217,7 @@ std::set<Npc> SQLConnector::PopulateNpcList() {
     std::stringstream query;
     char *errorMessage = NULL;
     query << "SELECT * FROM npcs";
-    sqls = sqlite3_exec(database, query.str().c_str(), ExecuteCallback, (void*)&npcs, &errorMessage);
+    sqls = sqlite3_exec(database, query.str().c_str(), ParseNpcs, (void*)&npcs, &errorMessage);
     if (sqls != SQLITE_OK) {
         std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
     }
@@ -298,8 +298,7 @@ static int ReturnStringCallback(void *stringToReturn, int argc, char **argv, cha
 static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
     for(i = 0; i < argc; i++) {
-        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
-        std::cout << " | ";
+        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
     }
     std::cout << std::endl;
     return 0;
@@ -313,5 +312,6 @@ static int ParsePlayerList(void * players, int argc, char ** argv, char ** azCol
 
 static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
     std::set<Npc> * npcset = (std::set<Npc> *)npcs;
+    npcset->insert(Npc temp(argv));
     return 0;
 }

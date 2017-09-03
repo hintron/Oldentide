@@ -21,6 +21,7 @@
 GameState::GameState(Server * server, SQLConnector * sql) {
     this->server = server;
     this->sql = sql;
+    npcs = sql->PopulateNpcList();
     curSession = 1;
 }
 

@@ -12,7 +12,7 @@ class Character {
 
     protected:
 
-    std::string name;
+    std::string firstname;
     std::string lastname;
     std::string guild;
     std::string race;
@@ -54,16 +54,19 @@ class Character {
     public:
 
     // Constructors
-    Character(std::string name, std::string lastname, std::string guild, std::string race, 
-              std::string gender, std::string face, std::string skin, std::string zone, 
-              int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep,
-              int maxEp, int strength, int constitution, int intelligence, int dexterity,
+    Character(std::string firstname, std::string lastname, std::string guild, std::string race, 
+              std::string gender, std::string face, std::string skin, int level, int hp, int maxHp,
+              int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, 
+              int constitution, int intelligence, int dexterity, std::string head, 
+              std::string chest, std::string arms, std::string hands, std::string legs,
+              std::string feet, std::string cloak, std::string necklace, std::string ringone,
+              std::string ringtwo, std::string righthand, std::string lefthand, std::string zone,
               float x, float y, float z, float pitch, float yaw);
               
     ~Character();
     
     // Getter Functions
-    std::string GetName();
+    std::string GetFirstName();
     std::string GetLastname();
     std::string GetGuild();
     std::string GetRace();
@@ -103,7 +106,7 @@ class Character {
     float GetYaw();
 
     // Setter Functions
-    void SetName(std::string name);
+    void SetFirstName(std::string firstname);
     void SetLastname(std::string lastname);
     void SetGuild(std::string guild);
     void SetRace(std::string race);

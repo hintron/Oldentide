@@ -10,12 +10,12 @@
 //-------------------                     Class Constructors                   -------------------//
 //------------------------------------------------------------------------------------------------//
 
-Character::Character(std::string name, std::string lastname, std::string guild, std::string race, 
-                     std::string gender, std::string face, std::string skin, std::string zone, 
-                     int level, int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, 
-                     int maxEp, int strength, int constitution, int intelligence, int dexterity, 
-                     float x, float y, float z, float pitch, float yaw) {
-    SetName(name);
+Character::Character(std::string firstname, std::string lastname, std::string guild, 
+                     std::string race, std::string gender, std::string face, std::string skin,
+                     std::string zone, int level, int hp, int maxHp, int bp, int maxBp, int mp,
+                     int maxMp, int ep, int maxEp, int strength, int constitution, int intelligence,
+                     int dexterity, float x, float y, float z, float pitch, float yaw) {
+    SetFirstName(firstname);
     SetLastname(lastname);
     SetGuild(guild);
     SetRace(race);
@@ -63,8 +63,8 @@ Character::~Character() {
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Character::GetName() {
-    return name;
+std::string Character::GetFirstName() {
+    return firstname;
 }
 
 std::string Character::GetLastname() {
@@ -219,8 +219,8 @@ float Character::GetYaw() {
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-void Character::SetName(std::string name) {
-    this->name = name;
+void Character::SetFirstName(std::string firstname) {
+    this->firstname = firstname;
 }
 
 void Character::SetLastname(std::string lastname) {
