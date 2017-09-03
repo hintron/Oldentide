@@ -14,10 +14,10 @@ using UnityEngine.UI;
 
 public class NetworkInterface : MonoBehaviour {
 
-    public ServerConfig serverConfig;
-
     public InputField messageInput;
     public Text messages;
+
+    ServerConfig serverConfig;
 
     IPEndPoint serverEndPoint;
     IPEndPoint clientEndPoint;
@@ -35,6 +35,10 @@ public class NetworkInterface : MonoBehaviour {
     // This is the number of bytes that the oldentide header is
     const int HEADER_SIZE = 3;
     const int PACKET_MAX_SIZE = 512;
+
+    private void Awake() {
+        serverConfig = gameObject.GetComponent<ServerConfig>();
+    }
 
     // Use this for initialization
     void Start() {
@@ -216,7 +220,7 @@ public class NetworkInterface : MonoBehaviour {
     }
 
 
-    void ConnectToServer(){
+    public void ConnectToServer(){
         Debug.Log("sending a single CONNECT packet via message pack!!");
 
         PacketConnect pp = new PacketConnect();

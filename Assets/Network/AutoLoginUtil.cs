@@ -8,9 +8,16 @@ using UnityEngine.EventSystems;
 public class AutoLoginUtil : MonoBehaviour
 {
     public bool active;
-    public ServerConfig serverConfig;
     public string username;
     public string password;
+
+    ServerConfig serverConfig;
+    NetworkInterface networkInterface;
+
+    private void Awake() {
+        serverConfig = gameObject.GetComponent<ServerConfig>();
+        networkInterface = gameObject.GetComponent<NetworkInterface>();
+    }
 
     void Start() {
         if (active) {
@@ -42,6 +49,7 @@ public class AutoLoginUtil : MonoBehaviour
                 Debug.Log(sessionId.Groups[1].Value);
                 OldentidePlayerInformation.accountName = username;
                 OldentidePlayerInformation.sessionId = sessionId.Groups[1].Value;
+                networkInterface.ConnectToServer();
             }
             else {
                 Debug.Log("User failed to login correctly to the server.");
