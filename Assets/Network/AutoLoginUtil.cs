@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 public class AutoLoginUtil : MonoBehaviour
 {
     public bool active;
-    public string serverIp;
+    public ServerConfig serverConfig;
     public string username;
     public string password;
 
@@ -21,7 +21,7 @@ public class AutoLoginUtil : MonoBehaviour
 
     private IEnumerator SubmitLoginInformation()
     {
-        string loginUrl = "http://" + serverIp + "/login";
+        string loginUrl = "http://" + serverConfig.serverIp + "/login";
 
         WWWForm form = new WWWForm();
         form.AddField("login_username", username);
