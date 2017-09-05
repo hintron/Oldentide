@@ -26,7 +26,6 @@ Character::Character(std::string firstname, std::string lastname, std::string gu
     SetGender(gender);
     SetFace(face);
     SetSkin(skin);
-    SetZone(zone);
     SetHead(head);
     SetChest(chest);
     SetArms(arms);
@@ -52,6 +51,7 @@ Character::Character(std::string firstname, std::string lastname, std::string gu
     SetConstitution(constitution);
     SetIntelligence(intelligence);
     SetDexterity(dexterity);
+    SetZone(zone);
     SetX(x);
     SetY(y);
     SetZ(z);
