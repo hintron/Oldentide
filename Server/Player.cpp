@@ -22,14 +22,18 @@ Player::Player(sockaddr_in client, std::string account, std::string profession, 
                int herbalism, int hunting, int mining, int bargaining, int camping, int firstAid, 
                int lore, int pickLocks, int scouting, int search, int stealth, int traps, 
                int aeolandis, int hieroform, int highGundis, int oldPraxic, int praxic, int runic, 
-               std::string name, std::string lastname, std::string guild, std::string race, 
-               std::string gender, std::string face, std::string skin, std::string zone, int level, 
+               std::string firstname, std::string lastname, std::string guild, std::string race, 
+               std::string gender, std::string face, std::string skin, int level, 
                int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, 
-               int strength, int constitution, int intelligence, int dexterity, float x, float y, 
-               float z, float pitch, float yaw)
-       :Character(name, lastname, guild, race, gender, face, skin, zone, level, hp, maxHp, bp, maxBp, mp, 
-                  maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, x, y, z, 
-                  pitch, yaw) {
+               int strength, int constitution, int intelligence, int dexterity, std::head, 
+               std::string chest, std::string arms, std::string hands, std::string legs, 
+               std::string feet, std::string cloak, std::string necklace, std::string ringone, 
+               std::string ringtwo, std::string righthand, std::string lefthand, std::string zone, 
+               float x, float y, float z, float pitch, float yaw)
+       :Character(firstname, lastname, guild, race, gender, face, skin, level, hp, maxHp, bp, 
+                  maxBp, mp, maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, 
+                  head, chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, 
+                  righthand, lefthand, zone, x, y, z, pitch, yaw) {
     SetClient(client);
     SetAccount(account);
     SetProfession(profession);
