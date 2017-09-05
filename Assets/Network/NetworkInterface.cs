@@ -14,11 +14,10 @@ using UnityEngine.UI;
 
 public class NetworkInterface : MonoBehaviour {
 
-    public string serverIp = "goblin.oldentide.com";
-    public int serverPort = 1337;
-
     public InputField messageInput;
     public Text messages;
+
+    ServerConfig serverConfig;
 
     IPEndPoint serverEndPoint;
     IPEndPoint clientEndPoint;
@@ -37,12 +36,16 @@ public class NetworkInterface : MonoBehaviour {
     const int HEADER_SIZE = 3;
     const int PACKET_MAX_SIZE = 512;
 
+    private void Awake() {
+        serverConfig = gameObject.GetComponent<ServerConfig>();
+    }
+
     // Use this for initialization
     void Start() {
         // Set up Server End Point for sending packets.
-        IPHostEntry serverHostEntry = Dns.GetHostEntry(serverIp);
+        IPHostEntry serverHostEntry = Dns.GetHostEntry(serverConfig.serverIp);
         IPAddress serverIpAddress = serverHostEntry.AddressList[0];
-        serverEndPoint = new IPEndPoint(serverIpAddress, serverPort);
+        serverEndPoint = new IPEndPoint(serverIpAddress, serverConfig.serverPort);
         Debug.Log("Server IPEndPoint: " + serverEndPoint.ToString());
         // Set up Client End Point for receiving packets.
         IPHostEntry clientHostEntry = Dns.GetHostEntry(Dns.GetHostName());
@@ -52,7 +55,7 @@ public class NetworkInterface : MonoBehaviour {
                 clientIpAddress = ip;
             }
         }
-        clientEndPoint = new IPEndPoint(clientIpAddress, serverPort);
+        clientEndPoint = new IPEndPoint(clientIpAddress, serverConfig.serverPort);
         Debug.Log("Client IPEndPoint: " + clientEndPoint.ToString());
         // Create socket for client and bind to Client End Point (Ip/Port).
         clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -217,7 +220,7 @@ public class NetworkInterface : MonoBehaviour {
     }
 
 
-    void ConnectToServer(){
+    public void ConnectToServer(){
         Debug.Log("sending a single CONNECT packet via message pack!!");
 
         PacketConnect pp = new PacketConnect();
