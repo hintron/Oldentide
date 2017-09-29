@@ -74,9 +74,12 @@ void GameState::PlayerCommand(std::string pCommand, int sessionId) {
     }
     else if (pCommandTokens[0] == "/h") {
         // std::cout << "Detected a help channel command!" << std::endl;
-        // TODO: Prevent users from doing buffer overflow attacks
-        // Tell the server to send out a broadcast
-        server->BroadcastToConnections(pCommand.substr(3,std::string::npos), std::to_string(sessionId));
+        // Only broadcast if something exists to broadcast
+        if(pCommandTokens.size() > 1){
+            // TODO: Prevent users from doing buffer overflow attacks
+            // Tell the server to send out a broadcast
+            server->BroadcastToConnections(pCommand.substr(3,std::string::npos), std::to_string(sessionId));
+        }
     }
     else if (pCommandTokens[0] == "/w") {
         std::cout << "Detected a whisper command!" << std::endl;
