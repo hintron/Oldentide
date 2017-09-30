@@ -1,0 +1,9 @@
+# Ignore executables
+bin
+
+# Ignore local libraries and headers
+include
+lib
+
+# Ignore Message Pack headers
+msgpack
