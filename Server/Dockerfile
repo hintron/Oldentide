@@ -6,6 +6,10 @@
 # cd into this directory and run:
 #   docker build -t oldentide_server .
 #   docker run -it oldentide_server
+#   ./bin/Server 1337
+# If it isn't going through (on Windows), then you might need to explicitly
+# specify the ports in order to force the OS to allow it through the firewall:
+#   docker run -it -p 1337:1337/udp oldentide_server
 
 
 # Base image
@@ -23,18 +27,14 @@ RUN apk --no-cache add \
     bash \
     make\
     g++ \
-    cmake \
     git \
     sqlite \
-    sqlite-dev \
-    sudo \
-    vim
+    sqlite-dev
 
 RUN ["make"]
 
 # Make ports available to the world outside this container
 # UDP ports need to be explicitly specified
-# EXPOSE 1337
 EXPOSE 1337/udp
 
 # Spawn a command line interface
