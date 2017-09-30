@@ -17,6 +17,8 @@
 #include "Utils.h"
 
 
+// TODO: Should we init the db to a blank slate?
+// TODO: Make a function to programmatically init the db, so we can use here
 TEST_CASE( "Insert Player", "[insert]" ) {
     SQLConnector* sql = new SQLConnector();
     sockaddr_in dummyClient;
@@ -36,36 +38,74 @@ TEST_CASE( "Insert Player", "[insert]" ) {
 
 TEST_CASE( "Insert Account", "[insert]" ) {
     SQLConnector* sql = new SQLConnector();
-    REQUIRE( sql->InsertAccount("my_account", "my_key", "my_salt") == true );
+    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
     delete sql;
 }
 
 
+TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
+    Server * server = new Server(7331);
+    delete server;
+}
 
-// int main() {
-//     SQLConnector* sql = new SQLConnector();
-//     std::cout << "Welcome to the Oldentide Unit Tester." << std::endl;
-//     std::cout << "Tests are added as needed! You will not see every function here." << std::endl;
-//     std::cout << "Please select a function to check from the list below:" <<std::endl;
-//     std::cout << "1. SQLConnector::InsertPlayer" << std::endl;
-//     bool running = true;
-//     while(running) {
-//         std::string test;
-//         getline(std::cin, test);
-//         switch(atoi(test.c_str())) {
-//             case 1:
-//                 sockaddr_in dummyClient;
-//                 Player p(dummyClient, "example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-//                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-//                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Newcomers_Guild",
-//                          "Human", "Male", "Scarred", "Pale", 0, 0, 0, 0, 0, 0,
-//                          0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand", "zone", 0.0, 0.0, 0.0, 0.0, 0.0);
-//                 if (sql->InsertPlayer(p)) {
-//                     std::cout << "Great Success!" << std::endl;
-//                 }
-//                 else {
-//                     std::cout << "Huge Mistake..." << std::endl;
-//                 }
-//         }
-//     }
+
+// TODO: What to break out into test cases, and what to break out into sections?
+
+
+TEST_CASE( "SanitizeAccountName", "[sql]" ) {
+    REQUIRE( utils::SanitizeAccountName("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") == false );
+    REQUIRE( utils::SanitizeAccountName("!@#$%!@%@!^#$%@#$") == false );
+    REQUIRE( utils::SanitizeAccountName("; drop all tables") == false );
+    REQUIRE( utils::SanitizeAccountName("A") == false );
+    REQUIRE( utils::SanitizeAccountName("") == false );
+    REQUIRE( utils::SanitizeAccountName("        ") == false );
+    REQUIRE( utils::SanitizeAccountName("my_ACCOUNT_1234   ") == false );
+
+    REQUIRE( utils::SanitizeAccountName("my_ACCOUNT_1234") == true );
+
+
+}
+
+TEST_CASE( "CheckAccountNameLength", "[sql]" ) {
+    REQUIRE( utils::CheckAccountNameLength("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") == false );
+    REQUIRE( utils::CheckAccountNameLength("A") == false );
+    REQUIRE( utils::CheckAccountNameLength("") == false );
+
+    REQUIRE( utils::CheckAccountNameLength("my_ACCOUNT_1234") == true );
+}
+
+
+TEST_CASE( "SanitizeAlphanumeric", "[sql]" ) {
+    REQUIRE( utils::SanitizeAlphanumeric("*&!@^*&#@@#$") == false );
+    REQUIRE( utils::SanitizeAlphanumeric(";;;;;") == false );
+    REQUIRE( utils::SanitizeAlphanumeric("||||") == false );
+    REQUIRE( utils::SanitizeAlphanumeric("----") == false );
+    REQUIRE( utils::SanitizeAlphanumeric("        ") == false );
+    REQUIRE( utils::SanitizeAlphanumeric("my_ACCOUNT_1234   ") == false );
+    REQUIRE( utils::SanitizeAlphanumeric("####") == false );
+
+    REQUIRE( utils::SanitizeAlphanumeric("____") == true );
+    REQUIRE( utils::SanitizeAlphanumeric("my_ACCOUNT_1234") == true );
+}
+
+
+
+// TODO: Create tests for all the Util functions, if possible
+// TODO: Create Util functions for setting up the IP stuff, so it's easier to call here
+// TODO: Create tests
+
+// TODO: Try out some BDD tests - Catch supports them!
+
+
+
+// TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
+//     Server * server = new Server(7331);
+//     delete server;
 // }
+
+
+
+
+// References:
+// How to use Catch:
+// https://github.com/philsquared/Catch/blob/master/docs/tutorial.md

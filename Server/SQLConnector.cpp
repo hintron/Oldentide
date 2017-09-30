@@ -44,13 +44,18 @@ int SQLConnector::Execute(std::string cmd) {
 // -------------------------------------- Parent Functions ----------------------------------------
 
 // Insert a new account record.
-bool SQLConnector::InsertAccount(char *accountName, char *key, char *salt) {
+bool SQLConnector::InsertAccount(std::string accountName, std::string email, std::string key, std::string salt) {
     std::stringstream query;
     // Sanitize key, salt, and account name
     if (!utils::SanitizeAccountName(accountName)) {
         std::cout << "Account Name is invalid! Cannot insert account record" << std::endl;
         return false;
     }
+    // TODO: Sanitize email!
+    // if (!utils::SanitizeEmail(email)) {
+    //     std::cout << "Email is invalid! Cannot insert account record" << std::endl;
+    //     return false;
+    // }
     if (!utils::SanitizeHexString(key)) {
         std::cout << "Key is invalid! Cannot insert account record" << std::endl;
         return false;
@@ -59,10 +64,14 @@ bool SQLConnector::InsertAccount(char *accountName, char *key, char *salt) {
         std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return false;
     }
-    query << "insert into accounts (accountname, key, salt) values (";
+    query << "insert into accounts (accountname, valid, email, playing, key, salt) values (";
     query << "\"" << accountName << "\",";
+    query << "\"" << true << "\",";
+    query << "\"" << email << "\",";
+    query << "\"" << true << "\",";
     query << "\"" << key << "\",";
     query << "\"" << salt << "\")";
+
     Execute(query.str());
     if (sqls == SQLITE_OK) {
         return true;
@@ -130,7 +139,7 @@ bool SQLConnector::InsertPlayer(Player p) {
     query << p.GetSorcery() << ", ";
     query << p.GetShamanic() << ", ";
     query << p.GetSummoning() << ", ";
-    query << p.GetSpellcraft() << ", "; 
+    query << p.GetSpellcraft() << ", ";
     query << p.GetFocus() << ", ";
     query << p.GetArmorsmithing() << ", ";
     query << p.GetTailoring() << ", ";
@@ -140,40 +149,40 @@ bool SQLConnector::InsertPlayer(Player p) {
     query << p.GetLapidary() << ", ";
     query << p.GetCalligraphy() << ", ";
     query << p.GetEnchanting() << ", ";
-    query << p.GetHerbalism() << ", "; 
+    query << p.GetHerbalism() << ", ";
     query << p.GetHunting() << ", ";
-    query << p.GetMining() << ", "; 
+    query << p.GetMining() << ", ";
     query << p.GetBargaining() << ", ";
-    query << p.GetCamping() << ", "; 
-    query << p.GetFirstAid() << ", "; 
+    query << p.GetCamping() << ", ";
+    query << p.GetFirstAid() << ", ";
     query << p.GetLore() << ", ";
-    query << p.GetPickLocks() << ", "; 
-    query << p.GetScouting() << ", "; 
+    query << p.GetPickLocks() << ", ";
+    query << p.GetScouting() << ", ";
     query << p.GetSearch() << ", ";
-    query << p.GetStealth() << ", "; 
-    query << p.GetTraps() << ", "; 
+    query << p.GetStealth() << ", ";
+    query << p.GetTraps() << ", ";
     query << p.GetAeolandis() << ", ";
-    query << p.GetHieroform() << ", "; 
+    query << p.GetHieroform() << ", ";
     query << p.GetHighGundis() << ", ";
-    query << p.GetOldPraxic() << ", "; 
-    query << p.GetPraxic() << ", "; 
+    query << p.GetOldPraxic() << ", ";
+    query << p.GetPraxic() << ", ";
     query << p.GetRunic() << ", ";
-    query << "'" << p.GetHead() << "', "; 
-    query << "'" << p.GetChest() << "', "; 
+    query << "'" << p.GetHead() << "', ";
+    query << "'" << p.GetChest() << "', ";
     query << "'" << p.GetArms() << "', ";
-    query << "'" << p.GetHands() << "', "; 
-    query << "'" << p.GetLegs() << "', "; 
+    query << "'" << p.GetHands() << "', ";
+    query << "'" << p.GetLegs() << "', ";
     query << "'" << p.GetFeet() << "', ";
-    query << "'" << p.GetCloak() << "', "; 
-    query << "'" << p.GetNecklace() << "', "; 
+    query << "'" << p.GetCloak() << "', ";
+    query << "'" << p.GetNecklace() << "', ";
     query << "'" << p.GetRingOne() << "', ";
     query << "'" << p.GetRingTwo() << "', ";
     query << "'" << p.GetRightHand() << "', ";
     query << "'" << p.GetLeftHand() << "', ";
-    query << "'" << p.GetZone() << "', "; 
+    query << "'" << p.GetZone() << "', ";
     query << p.GetX() << ", ";
-    query << p.GetY() << ", "; 
-    query << p.GetZ() << ", "; 
+    query << p.GetY() << ", ";
+    query << p.GetZ() << ", ";
     query << p.GetPitch() << ", ";
     query << p.GetYaw() << ")";
     std::cout << query.str() << std::endl;

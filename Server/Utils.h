@@ -13,11 +13,11 @@
 
 namespace utils{
     std::vector<std::string> Tokenfy(std::string s, char delim);
-    bool CheckPasswordLength(char *);
-    bool CheckAccountNameLength(char *);
-    bool SanitizeAccountName(char *);
-    bool SanitizeAlphanumeric(char *);
-    bool SanitizeHexString(char *);
+    bool CheckPasswordLength(std::string);
+    bool CheckAccountNameLength(std::string);
+    bool SanitizeAccountName(std::string);
+    bool SanitizeAlphanumeric(std::string);
+    bool SanitizeHexString(std::string);
     void PrintStringHex(std::string *);
     void PrependPacketHeader(std::string *, uint8_t);
     uint8_t GetPacketTypeFromPacket(char *);
