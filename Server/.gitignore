@@ -5,5 +5,6 @@ bin
 include
 lib
 
-# Ignore Message Pack headers
+# Ignore 3rd-party headers
 msgpack
+catch

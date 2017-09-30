@@ -10,11 +10,12 @@ LOCAL_HEADER = -I include_local
 
 # Keep message pack files local, to simplify life (no sudo or messing with os files)
 MSGPACK_HEADER = -I msgpack
+CATCH_HEADER = -I catch
 
 
-SERVER_FILES = 	Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
-CLIENT_FILES = 	TestClient.cpp Utils.cpp
-UNITTEST_FILES = UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
+SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
+CLIENT_FILES = 		TestClient.cpp Utils.cpp
+UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 
 
 all : $(BIN)
@@ -24,7 +25,7 @@ mkdir :
 
 database : mkdir
 	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
-    bash db/InitializeNpcs.sh
+	bash db/InitializeNpcs.sh
 
 server : mkdir msgpack
 	g++ -g $(SERVER_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(MSGPACK_HEADER) -ldl -lpthread -lsqlite3 -o bin/Server
@@ -32,14 +33,15 @@ server : mkdir msgpack
 client : mkdir msgpack
 	g++ -g $(CLIENT_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(MSGPACK_HEADER) -lpthread -o bin/Client
 
-unittest : mkdir msgpack
-	g++ -g $(UNITTEST_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(MSGPACK_HEADER) -ldl -lpthread -lsqlite3 -o bin/UnitTest
+unittest : mkdir msgpack catch
+	g++ -g $(UNITTEST_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(CATCH_HEADER) $(MSGPACK_HEADER) -ldl -lpthread -lsqlite3 -o bin/UnitTest
 
 clean :
 	rm -f bin/Server bin/Client bin/UnitTest;
 
 cleanall : clean
 	rm -rf msgpack;
+	rm -rf catch;
 
 
 # Download msgpack-c and set it to v2.1.1 if needed
@@ -58,7 +60,24 @@ msgpack :
 	fi
 
 
-.PHONY: all, clean, cleanall, mkdir, database, server, client, unittest, msgpack
+# Download the Catch testing framework
+catch :
+	@if [ ! -d "catch" ]; \
+	then \
+		echo "Downloading Catch test framework..."; \
+		git clone https://github.com/philsquared/Catch.git catch_temp; \
+		cd catch_temp; \
+		echo "Setting catch to v1.10.0"; \
+		git checkout -b v1.10.0; \
+		cd ..; \
+		mv catch_temp/single_include catch; \
+		rm -rf catch_temp; \
+	fi
+
+
+
+
+.PHONY: all, clean, cleanall, mkdir, database, server, client, unittest, msgpack, catch
 
 
 
