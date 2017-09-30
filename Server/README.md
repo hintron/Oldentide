@@ -37,7 +37,6 @@ Dependencies
   library is the package name on debian based systems.
 * msgpck-c v2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
 * git - Needed to download and install msgpack
-* cmake - Needed to install msgpack
 
 
 Server and Test Client Usage
@@ -45,9 +44,6 @@ Server and Test Client Usage
 In linux, cd into Oldentide/Server/ and run
 
     make
-
-The first time you build, after a few minutes it will ask you for sudo permission in order
-to install msgpck-c headers in /usr/local/indlude.
 
 If everything built properly, run
 
