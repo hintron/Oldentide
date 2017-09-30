@@ -12,28 +12,30 @@
 //-------------------                     Class Constructors                   -------------------//
 //------------------------------------------------------------------------------------------------//
 
-Player::Player(sockaddr_in client, std::string account, std::string profession, int id, 
-               int session, float weight, int axe, int dagger, int unarmed, int hammer, int polearm, 
-               int spear, int staff, int sword, int archery, int crossbow, int sling, int thrown, 
-               int armor, int dualWeapon, int shield, int bardic, int conjuring, int druidic, 
-               int illusion, int necromancy, int sorcery, int shamanic, int spellcraft, 
-               int summoning, int focus, int armorsmithing, int tailoring, int fletching, 
-               int weaponsmithing, int alchemy, int lapidary, int calligraphy, int enchanting, 
-               int herbalism, int hunting, int mining, int bargaining, int camping, int firstAid, 
-               int lore, int pickLocks, int scouting, int search, int stealth, int traps, 
-               int aeolandis, int hieroform, int highGundis, int oldPraxic, int praxic, int runic, 
-               std::string firstname, std::string lastname, std::string guild, std::string race, 
-               std::string gender, std::string face, std::string skin, int level, 
-               int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, 
-               int strength, int constitution, int intelligence, int dexterity, std::head, 
-               std::string chest, std::string arms, std::string hands, std::string legs, 
-               std::string feet, std::string cloak, std::string necklace, std::string ringone, 
-               std::string ringtwo, std::string righthand, std::string lefthand, std::string zone, 
+Player::Player(sockaddr_in client, std::string account, std::string profession, int id,
+               int session, float weight, int axe, int dagger, int unarmed, int hammer, int polearm,
+               int spear, int staff, int sword, int archery, int crossbow, int sling, int thrown,
+               int armor, int dualWeapon, int shield, int bardic, int conjuring, int druidic,
+               int illusion, int necromancy, int sorcery, int shamanic, int spellcraft,
+               int summoning, int focus, int armorsmithing, int tailoring, int fletching,
+               int weaponsmithing, int alchemy, int lapidary, int calligraphy, int enchanting,
+               int herbalism, int hunting, int mining, int bargaining, int camping, int firstAid,
+               int lore, int pickLocks, int scouting, int search, int stealth, int traps,
+               int aeolandis, int hieroform, int highGundis, int oldPraxic, int praxic, int runic,
+               std::string firstname, std::string lastname, std::string guild, std::string race,
+               std::string gender, std::string face, std::string skin, int level,
+               int hp, int maxHp, int bp, int maxBp, int mp, int maxMp, int ep, int maxEp,
+               int strength, int constitution, int intelligence, int dexterity, std::string head,
+               std::string chest, std::string arms, std::string hands, std::string legs,
+               std::string feet, std::string cloak, std::string necklace, std::string ringone,
+               std::string ringtwo, std::string righthand, std::string lefthand, std::string zone,
                float x, float y, float z, float pitch, float yaw)
-       :Character(firstname, lastname, guild, race, gender, face, skin, level, hp, maxHp, bp, 
-                  maxBp, mp, maxMp, ep, maxEp, strength, constitution, intelligence, dexterity, 
-                  head, chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, 
+       :Character(firstname, lastname, guild, race, gender, face, skin, level, hp, maxHp, bp,
+                  maxBp, mp, maxMp, ep, maxEp, strength, constitution, intelligence, dexterity,
+                  head, chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo,
                   righthand, lefthand, zone, x, y, z, pitch, yaw) {
+    SetFirstname(firstname);
+    SetLastname(lastname);
     SetClient(client);
     SetAccount(account);
     SetProfession(profession);
@@ -100,6 +102,14 @@ Player::~Player() {
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
+
+std::string Player::GetFirstname() {
+    return firstname;
+}
+
+std::string Player::GetLastname() {
+    return lastname;
+}
 
 sockaddr_in Player::GetClient() {
     return client;
@@ -332,6 +342,14 @@ int Player::GetRunic() {
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
+
+void Player::SetFirstname(std::string firstname) {
+    this->firstname = firstname;
+}
+
+void Player::SetLastname(std::string lastname) {
+    this->lastname = lastname;
+}
 
 void Player::SetClient(sockaddr_in client) {
     this->client = client;

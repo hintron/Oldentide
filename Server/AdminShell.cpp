@@ -53,7 +53,7 @@ void AdminShell::Run() {
                     std::set<Player> players = gameState->getPlayers();
                     for (std::set<Player>::iterator it = players.begin(); it != players.end(); ++it) {
                         Player temp = *it;
-                        std::cout << temp.GetName() << " " << temp.GetLastname() << std::endl;
+                        std::cout << temp.GetFirstname() << " " << temp.GetLastname() << std::endl;
                     }
                 }
                 if (adminTokens[1] == "npcs") {

@@ -27,11 +27,11 @@ int main() {
         switch(atoi(test.c_str())) {
             case 1:
                 sockaddr_in dummyClient;
-                Player p(dummyClient, "example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Dorks", 
-                         "Human", "Male", "Scarred", "Pale", "Newcomers_Guild", 0, 0, 0, 0, 0, 0, 
-                         0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                Player p(dummyClient, "example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Newcomers_Guild",
+                         "Human", "Male", "Scarred", "Pale", 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand", "zone", 0.0, 0.0, 0.0, 0.0, 0.0);
                 if (sql->InsertPlayer(p)) {
                     std::cout << "Great Success!" << std::endl;
                 }
