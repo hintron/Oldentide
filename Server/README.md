@@ -19,8 +19,8 @@ The *Oldentide Dedicated Server* currently supports a Linux development and runt
 Operating Systems
 ------------
 All development and testing is currently done on a 64-Bit linux environment.
-[Ubuntu 16.04.1 LTS][3] are recommended.
-Other distributions with similar package versions will work, too.
+[Ubuntu 16.04.1 LTS][3] is recommended, but other distributions have been known to work,
+too, including Debian, Fedora, Alpine, and Windows Bash.
 
 Compilers
 ------------
@@ -35,9 +35,8 @@ Dependencies
 * sqlite3 - To store data, the simple, lightweight [sqlite3][5] database is used.
 * libsqlite3-dev - To develop with [sqlite3][5], we need the c++ libraries.  This
   library is the package name on debian based systems.
-* msgpck-c v2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
 * git - Needed to download and install msgpack
-* cmake - Needed to install msgpack
+* msgpck-c v2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
 
 
 Server and Test Client Usage
@@ -45,9 +44,6 @@ Server and Test Client Usage
 In linux, cd into Oldentide/Server/ and run
 
     make
-
-The first time you build, after a few minutes it will ask you for sudo permission in order
-to install msgpck-c headers in /usr/local/indlude.
 
 If everything built properly, run
 
@@ -60,6 +56,25 @@ To test that the server is running, in a separate terminal, run
     bin/Client <IP> <Port>
 
 Where <IP> is the address of the server and <Port> is the port of the server.
+
+
+Docker
+------------
+To use Docker to run the server, first make sure the docker daemon is running (dockerd).
+Then build the image like so:
+
+    docker build -t oldentide_server .
+
+Then create a container instance of the image like so:
+
+    docker run -it -p 1337:1337/udp oldentide_server
+
+Inside the container, run:
+
+    ./bin/Server 1337
+
+
+
 
 [1]: http://www.cppreference.com/ "C / C++ reference"
 [2]: http://www.oldentide.com/ "Oldentide, a game where you can be anyone!"

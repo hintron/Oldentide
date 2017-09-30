@@ -1,0 +1,10 @@
+# Ignore copying over the msgpack-c folder, because of cmake caches.
+# It's better to clone and build msgpack from scratch,
+# even if it is already built on the host
+msgpack/
+# Ignore some folders
+bin/
+dockerfiles/
+doc/
+# Ignore any .db files
+*.db
