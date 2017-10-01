@@ -52,7 +52,43 @@ TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
 // TODO: What to break out into test cases, and what to break out into sections?
 
 
-TEST_CASE( "SanitizeAccountName", "[sql]" ) {
+
+
+
+TEST_CASE( "Tokenfy", "[utils]" ) {
+    std::vector<std::string> temp = utils::Tokenfy(std::string("This is a string"),' ');
+    REQUIRE( temp.size() == 4 );
+    REQUIRE( temp[0].compare("This") == 0 );
+    REQUIRE( temp[3].compare("string") == 0 );
+
+    temp = utils::Tokenfy(std::string(" abc.def.ghi "),'.');
+    REQUIRE( temp.size() == 3 );
+    REQUIRE( temp[0].compare(" abc") == 0 );
+    REQUIRE( temp[2].compare("ghi ") == 0 );
+
+    temp = utils::Tokenfy(std::string("....."),'.');
+    REQUIRE( temp.size() == 6 );
+    REQUIRE( temp[0].compare("") == 0 );
+    REQUIRE( temp[5].compare("") == 0 );
+
+    temp = utils::Tokenfy(std::string(""),'.');
+    REQUIRE( temp.size() == 1 );
+    REQUIRE( temp[0].compare("") == 0 );
+
+    temp = utils::Tokenfy(std::string("askdjf kjhaskld fklj askljfh ljh"),'.');
+    REQUIRE( temp.size() == 1 );
+}
+
+
+
+
+
+
+
+
+
+
+TEST_CASE( "SanitizeAccountName", "[utils]" ) {
     REQUIRE( utils::SanitizeAccountName("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") == false );
     REQUIRE( utils::SanitizeAccountName("!@#$%!@%@!^#$%@#$") == false );
     REQUIRE( utils::SanitizeAccountName("; drop all tables") == false );
@@ -66,7 +102,7 @@ TEST_CASE( "SanitizeAccountName", "[sql]" ) {
 
 }
 
-TEST_CASE( "CheckAccountNameLength", "[sql]" ) {
+TEST_CASE( "CheckAccountNameLength", "[utils]" ) {
     REQUIRE( utils::CheckAccountNameLength("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") == false );
     REQUIRE( utils::CheckAccountNameLength("A") == false );
     REQUIRE( utils::CheckAccountNameLength("") == false );
@@ -75,7 +111,7 @@ TEST_CASE( "CheckAccountNameLength", "[sql]" ) {
 }
 
 
-TEST_CASE( "SanitizeAlphanumeric", "[sql]" ) {
+TEST_CASE( "SanitizeAlphanumeric", "[utils]" ) {
     REQUIRE( utils::SanitizeAlphanumeric("*&!@^*&#@@#$") == false );
     REQUIRE( utils::SanitizeAlphanumeric(";;;;;") == false );
     REQUIRE( utils::SanitizeAlphanumeric("||||") == false );
