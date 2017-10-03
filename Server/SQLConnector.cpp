@@ -11,6 +11,12 @@
 #include <string.h>
 #include <sstream>
 
+
+// TODO: Make a wrapper around the sqlite API
+// TODO: Use generics?
+
+
+
 SQLConnector::SQLConnector() {
 
     try {
