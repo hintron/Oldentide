@@ -22,11 +22,29 @@
 TEST_CASE( "Insert Player", "[insert]" ) {
     SQLConnector* sql = new SQLConnector();
     sockaddr_in dummyClient;
-    Player p(dummyClient, "example", "Shaman", 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Poop", "Stain", "Newcomers_Guild",
-             "Human", "Male", "Scarred", "Pale", 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand", "zone", 0.0, 0.0, 0.0, 0.0, 0.0);
+    stats_t dummyStats;
+    equipment_t dummyEquipment;
+    location_t dummyLocation;
+
+    Player p(
+        dummyClient,
+        "example",
+        17,
+        1,
+        "Poop",
+        "Stain",
+        "Newcomers_Guild",
+        "Human",
+        "Male",
+        "Scarred",
+        "Pale",
+        "zone1",
+        "Shaman",
+        dummyEquipment,
+        dummyStats,
+        dummyLocation
+    );
+     // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",
 
     REQUIRE( sql->InsertPlayer(p) == true );
     delete sql;

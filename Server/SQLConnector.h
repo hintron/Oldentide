@@ -6,6 +6,7 @@
 #ifndef OLDENTIDE_SQLCONNECTOR_H
 #define OLDENTIDE_SQLCONNECTOR_H
 
+#include "Character.h"
 #include "Player.h"
 #include "Npc.h"
 #include <string>

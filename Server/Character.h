@@ -8,18 +8,7 @@
 
 #include <string>
 
-class Character {
-
-    protected:
-
-    std::string firstname;
-    std::string lastname;
-    std::string guild;
-    std::string race;
-    std::string gender;
-    std::string face;
-    std::string skin;
-    std::string zone;
+typedef struct {
     std::string head;
     std::string chest;
     std::string arms;
@@ -32,6 +21,10 @@ class Character {
     std::string ringTwo;
     std::string rightHand;
     std::string leftHand;
+} equipment_t;
+
+
+typedef struct {
     int level;
     int hp;
     int maxHp;
@@ -45,26 +38,58 @@ class Character {
     int constitution;
     int intelligence;
     int dexterity;
+} stats_t;
+
+typedef struct {
     float x;
     float y;
     float z;
     float pitch;
     float yaw;
+} location_t;
+
+
+
+class Character {
+
+
+
+
+    private:
+
+    std::string firstname;
+    std::string lastname;
+    std::string guild;
+    std::string race;
+    std::string gender;
+    std::string face;
+    std::string skin;
+    std::string zone;
+    std::string profession;
+    equipment_t equipment;
+    stats_t stats;
+    location_t location;
 
     public:
 
     // Constructors
-    Character(std::string firstname, std::string lastname, std::string guild, std::string race, 
-              std::string gender, std::string face, std::string skin, int level, int hp, int maxHp,
-              int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, 
-              int constitution, int intelligence, int dexterity, std::string head, 
-              std::string chest, std::string arms, std::string hands, std::string legs,
-              std::string feet, std::string cloak, std::string necklace, std::string ringone,
-              std::string ringtwo, std::string righthand, std::string lefthand, std::string zone,
-              float x, float y, float z, float pitch, float yaw);
-              
+    Character(
+        std::string firstname,
+        std::string lastname,
+        std::string guild,
+        std::string race,
+        std::string gender,
+        std::string face,
+        std::string skin,
+        std::string zone,
+        std::string profession,
+        equipment_t equipment,
+        stats_t stats,
+        location_t location
+    );
+
     ~Character();
-    
+
     // Getter Functions
     std::string GetFirstName();
     std::string GetLastname();
@@ -74,80 +99,26 @@ class Character {
     std::string GetFace();
     std::string GetSkin();
     std::string GetZone();
-    std::string GetHead();
-    std::string GetChest();
-    std::string GetArms();
-    std::string GetHands();
-    std::string GetLegs();
-    std::string GetFeet();
-    std::string GetCloak();
-    std::string GetNecklace();
-    std::string GetRingOne();
-    std::string GetRingTwo();
-    std::string GetRightHand();
-    std::string GetLeftHand();
-    int GetLevel();
-    int GetHp();
-    int GetMaxHp();
-    int GetBp();
-    int GetMaxBp();
-    int GetMp();
-    int GetMaxMp();
-    int GetEp();
-    int GetMaxEp();
-    int GetStrength();
-    int GetConstitution();
-    int GetIntelligence();
-    int GetDexterity();
-    float GetX();
-    float GetY();
-    float GetZ();
-    float GetPitch();
-    float GetYaw();
+    std::string GetProfession();
+    equipment_t GetEquipment();
+    stats_t GetStats();
+    location_t GetLocation();
 
     // Setter Functions
-    void SetFirstName(std::string firstname);
-    void SetLastname(std::string lastname);
-    void SetGuild(std::string guild);
-    void SetRace(std::string race);
-    void SetGender(std::string gender);
-    void SetFace(std::string face);
-    void SetSkin(std::string skin);
-    void SetZone(std::string zone);
-    void SetHead(std::string head);
-    void SetChest(std::string chest);
-    void SetArms(std::string arms);
-    void SetHands(std::string hands);
-    void SetLegs(std::string legs);
-    void SetFeet(std::string feet);
-    void SetCloak(std::string cloak);
-    void SetNecklace(std::string necklace);
-    void SetRingOne(std::string ringOne);
-    void SetRingTwo(std::string ringTwo);
-    void SetRightHand(std::string rightHand);
-    void SetLeftHand(std::string leftHand);
-    void SetLevel(int level);
-    void SetHp(int hp);
-    void SetMaxHp(int hp);
-    void SetBp(int bp);
-    void SetMaxBp(int bp);
-    void SetMp(int mp);
-    void SetMaxMp(int mp);
-    void SetEp(int ep);
-    void SetMaxEp(int ep);
-    void SetStrength(int strength);
-    void SetConstitution(int constitution);
-    void SetIntelligence(int intelligence);
-    void SetDexterity(int dexterity);
-    void SetX(float x);
-    void SetY(float y);
-    void SetZ(float z);
-    void SetPitch(float pitch);
-    void SetYaw(float yaw);
+    void SetFirstName(std::string);
+    void SetLastname(std::string);
+    void SetGuild(std::string);
+    void SetRace(std::string);
+    void SetGender(std::string);
+    void SetFace(std::string);
+    void SetSkin(std::string);
+    void SetZone(std::string);
+    void SetProfession(std::string);
+    void SetEquipment(equipment_t);
+    void SetStats(stats_t);
+    void SetLocation(location_t);
 
     // Class Functions
-    void SetPosition(float x, float y, float z, float pitch, float yaw);
-
 };
 
 #endif //OLDENTIDE_CHARACTER_H_
