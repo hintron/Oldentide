@@ -6,6 +6,7 @@
 #include "Server.h"
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 int main(int argc, char* argv[]) {
     // TODO: Parameter checking
@@ -15,7 +16,16 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     int port = atoi(argv[1]);
-    Server * server = new Server(port);
+
+    Server * server;
+    try {
+        server = new Server(port);
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << "Does db file db/Oldentide.db exist, and is it available?" << std::endl;
+        return 1;
+    }
     server->Run();
     delete server;
     return 0;

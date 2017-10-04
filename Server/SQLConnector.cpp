@@ -5,71 +5,44 @@
 
 #include "SQLConnector.h"
 #include "SQLiteCpp/SQLiteCpp.h"
-#include "sqlite3.h"
 #include "Utils.h"
 #include <iostream>
 #include <string.h>
 #include <sstream>
 
 
-// TODO: Make a wrapper around the sqlite API
-// TODO: Use generics?
 
+// For how to use sqlitecpp, see https://github.com/SRombauts/SQLiteCpp/blob/master/examples/example1/main.cpp
 
+// Note: In c++, you can't just instantiate a class inside the constructor - it needs to be in the initialization list
+// This trys to open the database file when instantiated
+SQLConnector::SQLConnector() : db("db/Oldentide.db"){
+    std::cout << "Oldentide database opened successfully." << std::endl;
+}
 
-SQLConnector::SQLConnector() {
+// TODO: There is no need to free the db, right? Should be automatic?
+SQLConnector::~SQLConnector() {}
 
+// Executes a static SQL statement, and prints out the result
+int SQLConnector::Execute(std::string cmd) {
     try {
-        // Open a database file
-        SQLite::Database    db("Oldentide.db");
-
-        // Compile a SQL query, containing one parameter (index 1)
-        SQLite::Statement   query(db, "SELECT * FROM characters");
-        // query.bind(1, 6);
-
-        // // Loop to execute the query step by step, to get rows of result
-        // while (query.executeStep()) {
-        //     // Demonstrate how to get some typed column value
-        //     int         id      = query.getColumn(0);
-        //     const char* value   = query.getColumn(1);
-        //     int         size    = query.getColumn(2);
-
-        //     std::cout << "row: " << id << ", " << value << ", " << size << std::endl;
-        // }
+        SQLite::Statement query(db, cmd);
+        std::cout << "Attempting to execute the following query:" << std::endl;
+        std::cout << query.getQuery() << std::endl;
+        int i = 0;
+        while (query.executeStep()) {
+            std::cout << "Row " << i << ":" << std::endl;
+            int col_count = query.getColumnCount();
+            for (int j = 0; j < col_count; ++j){
+                std::cout << "    *" << query.getColumn(j) << std::endl;
+            }
+            i++;
+        }
     }
     catch (std::exception& e) {
-        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << "Exception: could not execute sql statement:" << std::endl;
+        std::cout << e.what() << std::endl;
     }
-
-
-    // sqls = sqlite3_open("db/Oldentide.db", &database);
-    // if (sqls) {
-    //     std::cout << "Can't open database!" << std::endl;
-    //     // Is this needed?
-    //     sqlite3_close(database);
-    // }
-    // else {
-    //     std::cout << "Oldentide database opened successfully." << std::endl;
-    // }
-}
-
-SQLConnector::~SQLConnector() {
-    // sqlite3_close(database);
-}
-
-// Executes a static SQL statement
-int SQLConnector::Execute(std::string cmd) {
-    // char *errorMessage = NULL;
-    // sqls = sqlite3_exec(database, cmd.c_str(), &ExecuteCallback, 0, &errorMessage);
-    // if (sqls != SQLITE_OK) {
-    //     std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
-    // }
-    // if (errorMessage) {
-    //     // Print out the error message if any
-    //     std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
-    //     // Free the error message, since it was alloced in exec()
-    //     sqlite3_free(errorMessage);
-    // }
     return 0;
 }
 
@@ -461,32 +434,32 @@ int SQLConnector::GetAccountKey(char *accountName, char *keyStringHex) {
 // -------------------------------------- Callback Functions ---------------------------------------
 
 // A generic callback function to sqlite3_exec() that copies a c string in the first column
-// of the returned row into stringToReturn. This function assumes that only one record will be
-// in the result set, or else the return value will be the value in the last row processed.
-static int ReturnStringCallback(void *stringToReturn, int argc, char **argv, char **azColName) {
-    strcpy((char *)stringToReturn, argv[0]);
-    return 0;
-}
+// // of the returned row into stringToReturn. This function assumes that only one record will be
+// // in the result set, or else the return value will be the value in the last row processed.
+// static int ReturnStringCallback(void *stringToReturn, int argc, char **argv, char **azColName) {
+//     strcpy((char *)stringToReturn, argv[0]);
+//     return 0;
+// }
 
-// This is a generic callback that simply prints to screen all the values
-// of the returned row after a query. Callback adapted from https://www.sqlite.org/quickstart.html
-static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColName) {
-    int i;
-    for(i = 0; i < argc; i++) {
-        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
-    }
-    std::cout << std::endl;
-    return 0;
-}
+// // This is a generic callback that simply prints to screen all the values
+// // of the returned row after a query. Callback adapted from https://www.sqlite.org/quickstart.html
+// static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColName) {
+//     int i;
+//     for(i = 0; i < argc; i++) {
+//         std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
+//     }
+//     std::cout << std::endl;
+//     return 0;
+// }
 
-static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
-    std::vector<std::string> * playerList = (std::vector<std::string> *)players;
-    playerList->push_back(std::string(argv[0]).append(" ").append(std::string(argv[1])));
-    return 0;
-}
+// static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
+//     std::vector<std::string> * playerList = (std::vector<std::string> *)players;
+//     playerList->push_back(std::string(argv[0]).append(" ").append(std::string(argv[1])));
+//     return 0;
+// }
 
-static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
-    std::set<Npc> * npcset = (std::set<Npc> *)npcs;
-    //npcset->insert(Npc temp(argv));
-    return 0;
-}
+// static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
+//     std::set<Npc> * npcset = (std::set<Npc> *)npcs;
+//     //npcset->insert(Npc temp(argv));
+//     return 0;
+// }

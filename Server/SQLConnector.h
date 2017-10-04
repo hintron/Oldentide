@@ -6,11 +6,11 @@
 #ifndef OLDENTIDE_SQLCONNECTOR_H
 #define OLDENTIDE_SQLCONNECTOR_H
 
+#include "SQLiteCpp/SQLiteCpp.h"
 #include "Character.h"
 #include "Player.h"
 #include "Npc.h"
 #include <string>
-#include <sqlite3.h>
 #include <vector>
 #include <set>
 
@@ -27,7 +27,7 @@ class SQLConnector{
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
     private:
-        sqlite3 * database;
+        SQLite::Database db;
         int sqls;
 };
 
