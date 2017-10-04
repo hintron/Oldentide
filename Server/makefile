@@ -56,7 +56,7 @@ msgpack :
 		git clone https://github.com/msgpack/msgpack-c.git msgpack_temp; \
 		cd msgpack_temp; \
 		echo "Setting msgpack to v2.1.1"; \
-		git checkout cpp-2.1.1; \
+		git checkout cpp-2.1.1 -q; \
 		cd ..; \
 		mv msgpack_temp/include msgpack; \
 		rm -rf msgpack_temp; \
@@ -71,13 +71,12 @@ catch :
 		git clone https://github.com/philsquared/Catch.git catch_temp; \
 		cd catch_temp; \
 		echo "Setting catch to v1.10.0"; \
-		git checkout v1.10.0; \
+		git checkout v1.10.0 -q; \
 		cd ..; \
 		mv catch_temp/single_include catch; \
 		rm -rf catch_temp; \
 	fi
 
-# TODO: ?
 # Download the SQLiteCpp
 sqlitecpp :
 	@if [ ! -d "sqlitecpp" ]; \
@@ -86,7 +85,7 @@ sqlitecpp :
 		git clone https://github.com/SRombauts/SQLiteCpp.git sqlitecpp_temp; \
 		cd sqlitecpp_temp; \
 		echo "Setting SQLiteCpp to 2.2.0"; \
-		git checkout 2.2.0; \
+		git checkout 2.2.0 -q; \
 		mkdir -p build; \
 		cd build; \
 		cmake ..; \
@@ -95,9 +94,10 @@ sqlitecpp :
 		mkdir -p sqlitecpp; \
 		mv sqlitecpp_temp/include/SQLiteCpp sqlitecpp/; \
 		mv sqlitecpp_temp/build/libSQLiteCpp.a sqlitecpp/; \
+		rm -rf sqlitecpp_temp; \
 	fi
-
-		# rm -rf sqlitecpp_temp; \
+		# Suggested cmake flags (doesn't seem to work...)
+		# cmake -DSQLITE_USE_LEGACY_STRUCT=ON -DCMAKE_BUILD_TYPE=Release ..; \
 
 
 
