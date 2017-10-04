@@ -127,7 +127,7 @@ CREATE TABLE players (
 
 CREATE TABLE npcs (
     id integer not null primary key autoincrement,
-    character_id integer not null
+    character_id integer not null,
     -- TODO: Add in npc-specific fields
 
     FOREIGN KEY(character_id) REFERENCES characters(id)
@@ -142,7 +142,7 @@ CREATE TABLE items (
     equip integer not null,
     use integer not null,
     x integer not null,
-    y integer not null
+    y integer not null,
 
     FOREIGN KEY(character_id) REFERENCES characters(id)
 );
