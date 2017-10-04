@@ -1,6 +1,6 @@
 Oldentide Dedicated Server
 ==
-The *Oldentide Dedicated Server* is open source project, built in [C++][1], to implement the
+The *Oldentide Dedicated Server* is an open source project, built in [C++][1], to implement the
 backend game state for the multiplayer online role-playing game [*Oldentide*][2].  This
 directory contains all of the code necessary to build and run the dedicated server.
 
