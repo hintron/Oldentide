@@ -1,12 +1,8 @@
 BIN = mkdir database server client unittest
 
-# See if there are any local library files to include
-# If you don't have sudo access, put your lib files here!
-LOCAL_LIB = -L lib_local
-
-# See if there are any local header files to include
-# If you don't have sudo access, put your include files here!
-LOCAL_HEADER = -I include_local
+# If you don't have sudo access, you can put your local lib and header files here!
+LOCAL_LIBS = lib_local
+LOCAL_HEADERS = include_local
 
 # Keep message pack files local, to simplify life (no sudo or messing with os files)
 MSGPACK_HEADER = -I msgpack
@@ -25,18 +21,21 @@ all : $(BIN)
 mkdir :
 	mkdir -p bin db
 
+
 database : mkdir
 	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
 	bash db/InitializeNpcs.sh
 
+# NOTE: Dependent libraries need to be specified BEFORE the library it depends on (sqlitecpp, then sqlite)
+# -DSQLITE_USE_LEGACY_STRUCT is needed for sqlitecpp to work if sqlite is < v3.19
 server : mkdir msgpack sqlitecpp
-	g++ -g $(SERVER_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(MSGPACK_HEADER) $(SQLITECPP_HEADER) -ldl -lpthread -lsqlite3 $(SQLITECPP_LIB) -o bin/Server
+	g++ -g $(SERVER_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITECPP_HEADER) $(SQLITECPP_LIB) -ldl -lpthread -lsqlite3 -o bin/Server -DSQLITE_USE_LEGACY_STRUCT
 
 client : mkdir msgpack
-	g++ -g $(CLIENT_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(MSGPACK_HEADER) -lpthread -o bin/Client
+	g++ -g $(CLIENT_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) -lpthread -o bin/Client
 
 unittest : mkdir msgpack catch sqlitecpp
-	g++ -g $(UNITTEST_FILES) -std=c++11 $(LOCAL_LIB) $(LOCAL_HEADER) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITECPP_HEADER) -ldl -lpthread -lsqlite3 $(SQLITECPP_LIB) -o bin/UnitTest
+	g++ -g $(UNITTEST_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITECPP_HEADER) $(SQLITECPP_LIB) -ldl -lpthread -lsqlite3 -o bin/UnitTest -DSQLITE_USE_LEGACY_STRUCT
 
 clean :
 	rm -f bin/Server bin/Client bin/UnitTest;
@@ -46,6 +45,9 @@ cleanall : clean
 	rm -rf catch;
 	rm -rf sqlitecpp;
 
+cleansql :
+	rm -rf sqlitecpp;
+	rm -rf sqlitecpp_temp;
 
 # Download msgpack-c and set it to v2.1.1 if needed
 # Delete the rest of the files and only keep the headers (c++ version is a header-only library)
@@ -86,22 +88,25 @@ sqlitecpp :
 		cd sqlitecpp_temp; \
 		echo "Setting SQLiteCpp to 2.2.0"; \
 		git checkout 2.2.0 -q; \
+		rm -rf sqlite3; \
 		mkdir -p build; \
 		cd build; \
-		cmake ..; \
+		cmake -DSQLITE_USE_LEGACY_STRUCT=ON -DSQLITECPP_INTERNAL_SQLITE=OFF ..; \
 		make; \
 		cd ../..; \
 		mkdir -p sqlitecpp; \
-		mv sqlitecpp_temp/include/SQLiteCpp sqlitecpp/; \
-		mv sqlitecpp_temp/build/libSQLiteCpp.a sqlitecpp/; \
+		cp -r sqlitecpp_temp/include/SQLiteCpp sqlitecpp/; \
+		cp sqlitecpp_temp/build/libSQLiteCpp.a sqlitecpp/; \
 		rm -rf sqlitecpp_temp; \
 	fi
-		# Suggested cmake flags (doesn't seem to work...)
-		# cmake -DSQLITE_USE_LEGACY_STRUCT=ON -DCMAKE_BUILD_TYPE=Release ..; \
+
+		# Uninstall libsqlite3-dev and use the following to use the version of sqlite that comes with sqlitecpp...
+		# cmake ..; \
+		# cp sqlitecpp_temp/build/sqlite3/libsqlite3.a sqlitecpp/; \
+		# cp sqlitecpp_temp/sqlite3/sqlite3.h sqlitecpp/; \
 
 
-
-.PHONY: all, clean, cleanall, mkdir, database, server, client, unittest, msgpack, catch, sqlitecpp
+.PHONY: all, clean, cleanall, cleansql, mkdir, database, server, client, unittest, msgpack, catch, sqlitecpp
 
 
 
