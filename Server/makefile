@@ -16,7 +16,7 @@ CLIENT_FILES = 		TestClient.cpp Utils.cpp
 UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 
 # Enable sqlitecpp to use query.getColumnOriginName()
-DEFS = "-DSQLITE_ENABLE_COLUMN_METADATA"
+DEFS = -DSQLITE_ENABLE_COLUMN_METADATA
 
 
 all : $(BIN)

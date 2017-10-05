@@ -343,7 +343,7 @@ bool SQLConnector::InsertPlayer(Player p) {
     // Execute(query.str());
 
     // if (sqls == SQLITE_OK) {
-        return true;
+        return false;
     // }
     // else {
     //     return false;
@@ -352,27 +352,27 @@ bool SQLConnector::InsertPlayer(Player p) {
 
 // Lists all the accounts
 void SQLConnector::ListAccounts() {
-    // std::stringstream query;
-    // query << "select * from accounts ORDER BY accountname";
-    // Execute(query.str());
+    std::string cmd("select * from accounts ORDER BY accountname");
+    SQLite::Statement query(db, cmd);
+    while (query.executeStep()) {
+        std::cout << "Executing step for insert account..." << std::endl;
+    }
 }
 
-std::vector<std::string> SQLConnector::GetPlayerList(std::string account) {
+// TODO: Create a view instead of creating a join table right here
+std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
     std::vector<std::string> players;
-    std::stringstream query;
-    char *errorMessage = NULL;
-    query << "SELECT firstname, lastname ";
-    query << "FROM players JOIN accounts ";
-    query << "ON players.accountid = accounts.id ";
-    query << "WHERE accountname = \"" << account << "\"";
-    // sqls = sqlite3_exec(database, query.str().c_str(), ParsePlayerList, (void*)&players, &errorMessage);
-    // if (sqls != SQLITE_OK) {
-    //     std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
-    // }
-    // if (errorMessage) {
-    //     std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
-    //     sqlite3_free(errorMessage);
-    // }
+
+    std::string cmd("select firstname, lastname FROM players JOIN accounts ON players.account_id = accounts.id ORDER BY accountname WHERE accountname = ?");
+    SQLite::Statement query(db, cmd);
+    query.bind(1, accountname);
+
+    while (query.executeStep()) {
+        std::string name = query.getColumn(0);
+        std::string lastname = query.getColumn(1);
+        name.append(" ").append(lastname);
+        players.push_back(name);
+    }
     return players;
 }
 
@@ -454,23 +454,6 @@ int SQLConnector::GetAccountKey(char *accountName, char *keyStringHex) {
 // // in the result set, or else the return value will be the value in the last row processed.
 // static int ReturnStringCallback(void *stringToReturn, int argc, char **argv, char **azColName) {
 //     strcpy((char *)stringToReturn, argv[0]);
-//     return 0;
-// }
-
-// // This is a generic callback that simply prints to screen all the values
-// // of the returned row after a query. Callback adapted from https://www.sqlite.org/quickstart.html
-// static int ExecuteCallback(void *NotUsed, int argc, char **argv, char **azColName) {
-//     int i;
-//     for(i = 0; i < argc; i++) {
-//         std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
-//     }
-//     std::cout << std::endl;
-//     return 0;
-// }
-
-// static int ParsePlayerList(void * players, int argc, char ** argv, char ** azColName) {
-//     std::vector<std::string> * playerList = (std::vector<std::string> *)players;
-//     playerList->push_back(std::string(argv[0]).append(" ").append(std::string(argv[1])));
 //     return 0;
 // }
 

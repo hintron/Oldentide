@@ -16,7 +16,28 @@
 #include "SQLConnector.h"
 #include "Utils.h"
 
+TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
+    Server * server = new Server(7331);
+    delete server;
+}
 
+
+// TODO: Create and test a 'init db' or blank_db
+// TODO: Test insert player
+
+TEST_CASE( "Insert Account", "[insert]" ) {
+    SQLConnector* sql = new SQLConnector();
+    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
+    REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
+    // Cannot reinsert account with same name
+    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == false );
+    // TODO: Test to make sure players looks good
+    std::vector<std::string> players = sql->GetPlayerList("my_account");
+    REQUIRE( players.size() > 0 );
+    delete sql;
+}
+
+// TODO: Tie new player to an account
 // TODO: Should we init the db to a blank slate?
 // TODO: Make a function to programmatically init the db, so we can use here
 TEST_CASE( "Insert Player", "[insert]" ) {
@@ -54,17 +75,9 @@ TEST_CASE( "Insert Player", "[insert]" ) {
 
 
 
-TEST_CASE( "Insert Account", "[insert]" ) {
-    SQLConnector* sql = new SQLConnector();
-    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
-    delete sql;
-}
 
 
-TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
-    Server * server = new Server(7331);
-    delete server;
-}
+
 
 
 // TODO: What to break out into test cases, and what to break out into sections?
