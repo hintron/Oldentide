@@ -15,7 +15,8 @@ SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Ser
 CLIENT_FILES = 		TestClient.cpp Utils.cpp
 UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 
-# Enable sqlitecpp to use query.getColumnOriginName()
+# Enable sqlitecpp to use query.getColumnOriginName() via -DSQLITE_ENABLE_COLUMN_METADATA
+# Add -DSQLITE_USE_LEGACY_STRUCT to make sqlitecpp only work with sqlite versions <= 3.18
 DEFS = -DSQLITE_ENABLE_COLUMN_METADATA
 
 
@@ -102,6 +103,15 @@ sqlitecpp :
 		cp sqlitecpp_temp/sqlite3/sqlite3.h sqlitecpp/; \
 		rm -rf sqlitecpp_temp; \
 	fi
+
+# NOTES:
+# To NOT use the internal sqlite version that comes with sqlitecpp (e.g. libsqlite3-dev), add the following flag to the cmake command above:
+# 		-DSQLITECPP_INTERNAL_SQLITE=OFF
+# To use an external version of sqlite that is < 3.19, add the following flag to the cmake command above:
+# 		-DSQLITE_USE_LEGACY_STRUCT=ON
+# and be sure to also add -DSQLITE_USE_LEGACY_STRUCT to the g++ DEFS make variable above, or you'll get some errors in the headers
+
+
 
 
 
