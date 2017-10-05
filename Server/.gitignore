@@ -4,7 +4,8 @@ bin
 # Ignore local libraries and headers
 include
 lib
-
-# Ignore 3rd-party headers
+*_temp/
+# Ignore 3rd-party files
 msgpack
 catch
+sqlitecpp

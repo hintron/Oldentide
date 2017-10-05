@@ -1,7 +1,9 @@
 DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS characters;
 DROP TABLE IF EXISTS npcs;
 DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS stats;
 CREATE TABLE accounts (
     id integer not null primary key autoincrement,
     valid integer not null,
@@ -12,156 +14,157 @@ CREATE TABLE accounts (
     key text not null collate nocase,
     salt text not null collate nocase
 );
-CREATE TABLE players (
+
+-- Characters is the parent table of both nps and players (pcs)
+CREATE TABLE characters (
     -- Identification:
     id integer not null primary key autoincrement,
-    accountid numeric not null,
     firstname text not null,
     lastname text not null,
     guild text,
     race text not null,
     gender text not null,
-    face text not null,
-    skin text not null,
-    profession text not null,
-    level integer not null,
+    face text,
+    skin text,
+    profession text,
+    level integer not null default 1,
     -- Stats:
-    hp integer not null,
-    maxhp integer not null,
-    bp integer not null,
-    maxbp integer not null,
-    mp integer not null,
-    maxmp integer not null,
-    ep integer not null,
-    maxep integer not null,
-    strength integer not null,
-    constitution integer not null,
-    intelligence integer not null,
-    dexterity integer not null,
+    hp integer not null default 100,
+    maxhp integer not null default 100,
+    bp integer not null default 0,
+    maxbp integer not null default 0,
+    mp integer not null default 0,
+    maxmp integer not null default 0,
+    ep integer not null default 0,
+    maxep integer not null default 0,
+    strength integer not null default 1,
+    constitution integer not null default 1,
+    intelligence integer not null default 1,
+    dexterity integer not null default 1,
     -- Skills:
-    axe integer not null,
-    dagger integer not null,
-    unarmed integer not null,
-    hammer integer not null,
-    polearm integer not null,
-    spear integer not null,
-    staff integer not null,
-    sword integer not null,
-    archery integer not null,
-    crossbow integer not null,
-    sling integer not null,
-    thrown integer not null,
-    armor integer not null,
-    dualWeapon integer not null,
-    shield integer not null,
-    bardic integer not null,
-    conjuring integer not null,
-    druidic integer not null,
-    illusion integer not null,
-    necromancy integer not null,
-    sorcery integer not null,
-    shamanic integer not null,
-    spellcraft integer not null,
-    summoning integer not null,
-    focus integer not null,
-    armorsmithing integer not null,
-    tailoring integer not null,
-    fletching integer not null,
-    weaponsmithing integer not null,
-    alchemy integer not null,
-    lapidary integer not null,
-    calligraphy integer not null,
-    enchanting integer not null,
-    herbalism integer not null,
-    hunting integer not null,
-    mining integer not null,
-    bargaining integer not null,
-    camping integer not null,
-    firstaid integer not null,
-    lore integer not null,
-    pickLocks integer not null,
-    scouting integer not null,
-    search integer not null,
-    stealth integer not null,
-    traps integer not null,
-    aeolandis integer not null,
-    hieroform integer not null,
-    highgundis integer not null,
-    oldpraxic integer not null,
-    praxic integer not null,
-    runic integer not null,
+    axe integer default 1,
+    dagger integer default 1,
+    unarmed integer default 1,
+    hammer integer default 1,
+    polearm integer default 1,
+    spear integer default 1,
+    staff integer default 1,
+    sword integer default 1,
+    archery integer default 1,
+    crossbow integer default 1,
+    sling integer default 1,
+    thrown integer default 1,
+    armor integer default 1,
+    dualWeapon integer default 1,
+    shield integer default 1,
+    bardic integer default 1,
+    conjuring integer default 1,
+    druidic integer default 1,
+    illusion integer default 1,
+    necromancy integer default 1,
+    sorcery integer default 1,
+    shamanic integer default 1,
+    spellcraft integer default 1,
+    summoning integer default 1,
+    focus integer default 1,
+    armorsmithing integer default 1,
+    tailoring integer default 1,
+    fletching integer default 1,
+    weaponsmithing integer default 1,
+    alchemy integer default 1,
+    lapidary integer default 1,
+    calligraphy integer default 1,
+    enchanting integer default 1,
+    herbalism integer default 1,
+    hunting integer default 1,
+    mining integer default 1,
+    bargaining integer default 1,
+    camping integer default 1,
+    firstaid integer default 1,
+    lore integer default 1,
+    pickLocks integer default 1,
+    scouting integer default 1,
+    search integer default 1,
+    stealth integer default 1,
+    traps integer default 1,
+    aeolandis integer default 1,
+    hieroform integer default 1,
+    highgundis integer default 1,
+    oldpraxic integer default 1,
+    praxic integer default 1,
+    runic integer default 1,
     -- Equipment:
-    head text not null,
-    chest text not null,
-    arms text not null,
-    hands text not null,
-    legs text not null,
-    feet text not null,
-    cloak text not null,
-    necklace text not null,
-    ringone text not null,
-    ringtwo text not null,
-    righthand text not null,
-    lefthand text not null,
+    head text,
+    chest text,
+    arms text,
+    hands text,
+    legs text,
+    feet text,
+    cloak text,
+    necklace text,
+    ringone text,
+    ringtwo text,
+    righthand text,
+    lefthand text,
     -- Location:
-    zone text not null,
-    x real not null,
-    y real not null,
-    z real not null,
-    pitch real not null,
-    yaw real not null
+    zone text,
+    x real,
+    y real,
+    z real,
+    pitch real,
+    yaw real
+
 );
-CREATE TABLE npcs (
-    -- Identification:
+
+CREATE TABLE players (
     id integer not null primary key autoincrement,
-    firstname text not null,
-    lastname text not null,
-    guild text,
-    race text not null,
-    gender text not null,
-    face text not null,
-    skin text not null,
-    level integer not null,
-    hp integer not null,
-    maxhp integer not null,
-    bp integer not null,
-    maxbp integer not null,
-    mp integer not null,
-    maxmp integer not null,
-    ep integer not null,
-    maxep integer not null,
-    strength integer not null,
-    constitution integer not null,
-    intelligence integer not null,
-    dexterity integer not null,
-    -- Equipment:
-    head text not null,
-    chest text not null,
-    arms text not null,
-    hands text not null,
-    legs text not null,
-    feet text not null,
-    cloak text not null,
-    necklace text not null,
-    ringone text not null,
-    ringtwo text not null,
-    righthand text not null,
-    lefthand text not null,
-    -- Location:
-    zone text not null,
-    x real not null,
-    y real not null,
-    z real not null,
-    pitch real not null,
-    yaw real not null
+    character_id integer not null,
+    account_id integer,
+    -- TODO: Add in other player-specific fields
+
+    FOREIGN KEY(character_id) REFERENCES characters(id)
 );
+
+CREATE TABLE npcs (
+    id integer not null primary key autoincrement,
+    character_id integer not null,
+    -- TODO: Add in npc-specific fields
+
+    FOREIGN KEY(character_id) REFERENCES characters(id)
+);
+
 CREATE TABLE items (
     id integer not null primary key autoincrement,
+    character_id integer not null,
     name text not null,
     location text not null,
     weight real not null,
     equip integer not null,
     use integer not null,
     x integer not null,
-    y integer not null
+    y integer not null,
+
+    FOREIGN KEY(character_id) REFERENCES characters(id)
 );
+
+
+
+-- Views
+
+
+CREATE VIEW player_view AS
+SELECT
+    *
+FROM player
+left join
+    characters on players.character_id = characters.id
+;
+
+
+CREATE VIEW npcs_view AS
+SELECT
+    *
+FROM npcs
+left join
+    characters on npcs.character_id = characters.id
+;

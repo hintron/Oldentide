@@ -11,21 +11,29 @@
 #include <string>
 
 class Npc : public Character {
-    
-    protected:
+
+    private:
 
     int id;
 
     public:
 
     // Constructors.
-    Npc(int id, std::string firstname, std::string lastname, std::string guild, std::string race, 
-        std::string gender, std::string face, std::string skin, int level, int hp, int maxHp,
-        int bp, int maxBp, int mp, int maxMp, int ep, int maxEp, int strength, int constitution,
-        int intelligence, int dexterity, std::string head, std::string chest, std::string arms,
-        std::string hands, std::string legs, std::string feet, std::string cloak,
-        std::string necklace, std::string ringone, std::string ringtwo, std::string righthand,
-        std::string lefthand, std::string zone, float x, float y, float z, float pitch, float yaw);
+    Npc(
+        int id,
+        std::string firstname,
+        std::string lastname,
+        std::string guild,
+        std::string race,
+        std::string gender,
+        std::string face,
+        std::string skin,
+        std::string zone,
+        std::string profession,
+        equipment_t equipment,
+        stats_t stats,
+        location_t location
+    );
 
     ~Npc();
 
@@ -34,10 +42,9 @@ class Npc : public Character {
 
     // Setter Functions.
     void SetId(int id);
-    
+
     // Class Functions.
-    std::string ToString();
-    
+
 };
 
 #endif //OLDENTIDE_NPC_H_

@@ -13,7 +13,8 @@
 
 
 # Base image
-FROM alpine:3.6
+# Do 3.5, because sqlite-dev is < 3.19
+FROM alpine:3.5
 
 # Set the working directory
 WORKDIR /oldentide
@@ -25,6 +26,7 @@ ADD . /oldentide
 # To search for valid packages, go to https://pkgs.alpinelinux.org/packages
 RUN apk --no-cache add \
     bash \
+    cmake \
     make\
     g++ \
     git \

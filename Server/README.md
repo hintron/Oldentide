@@ -32,11 +32,12 @@ Building *Oldentide Dedicated Server* is currently possible with the following c
 
 Dependencies
 ------------
-* sqlite3 - To store data, the simple, lightweight [sqlite3][5] database is used.
-* libsqlite3-dev - To develop with [sqlite3][5], we need the c++ libraries.  This
-  library is the package name on debian based systems.
-* git - Needed to download and install msgpack
-* msgpck-c v2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
+* sqlite3 - The sqlite3 command-line tool, used to initialize and manage sqlite databases [sqlite3][5]
+* git - Needed to download and install msgpack, catch, and sqlitecpp
+* Cmake - Needed to build and compile sqlitecpp and sqlite.
+* msgpck-c 2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
+* sqlitecpp 2.2.0 - [SQLiteC++][7] is used to provide an easy-to-use C++ wrapper to the sqlite C API. It comes packaged with a recent version (v3.21) of the sqlite C API library
+* Catch 1.10.0 - [Catch][8] is used to run unit and regression tests.
 
 
 Server and Test Client Usage
@@ -82,3 +83,5 @@ Inside the container, run:
 [4]: https://gcc.gnu.org/ "Gnu C / C++ Compiler"
 [5]: https://www.sqlite.org/ "SQLite 3"
 [6]: https://github.com/msgpack/msgpack-c/ "msgpack-c"
+[7]: https://github.com/SRombauts/SQLiteCpp "SQLiteC++"
+[8]: https://github.com/philsquared/Catch "Catch"
