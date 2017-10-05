@@ -15,6 +15,9 @@ SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Ser
 CLIENT_FILES = 		TestClient.cpp Utils.cpp
 UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 
+# Enable sqlitecpp to use query.getColumnOriginName()
+DEFS = "-DSQLITE_ENABLE_COLUMN_METADATA"
+
 
 all : $(BIN)
 
@@ -28,13 +31,13 @@ database : mkdir
 
 # NOTE: With gcc/g++, dependent libraries need to be specified BEFORE the library it depends on
 server : mkdir msgpack sqlitecpp
-	g++ -g $(SERVER_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -ldl -lpthread -lsqlite3 -o bin/Server
+	g++ -g $(SERVER_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -ldl -lpthread -lsqlite3 -o bin/Server $(DEFS)
 
 client : mkdir msgpack
 	g++ -g $(CLIENT_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) -lpthread -o bin/Client
 
 unittest : mkdir msgpack catch sqlitecpp
-	g++ -g $(UNITTEST_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -ldl -lpthread -lsqlite3 -o bin/UnitTest
+	g++ -g $(UNITTEST_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -ldl -lpthread -lsqlite3 -o bin/UnitTest $(DEFS)
 
 clean :
 	rm -f bin/Server bin/Client bin/UnitTest;

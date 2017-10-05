@@ -18,7 +18,7 @@ class SQLConnector{
     public:
         SQLConnector();
         ~SQLConnector();
-        int Execute(std::string cmd);
+        bool Execute(std::string cmd, bool quiet = false);
         bool InsertAccount(std::string, std::string, std::string, std::string);
         bool InsertPlayer(Player newPlayer);
         void ListAccounts();
@@ -31,12 +31,12 @@ class SQLConnector{
         int sqls;
 };
 
-// This can't be a private method, because it needs to be passed as a pointer to sqlite3_exec()
-// and methods of a c++ class have a hidden function pointer to the class instance
-// See http://stackoverflow.com/a/8045331
-static int ExecuteCallback(void *, int, char **, char **);
-static int ReturnStringCallback(void *, int, char **, char **);
-static int ParsePlayerList(void *, int, char **, char **);
-static int ParseNpcs(void *, int, char **, char **);
+// // This can't be a private method, because it needs to be passed as a pointer to sqlite3_exec()
+// // and methods of a c++ class have a hidden function pointer to the class instance
+// // See http://stackoverflow.com/a/8045331
+// static int ExecuteCallback(void *, int, char **, char **);
+// static int ReturnStringCallback(void *, int, char **, char **);
+// static int ParsePlayerList(void *, int, char **, char **);
+// static int ParseNpcs(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H

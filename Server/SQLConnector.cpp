@@ -15,8 +15,8 @@
 // For how to use sqlitecpp, see https://github.com/SRombauts/SQLiteCpp/blob/master/examples/example1/main.cpp
 
 // Note: In c++, you can't just instantiate a class inside the constructor - it needs to be in the initialization list
-// This trys to open the database file when instantiated
-SQLConnector::SQLConnector() : db("db/Oldentide.db"){
+// This tries to open the database file when instantiated, and set it to write
+SQLConnector::SQLConnector() : db("db/Oldentide.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE){
     std::cout << "Oldentide database opened successfully." << std::endl;
 }
 
@@ -24,66 +24,82 @@ SQLConnector::SQLConnector() : db("db/Oldentide.db"){
 SQLConnector::~SQLConnector() {}
 
 // Executes a static SQL statement, and prints out the result
-int SQLConnector::Execute(std::string cmd) {
+// Returns true if successful, false otherwise
+bool SQLConnector::Execute(std::string cmd, bool quiet) {
     try {
         SQLite::Statement query(db, cmd);
-        std::cout << "Attempting to execute the following query:" << std::endl;
-        std::cout << query.getQuery() << std::endl;
+        if(!quiet){
+            std::cout << "Attempting to execute the following query:" << std::endl;
+            std::cout << query.getQuery() << std::endl;
+        }
         int i = 0;
+        bool printed_columns = false;
         while (query.executeStep()) {
-            std::cout << "Row " << i << ":" << std::endl;
-            int col_count = query.getColumnCount();
-            for (int j = 0; j < col_count; ++j){
-                std::cout << "    *" << query.getColumn(j) << std::endl;
+            if(quiet){
+                i++;
+                continue;
             }
+            int col_count = query.getColumnCount();
+            if(!printed_columns){
+                printed_columns = true;
+                std::cout << "Columns: ";
+                for (int k = 0; k < col_count; ++k) {
+                    // To enable getColumnOriginName(), make sure SQLITE_ENABLE_COLUMN_METADATA is defined during compilation
+                    std::cout << std::setw(10) << query.getColumnOriginName(k) << " | ";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << "Row " << std::setw(3) << i << ": ";
+            for (int j = 0; j < col_count; ++j){
+                std::cout << std::setw(10) << query.getColumn(j) << " | ";
+            }
+            std::cout << std::endl;
             i++;
         }
+        return true;
     }
     catch (std::exception& e) {
         std::cout << "Exception: could not execute sql statement:" << std::endl;
         std::cout << e.what() << std::endl;
+        return false;
     }
-    return 0;
 }
 
 // -------------------------------------- Parent Functions ----------------------------------------
 
 // Insert a new account record.
 bool SQLConnector::InsertAccount(std::string accountName, std::string email, std::string key, std::string salt) {
-    // std::stringstream query;
-    // // Sanitize key, salt, and account name
-    // if (!utils::SanitizeAccountName(accountName)) {
-    //     std::cout << "Account Name is invalid! Cannot insert account record" << std::endl;
-    //     return false;
-    // }
-    // // TODO: Sanitize email!
-    // // if (!utils::SanitizeEmail(email)) {
-    // //     std::cout << "Email is invalid! Cannot insert account record" << std::endl;
-    // //     return false;
-    // // }
-    // if (!utils::SanitizeHexString(key)) {
-    //     std::cout << "Key is invalid! Cannot insert account record" << std::endl;
-    //     return false;
-    // }
-    // if (!utils::SanitizeHexString(salt)) {
-    //     std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
-    //     return false;
-    // }
-    // query << "insert into accounts (accountname, valid, email, playing, key, salt) values (";
-    // query << "\"" << accountName << "\",";
-    // query << "\"" << true << "\",";
-    // query << "\"" << email << "\",";
-    // query << "\"" << true << "\",";
-    // query << "\"" << key << "\",";
-    // query << "\"" << salt << "\")";
-
-    // Execute(query.str());
-    // if (sqls == SQLITE_OK) {
-    //     return true;
-    // }
-    // else {
+    // Sanitize key, salt, and account name
+    if (!utils::SanitizeAccountName(accountName)) {
+        std::cout << "Account Name is invalid! Cannot insert account record" << std::endl;
         return false;
+    }
+    // TODO: Sanitize email!
+    // if (!utils::SanitizeEmail(email)) {
+    //     std::cout << "Email is invalid! Cannot insert account record" << std::endl;
+    //     return false;
     // }
+    if (!utils::SanitizeHexString(key)) {
+        std::cout << "Key is invalid! Cannot insert account record" << std::endl;
+        return false;
+    }
+    if (!utils::SanitizeHexString(salt)) {
+        std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
+        return false;
+    }
+    std::string cmd("insert into accounts (accountname, valid, email, playing, key, salt) values (?,?,?,?,?,?)");
+    SQLite::Statement query(db, cmd);
+    query.bind(1, accountName);
+    query.bind(2, true);
+    query.bind(3, email);
+    query.bind(4, true);
+    query.bind(5, key);
+    query.bind(6, salt);
+    while (query.executeStep()) {
+        std::cout << "Executing step for insert account..." << std::endl;
+    }
+
+    return true;
 }
 
 // Inserts a new player into the database.
