@@ -25,6 +25,22 @@ TEST_CASE( "Test instantiating Server on port 7331", "[server]" ) {
 // TODO: Create and test a 'init db' or blank_db
 // TODO: Test insert player
 
+
+
+
+
+// TODO: Be careful! Right now, this will overwrite the current database!
+TEST_CASE( "Init db", "[init]" ) {
+    SQLConnector* sql = new SQLConnector();
+    // Init the db
+    REQUIRE( sql->ExecuteSqlFile("db/InitializeDb.sql") == true );
+    // TODO: Check to make sure that db initialization worked
+
+    delete sql;
+}
+
+
+
 TEST_CASE( "Insert Account", "[insert]" ) {
     SQLConnector* sql = new SQLConnector();
     REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );

@@ -9,8 +9,9 @@
 #include <iostream>
 #include <string.h>
 #include <sstream>
+#include <fstream>
 
-
+// TODO: Make all strings references to reduce copying
 
 // For how to use sqlitecpp, see https://github.com/SRombauts/SQLiteCpp/blob/master/examples/example1/main.cpp
 
@@ -22,6 +23,26 @@ SQLConnector::SQLConnector() : db("db/Oldentide.db", SQLite::OPEN_READWRITE | SQ
 
 // TODO: There is no need to free the db, right? Should be automatic?
 SQLConnector::~SQLConnector() {}
+
+
+bool SQLConnector::ExecuteSqlFile(std::string filename) {
+    // Extract the contents of the sql file into a stringstream
+    std::ifstream file(filename);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    // Execute the sql file
+    try {
+        db.exec(buffer.str());
+        return true;
+    }
+    catch (std::exception& e) {
+        std::cout << "Exception: could not execute sql file:" << std::endl;
+        std::cout << e.what() << std::endl;
+        return false;
+    }
+}
+
+
 
 // Executes a static SQL statement, and prints out the result
 // Returns true if successful, false otherwise

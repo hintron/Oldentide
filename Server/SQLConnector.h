@@ -19,6 +19,7 @@ class SQLConnector{
         SQLConnector();
         ~SQLConnector();
         bool Execute(std::string cmd, bool quiet = false);
+        bool ExecuteSqlFile(std::string filename);
         bool InsertAccount(std::string, std::string, std::string, std::string);
         bool InsertPlayer(Player newPlayer);
         void ListAccounts();
