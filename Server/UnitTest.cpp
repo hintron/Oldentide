@@ -63,10 +63,10 @@ TEST_CASE( "init db", "[sql]" ) {
 
 TEST_CASE( "insert account", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
-    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
-    REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
+    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
+    REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
     // Cannot reinsert account with same name
-    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == false );
+    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == 0 );
     // TODO: Test to make sure players looks good
     std::vector<std::string> players = sql->GetPlayerList("my_account");
     REQUIRE( players.size() > 0 );
@@ -118,7 +118,7 @@ TEST_CASE( "insert player", "[sql]" ) {
 
     Player p(
         dummyClient,
-        "example",
+        "my_account",
         17,
         1,
         "Poop",
@@ -136,8 +136,10 @@ TEST_CASE( "insert player", "[sql]" ) {
         dummyLocation
     );
      // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",
+    int account_id = sql->InsertAccount("player_test_account", "my_email@my.example.com", "deadBEEF019", "deAD1337");
+    REQUIRE( account_id != 0 );
 
-    REQUIRE( sql->InsertPlayer(p) == true );
+    REQUIRE( sql->InsertPlayer(p, account_id) == true );
     delete sql;
 }
 

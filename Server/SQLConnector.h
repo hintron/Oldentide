@@ -20,9 +20,9 @@ class SQLConnector{
         ~SQLConnector();
         bool Execute(std::string cmd, bool quiet = false);
         bool ExecuteSqlFile(std::string filename);
-        bool InsertAccount(std::string, std::string, std::string, std::string);
-        bool InsertCharacter(Character newCharacter);
-        bool InsertPlayer(Player newPlayer);
+        int InsertAccount(std::string, std::string, std::string, std::string);
+        int InsertCharacter(Character newCharacter);
+        int InsertPlayer(Player newPlayer, int account_id);
         void ListAccounts();
         std::vector<std::string> GetPlayerList(std::string account);
         std::set<Npc> PopulateNpcList();

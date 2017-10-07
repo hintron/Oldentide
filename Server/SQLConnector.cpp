@@ -18,7 +18,7 @@
 // Note: In c++, you can't just instantiate a class inside the constructor - it needs to be in the initialization list
 // This tries to open the database file when instantiated, and set it to write
 SQLConnector::SQLConnector() : db("db/Oldentide.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE){
-    std::cout << "Oldentide database opened successfully." << std::endl;
+    std::cout << "Oldentide database \"" << db.getFilename() << "\" opened successfully." << std::endl;
 }
 
 // TODO: There is no need to free the db, right? Should be automatic?
@@ -89,7 +89,7 @@ bool SQLConnector::Execute(std::string cmd, bool quiet) {
 // -------------------------------------- Parent Functions ----------------------------------------
 
 // Insert a new account record.
-bool SQLConnector::InsertAccount(std::string accountName, std::string email, std::string key, std::string salt) {
+int SQLConnector::InsertAccount(std::string accountName, std::string email, std::string key, std::string salt) {
     // Sanitize key, salt, and account name
     if (!utils::SanitizeAccountName(accountName)) {
         std::cout << "Account Name is invalid! Cannot insert account record" << std::endl;
@@ -124,15 +124,72 @@ bool SQLConnector::InsertAccount(std::string accountName, std::string email, std
 }
 
 // Inserts a new player into the database.
-bool SQLConnector::InsertPlayer(Player p) {
+int SQLConnector::InsertPlayer(Player p, int account_id) {
+    Character c(
+        p.GetFirstname(),
+        p.GetLastname(),
+        p.GetGuild(),
+        p.GetRace(),
+        p.GetGender(),
+        p.GetFace(),
+        p.GetSkin(),
+        p.GetZone(),
+        p.GetProfession(),
+        p.GetEquipment(),
+        p.GetStats(),
+        p.GetSkills(),
+        p.GetLocation()
+    );
+
+    int character_id = InsertCharacter(c);
+
+    if(character_id == 0){
+        std::cout << "Could not insert player - base character insertion failed" << std::endl;
+        return 0;
+    }
+
+    // TODO: Deal with these fields
     // sockaddr_in client,
     // std::string account,
     // int id,
     // int session,
 
+    // TODO: Update active player list
+
+    std::string query_string(R"(
+        INSERT INTO players (
+            character_id,
+            account_id
+        ) VALUES (
+            :character_id,
+            :account_id
+        )
+    )");
+
+
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(":character_id", character_id);
+        query.bind(":account_id", account_id);
+        int rows_modified = query.exec();
+
+        if(rows_modified < 1){
+            std::cout << "Could not insert character record! " << rows_modified << "Rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
 }
 
-bool SQLConnector::InsertCharacter(Character c) {
+int SQLConnector::InsertCharacter(Character c) {
     std::stringstream query;
 
 
@@ -421,13 +478,20 @@ bool SQLConnector::InsertCharacter(Character c) {
         query.bind(":z", location.z);
         query.bind(":pitch", location.pitch);
         query.bind(":yaw", location.yaw);
-        query.exec();
-        return true;
+        int rows_modified = query.exec();
+        if(rows_modified < 1){
+            std::cout << "Could not insert character record! " << rows_modified << "Rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
     }
     catch (std::exception& e) {
         std::cout << "exception: " << e.what() << std::endl;
         std::cout << query_string << std::endl;
-        return false;
+        return 0;
     }
 }
 
