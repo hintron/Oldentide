@@ -14,7 +14,16 @@ tail -n +2 "Npcs.csv" > "Npcs.init"
 
 # Import to sqlite3
 sqlite3 Oldentide.db <<EOF
-delete from npcs;
+-- delete all npcs and their corresponding character records
+create temp trigger ttrig0 after delete on npcs begin
+    DELETE FROM characters WHERE old.character_id = characters.id;
+end;
+DELETE FROM npcs;
+-- Create a trigger that will set each of the new npc-characters as npcs
+PRAGMA recursive_triggers = on;
+create temp trigger ttrig1 after insert on characters begin
+    INSERT INTO npcs (character_id) VALUES (new.id);
+end;
 .headers on
 .mode csv
 .import Npcs.init characters
@@ -24,3 +33,11 @@ echo "NPCs Populated."
 
 # Delete temp file.
 rm "Npcs.init"
+
+
+# How to do a for loop in sqlite command line using triggers:
+# https://stackoverflow.com/a/7373289
+# Syntax for sqlite trigger
+# https://sqlite.org/lang_createtrigger.html
+# SQL and modeling class inheritance
+# https://stackoverflow.com/questions/3579079/how-can-you-represent-inheritance-in-a-database

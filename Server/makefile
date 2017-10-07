@@ -30,6 +30,9 @@ database db : mkdir
 	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
 	bash db/InitializeNpcs.sh
 
+npc npcs : mkdir
+	bash db/InitializeNpcs.sh
+
 # NOTE: With gcc/g++, dependent libraries need to be specified BEFORE the library it depends on
 server : mkdir msgpack sqlitecpp
 	g++ -g $(SERVER_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/Server $(DEFS)
@@ -115,7 +118,7 @@ sqlitecpp :
 
 
 
-.PHONY: all, clean, cleanall, cleansql, mkdir, database, db, server, client, unittest, msgpack, catch, sqlitecpp
+.PHONY: all, clean, cleanall, cleansql, mkdir, database, db, npc, npcs, server, client, unittest, msgpack, catch, sqlitecpp
 
 
 
