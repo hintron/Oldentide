@@ -32,6 +32,7 @@ class Npc : public Character {
         std::string profession,
         equipment_t equipment,
         stats_t stats,
+        skills_t skills,
         location_t location
     );
 

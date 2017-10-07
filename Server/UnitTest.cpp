@@ -9,9 +9,10 @@
 #include <catch.hpp>
 #include "AdminShell.h"
 #include "GameState.h"
+#include "Character.h"
+#include "Player.h"
 #include "Npc.h"
 #include "Packets.h"
-#include "Player.h"
 #include "Server.h"
 #include "SQLConnector.h"
 #include "Utils.h"
@@ -31,6 +32,9 @@ TEST_CASE( "create server", "[server]" ) {
 // TODO: delete npc
 // TODO: insert item
 // TODO: delete item
+// TODO: update player
+// TODO: update npc
+// TODO: update character - test cascade updates
 
 
 
@@ -45,8 +49,6 @@ TEST_CASE( "init db", "[sql]" ) {
     delete sql;
 }
 
-
-
 TEST_CASE( "insert account", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == true );
@@ -59,6 +61,38 @@ TEST_CASE( "insert account", "[sql]" ) {
     delete sql;
 }
 
+TEST_CASE( "insert character", "[sql]" ) {
+    SQLConnector* sql = new SQLConnector();
+
+    equipment_t equip = {};
+    stats_t stats = {};
+    skills_t skills = {};
+    location_t location = {};
+
+    Character tony(
+        "Tony",
+        "Starks",
+        "Marvel",
+        "Human",
+        "Male",
+        "Mustached",
+        "Light",
+        "New York",
+        "Electrical Engineer",
+        equip,
+        stats,
+        skills,
+        location
+    );
+
+    // Init the db
+    REQUIRE( sql->InsertCharacter(tony) == true );
+    // TODO: Check to make sure that the character was inserted
+
+    delete sql;
+}
+
+
 // TODO: Tie new player to an account
 // TODO: Should we init the db to a blank slate?
 // TODO: Make a function to programmatically init the db, so we can use here
@@ -66,6 +100,7 @@ TEST_CASE( "insert player", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     sockaddr_in dummyClient;
     stats_t dummyStats;
+    skills_t dummySkills;
     equipment_t dummyEquipment;
     location_t dummyLocation;
 
@@ -85,6 +120,7 @@ TEST_CASE( "insert player", "[sql]" ) {
         "Shaman",
         dummyEquipment,
         dummyStats,
+        dummySkills,
         dummyLocation
     );
      // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",

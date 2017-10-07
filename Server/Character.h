@@ -17,28 +17,85 @@ typedef struct {
     std::string feet;
     std::string cloak;
     std::string necklace;
-    std::string ringOne;
-    std::string ringTwo;
-    std::string rightHand;
-    std::string leftHand;
+    std::string ringone;
+    std::string ringtwo;
+    std::string righthand;
+    std::string lefthand;
 } equipment_t;
 
 
 typedef struct {
     int level;
     int hp;
-    int maxHp;
+    int maxhp;
     int bp;
-    int maxBp;
+    int maxbp;
     int mp;
-    int maxMp;
+    int maxmp;
     int ep;
-    int maxEp;
+    int maxep;
     int strength;
     int constitution;
     int intelligence;
     int dexterity;
 } stats_t;
+
+
+typedef struct {
+    int axe;
+    int dagger;
+    int unarmed;
+    int hammer;
+    int polearm;
+    int spear;
+    int staff;
+    int sword;
+    int archery;
+    int crossbow;
+    int sling;
+    int thrown;
+    int armor;
+    int dualweapon;
+    int shield;
+    int bardic;
+    int conjuring;
+    int druidic;
+    int illusion;
+    int necromancy;
+    int sorcery;
+    int shamanic;
+    int spellcraft;
+    int summoning;
+    int focus;
+    int armorsmithing;
+    int tailoring;
+    int fletching;
+    int weaponsmithing;
+    int alchemy;
+    int lapidary;
+    int calligraphy;
+    int enchanting;
+    int herbalism;
+    int hunting;
+    int mining;
+    int bargaining;
+    int camping;
+    int firstaid;
+    int lore;
+    int picklocks;
+    int scouting;
+    int search;
+    int stealth;
+    int traps;
+    int aeolandis;
+    int hieroform;
+    int highgundis;
+    int oldpraxic;
+    int praxic;
+    int runic;
+} skills_t;
+
+
 
 typedef struct {
     float x;
@@ -51,10 +108,6 @@ typedef struct {
 
 
 class Character {
-
-
-
-
     private:
 
     std::string firstname;
@@ -68,6 +121,7 @@ class Character {
     std::string profession;
     equipment_t equipment;
     stats_t stats;
+    skills_t skills;
     location_t location;
 
     public:
@@ -85,13 +139,14 @@ class Character {
         std::string profession,
         equipment_t equipment,
         stats_t stats,
+        skills_t skills,
         location_t location
     );
 
     ~Character();
 
     // Getter Functions
-    std::string GetFirstName();
+    std::string GetFirstname();
     std::string GetLastname();
     std::string GetGuild();
     std::string GetRace();
@@ -102,10 +157,11 @@ class Character {
     std::string GetProfession();
     equipment_t GetEquipment();
     stats_t GetStats();
+    skills_t GetSkills();
     location_t GetLocation();
 
     // Setter Functions
-    void SetFirstName(std::string);
+    void SetFirstname(std::string);
     void SetLastname(std::string);
     void SetGuild(std::string);
     void SetRace(std::string);
@@ -116,6 +172,7 @@ class Character {
     void SetProfession(std::string);
     void SetEquipment(equipment_t);
     void SetStats(stats_t);
+    void SetSkills(skills_t);
     void SetLocation(location_t);
 
     // Class Functions

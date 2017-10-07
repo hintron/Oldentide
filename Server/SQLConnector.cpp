@@ -125,250 +125,310 @@ bool SQLConnector::InsertAccount(std::string accountName, std::string email, std
 
 // Inserts a new player into the database.
 bool SQLConnector::InsertPlayer(Player p) {
-    std::stringstream query;
-
-    stats_t stats;
-    equipment_t equipment;
-    location_t location;
-
     // sockaddr_in client,
     // std::string account,
     // int id,
     // int session,
-    // std::string firstname,
-    // std::string lastname,
-    // std::string guild,
-    // std::string race,
-    // std::string gender,
-    // std::string face,
-    // std::string skin,
-    // std::string zone,
-    // std::string profession,
-    // equipment_t equipment,
-    // stats_t stats,
-    // location_t location
+
+}
+
+bool SQLConnector::InsertCharacter(Character c) {
+    std::stringstream query;
 
 
-    // try {
-    //     // Open a database file
-    //     SQLite::Database    db("Oldentide.db");
+    location_t location = c.GetLocation();
+    equipment_t equip = c.GetEquipment();
+    stats_t stats = c.GetStats();
+    skills_t skills = c.GetSkills();
 
-    //     // Compile a SQL query, containing one parameter (index 1)
-    //     SQLite::Statement   query(db, "SELECT * FROM characters");
-    //     // query.bind(1, 6);
+    // TODO: Return the id of the newly-created record
+    // Multiline string literal!
+    std::string query_string(R"(
+    INSERT INTO characters (
+        firstname,
+        lastname,
+        guild,
+        race,
+        gender,
+        face,
+        skin,
+        profession,
+        level,
+        hp,
+        maxhp,
+        bp,
+        maxbp,
+        mp,
+        maxmp,
+        ep,
+        maxep,
+        strength,
+        constitution,
+        intelligence,
+        dexterity,
+        axe,
+        dagger,
+        unarmed,
+        hammer,
+        polearm,
+        spear,
+        staff,
+        sword,
+        archery,
+        crossbow,
+        sling,
+        thrown,
+        armor,
+        dualweapon,
+        shield,
+        bardic,
+        conjuring,
+        druidic,
+        illusion,
+        necromancy,
+        sorcery,
+        shamanic,
+        summoning,
+        spellcraft,
+        focus,
+        armorsmithing,
+        tailoring,
+        fletching,
+        weaponsmithing,
+        alchemy,
+        lapidary,
+        calligraphy,
+        enchanting,
+        herbalism,
+        hunting,
+        mining,
+        bargaining,
+        camping,
+        firstaid,
+        lore,
+        picklocks,
+        scouting,
+        search,
+        stealth,
+        traps,
+        aeolandis,
+        hieroform,
+        highgundis,
+        oldpraxic,
+        praxic,
+        runic,
+        head,
+        chest,
+        arms,
+        hands,
+        legs,
+        feet,
+        cloak,
+        necklace,
+        ringone,
+        ringtwo,
+        righthand,
+        lefthand,
+        zone,
+        x,
+        y,
+        z,
+        pitch,
+        yaw
+    ) VALUES (
+        :firstname,
+        :lastname,
+        :guild,
+        :race,
+        :gender,
+        :face,
+        :skin,
+        :profession,
+        :level,
+        :hp,
+        :maxhp,
+        :bp,
+        :maxbp,
+        :mp,
+        :maxmp,
+        :ep,
+        :maxep,
+        :strength,
+        :constitution,
+        :intelligence,
+        :dexterity,
+        :axe,
+        :dagger,
+        :unarmed,
+        :hammer,
+        :polearm,
+        :spear,
+        :staff,
+        :sword,
+        :archery,
+        :crossbow,
+        :sling,
+        :thrown,
+        :armor,
+        :dualweapon,
+        :shield,
+        :bardic,
+        :conjuring,
+        :druidic,
+        :illusion,
+        :necromancy,
+        :sorcery,
+        :shamanic,
+        :summoning,
+        :spellcraft,
+        :focus,
+        :armorsmithing,
+        :tailoring,
+        :fletching,
+        :weaponsmithing,
+        :alchemy,
+        :lapidary,
+        :calligraphy,
+        :enchanting,
+        :herbalism,
+        :hunting,
+        :mining,
+        :bargaining,
+        :camping,
+        :firstaid,
+        :lore,
+        :picklocks,
+        :scouting,
+        :search,
+        :stealth,
+        :traps,
+        :aeolandis,
+        :hieroform,
+        :highgundis,
+        :oldpraxic,
+        :praxic,
+        :runic,
+        :head,
+        :chest,
+        :arms,
+        :hands,
+        :legs,
+        :feet,
+        :cloak,
+        :necklace,
+        :ringone,
+        :ringtwo,
+        :righthand,
+        :lefthand,
+        :zone,
+        :x,
+        :y,
+        :z,
+        :pitch,
+        :yaw
+    )
+    )"); // End query
 
-    //     // Loop to execute the query step by step, to get rows of result
-    //     while (query.executeStep()) {
-    //         // Demonstrate how to get some typed column value
-    //         int         id      = query.getColumn(0);
-    //         const char* value   = query.getColumn(1);
-    //         int         size    = query.getColumn(2);
-
-    //         std::cout << "row: " << id << ", " << value << ", " << size << std::endl;
-    //     }
-    // }
-    // catch (std::exception& e) {
-    //     std::cout << "exception: " << e.what() << std::endl;
-    // }
-
-
-
-    // // TODO: Return the id of the newly-created record
-    // // Multiline string literal!
-    // std::string query_string(R"(
-    //     INSERT INTO characters (
-    //         accountid,
-    //         firstname,
-    //         lastname,
-    //         race,
-    //         gender,
-    //         face,
-    //         skin,
-    //         profession,
-    //         level,
-    //         hp,
-    //         maxhp,
-    //         bp,
-    //         maxbp,
-    //         mp,
-    //         maxmp,
-    //         ep,
-    //         maxep,
-    //         strength,
-    //         constitution,
-    //         intelligence,
-    //         dexterity,
-    //         axe,
-    //         dagger,
-    //         unarmed,
-    //         hammer,
-    //         polearm,
-    //         spear,
-    //         staff,
-    //         sword,
-    //         archery,
-    //         crossbow,
-    //         sling,
-    //         thrown,
-    //         armor,
-    //         dualweapon,
-    //         shield,
-    //         bardic,
-    //         conjuring,
-    //         druidic,
-    //         illusion,
-    //         necromancy,
-    //         sorcery,
-    //         shamanic,
-    //         summoning,
-    //         spellcraft,
-    //         focus,
-    //         armorsmithing,
-    //         tailoring,
-    //         fletching,
-    //         weaponsmithing,
-    //         alchemy,
-    //         lapidary,
-    //         calligraphy,
-    //         enchanting,
-    //         herbalism,
-    //         hunting,
-    //         mining,
-    //         bargaining,
-    //         camping,
-    //         firstaid,
-    //         lore,
-    //         picklocks,
-    //         scouting,
-    //         search,
-    //         stealth,
-    //         traps,
-    //         aeolandis,
-    //         hieroform,
-    //         highgundis,
-    //         oldpraxic,
-    //         praxic,
-    //         runic,
-    //         head,
-    //         chest,
-    //         arms,
-    //         hands,
-    //         legs,
-    //         feet,
-    //         cloak,
-    //         necklace,
-    //         ringone,
-    //         ringtwo,
-    //         righthand,
-    //         lefthand,
-    //         zone,
-    //         x,
-    //         y,
-    //         z,
-    //         pitch,
-    //         yaw
-    //     ) VALUES (";
-    // )");
-    // query << "'" << p.GetAccount() << "', ";
-    // query << "'" << p.GetFirstName() << "', ";
-    // query << "'" << p.GetLastname() << "', ";
-    // query << "'" << p.GetRace() << "', ";
-    // query << "'" << p.GetGender() << "', ";
-    // query << "'" << p.GetFace() << "', ";
-    // query << "'" << p.GetSkin() << "', ";
-    // query << "'" << p.GetProfession() << "', ";
-    // query << p.GetLevel() << ", ";
-    // query << p.GetHp() << ", ";
-    // query << p.GetMaxHp() << ", ";
-    // query << p.GetBp() << ", ";
-    // query << p.GetMaxBp() << ", ";
-    // query << p.GetMp() << ", ";
-    // query << p.GetMaxMp() << ", ";
-    // query << p.GetEp() << ", ";
-    // query << p.GetMaxEp() << ", ";
-    // query << p.GetStrength() << ", ";
-    // query << p.GetConstitution() << ", ";
-    // query << p.GetIntelligence() << ", ";
-    // query << p.GetDexterity() << ", ";
-    // query << p.GetAxe() << ", ";
-    // query << p.GetDagger() << ", ";
-    // query << p.GetUnarmed() << ", ";
-    // query << p.GetHammer() << ", ";
-    // query << p.GetPolearm() << ", ";
-    // query << p.GetSpear() << ", ";
-    // query << p.GetStaff() << ", ";
-    // query << p.GetSword() << ", ";
-    // query << p.GetArchery() << ", ";
-    // query << p.GetCrossbow() << ", ";
-    // query << p.GetSling() << ", ";
-    // query << p.GetThrown() << ", ";
-    // query << p.GetArmor() << ", ";
-    // query << p.GetDualWeapon() << ", ";
-    // query << p.GetShield() << ", ";
-    // query << p.GetBardic() << ", ";
-    // query << p.GetConjuring() << ", ";
-    // query << p.GetDruidic() << ", ";
-    // query << p.GetIllusion() << ", ";
-    // query << p.GetNecromancy() << ", ";
-    // query << p.GetSorcery() << ", ";
-    // query << p.GetShamanic() << ", ";
-    // query << p.GetSummoning() << ", ";
-    // query << p.GetSpellcraft() << ", ";
-    // query << p.GetFocus() << ", ";
-    // query << p.GetArmorsmithing() << ", ";
-    // query << p.GetTailoring() << ", ";
-    // query << p.GetFletching() << ", ";
-    // query << p.GetWeaponsmithing() << ", ";
-    // query << p.GetAlchemy() << ", ";
-    // query << p.GetLapidary() << ", ";
-    // query << p.GetCalligraphy() << ", ";
-    // query << p.GetEnchanting() << ", ";
-    // query << p.GetHerbalism() << ", ";
-    // query << p.GetHunting() << ", ";
-    // query << p.GetMining() << ", ";
-    // query << p.GetBargaining() << ", ";
-    // query << p.GetCamping() << ", ";
-    // query << p.GetFirstAid() << ", ";
-    // query << p.GetLore() << ", ";
-    // query << p.GetPickLocks() << ", ";
-    // query << p.GetScouting() << ", ";
-    // query << p.GetSearch() << ", ";
-    // query << p.GetStealth() << ", ";
-    // query << p.GetTraps() << ", ";
-    // query << p.GetAeolandis() << ", ";
-    // query << p.GetHieroform() << ", ";
-    // query << p.GetHighGundis() << ", ";
-    // query << p.GetOldPraxic() << ", ";
-    // query << p.GetPraxic() << ", ";
-    // query << p.GetRunic() << ", ";
-    // query << "'" << p.GetHead() << "', ";
-    // query << "'" << p.GetChest() << "', ";
-    // query << "'" << p.GetArms() << "', ";
-    // query << "'" << p.GetHands() << "', ";
-    // query << "'" << p.GetLegs() << "', ";
-    // query << "'" << p.GetFeet() << "', ";
-    // query << "'" << p.GetCloak() << "', ";
-    // query << "'" << p.GetNecklace() << "', ";
-    // query << "'" << p.GetRingOne() << "', ";
-    // query << "'" << p.GetRingTwo() << "', ";
-    // query << "'" << p.GetRightHand() << "', ";
-    // query << "'" << p.GetLeftHand() << "', ";
-    // query << "'" << p.GetZone() << "', ";
-    // query << p.GetX() << ", ";
-    // query << p.GetY() << ", ";
-    // query << p.GetZ() << ", ";
-    // query << p.GetPitch() << ", ";
-    // query << p.GetYaw() << ")";
-
-    // std::cout << query.str() << std::endl;
-    // Execute(query.str());
-
-    // if (sqls == SQLITE_OK) {
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(":firstname", c.GetFirstname());
+        query.bind(":lastname", c.GetLastname());
+        query.bind(":guild", c.GetGuild());
+        query.bind(":race", c.GetRace());
+        query.bind(":gender", c.GetGender());
+        query.bind(":face", c.GetFace());
+        query.bind(":skin", c.GetSkin());
+        query.bind(":profession", c.GetProfession());
+        query.bind(":level", stats.level);
+        query.bind(":hp", stats.hp);
+        query.bind(":maxhp", stats.maxhp);
+        query.bind(":bp", stats.bp);
+        query.bind(":maxbp", stats.maxbp);
+        query.bind(":mp", stats.mp);
+        query.bind(":maxmp", stats.maxmp);
+        query.bind(":ep", stats.ep);
+        query.bind(":maxep", stats.maxep);
+        query.bind(":strength", stats.strength);
+        query.bind(":constitution", stats.constitution);
+        query.bind(":intelligence", stats.intelligence);
+        query.bind(":dexterity", stats.dexterity);
+        query.bind(":axe", skills.axe);
+        query.bind(":dagger", skills.dagger);
+        query.bind(":unarmed", skills.unarmed);
+        query.bind(":hammer", skills.hammer);
+        query.bind(":polearm", skills.polearm);
+        query.bind(":spear", skills.spear);
+        query.bind(":staff", skills.staff);
+        query.bind(":sword", skills.sword);
+        query.bind(":archery", skills.archery);
+        query.bind(":crossbow", skills.crossbow);
+        query.bind(":sling", skills.sling);
+        query.bind(":thrown", skills.thrown);
+        query.bind(":armor", skills.armor);
+        query.bind(":dualweapon", skills.dualweapon);
+        query.bind(":shield", skills.shield);
+        query.bind(":bardic", skills.bardic);
+        query.bind(":conjuring", skills.conjuring);
+        query.bind(":druidic", skills.druidic);
+        query.bind(":illusion", skills.illusion);
+        query.bind(":necromancy", skills.necromancy);
+        query.bind(":sorcery", skills.sorcery);
+        query.bind(":shamanic", skills.shamanic);
+        query.bind(":summoning", skills.summoning);
+        query.bind(":spellcraft", skills.spellcraft);
+        query.bind(":focus", skills.focus);
+        query.bind(":armorsmithing", skills.armorsmithing);
+        query.bind(":tailoring", skills.tailoring);
+        query.bind(":fletching", skills.fletching);
+        query.bind(":weaponsmithing", skills.weaponsmithing);
+        query.bind(":alchemy", skills.alchemy);
+        query.bind(":lapidary", skills.lapidary);
+        query.bind(":calligraphy", skills.calligraphy);
+        query.bind(":enchanting", skills.enchanting);
+        query.bind(":herbalism", skills.herbalism);
+        query.bind(":hunting", skills.hunting);
+        query.bind(":mining", skills.mining);
+        query.bind(":bargaining", skills.bargaining);
+        query.bind(":camping", skills.camping);
+        query.bind(":firstaid", skills.firstaid);
+        query.bind(":lore", skills.lore);
+        query.bind(":picklocks", skills.picklocks);
+        query.bind(":scouting", skills.scouting);
+        query.bind(":search", skills.search);
+        query.bind(":stealth", skills.stealth);
+        query.bind(":traps", skills.traps);
+        query.bind(":aeolandis", skills.aeolandis);
+        query.bind(":hieroform", skills.hieroform);
+        query.bind(":highgundis", skills.highgundis);
+        query.bind(":oldpraxic", skills.oldpraxic);
+        query.bind(":praxic", skills.praxic);
+        query.bind(":runic", skills.runic);
+        query.bind(":head", equip.head);
+        query.bind(":chest", equip.chest);
+        query.bind(":arms", equip.arms);
+        query.bind(":hands", equip.hands);
+        query.bind(":legs", equip.legs);
+        query.bind(":feet", equip.feet);
+        query.bind(":cloak", equip.cloak);
+        query.bind(":necklace", equip.necklace);
+        query.bind(":ringone", equip.ringone);
+        query.bind(":ringtwo", equip.ringtwo);
+        query.bind(":righthand", equip.righthand);
+        query.bind(":lefthand", equip.lefthand);
+        query.bind(":zone", c.GetZone());
+        query.bind(":x", location.x);
+        query.bind(":y", location.y);
+        query.bind(":z", location.z);
+        query.bind(":pitch", location.pitch);
+        query.bind(":yaw", location.yaw);
+        query.exec();
+        return true;
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
         return false;
-    // }
-    // else {
-    //     return false;
-    // }
+    }
 }
 
 // Lists all the accounts
