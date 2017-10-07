@@ -60,14 +60,6 @@ Player::~Player() {
 //-------------------                      Getter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
 
-std::string Player::GetFirstname() {
-    return firstname;
-}
-
-std::string Player::GetLastname() {
-    return lastname;
-}
-
 sockaddr_in Player::GetClient() {
     return client;
 }
@@ -89,14 +81,6 @@ int Player::GetSession() {
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Setter Functions                    -------------------//
 //------------------------------------------------------------------------------------------------//
-
-void Player::SetFirstname(std::string firstname) {
-    this->firstname = firstname;
-}
-
-void Player::SetLastname(std::string lastname) {
-    this->lastname = lastname;
-}
 
 void Player::SetClient(sockaddr_in client) {
     this->client = client;

@@ -125,6 +125,9 @@ int SQLConnector::InsertAccount(std::string accountName, std::string email, std:
 
 // Inserts a new player into the database.
 int SQLConnector::InsertPlayer(Player p, int account_id) {
+    std::cout << "Creating player " << p.GetFirstname() << " " << p.GetLastname() << std::endl;
+
+    // First, insert the base character that the player is based off of
     Character c(
         p.GetFirstname(),
         p.GetLastname(),
@@ -156,6 +159,8 @@ int SQLConnector::InsertPlayer(Player p, int account_id) {
 
     // TODO: Update active player list
 
+
+    // Now insert the player using the newly-created character
     std::string query_string(R"(
         INSERT INTO players (
             character_id,
@@ -192,13 +197,13 @@ int SQLConnector::InsertPlayer(Player p, int account_id) {
 int SQLConnector::InsertCharacter(Character c) {
     std::stringstream query;
 
-
     location_t location = c.GetLocation();
     equipment_t equip = c.GetEquipment();
     stats_t stats = c.GetStats();
     skills_t skills = c.GetSkills();
 
-    // TODO: Return the id of the newly-created record
+    std::cout << "Creating character " << c.GetFirstname() << " " << c.GetLastname() << std::endl;
+
     // Multiline string literal!
     std::string query_string(R"(
     INSERT INTO characters (

@@ -17,9 +17,6 @@ public:
     int session;
     sockaddr_in client;
     std::string account;
-    std::string profession;
-    std::string firstname;
-    std::string lastname;
 
     public:
 
@@ -48,8 +45,6 @@ public:
 
     // Getter Functions.
 
-    std::string GetFirstname();
-    std::string GetLastname();
     sockaddr_in GetClient();
     std::string GetAccount();
     int GetId();
@@ -57,8 +52,6 @@ public:
 
     // Setter Functions.
 
-    void SetFirstname(std::string firstname);
-    void SetLastname(std::string lastname);
     void SetClient(sockaddr_in client);
     void SetAccount(std::string account);
     void SetId(int id);
