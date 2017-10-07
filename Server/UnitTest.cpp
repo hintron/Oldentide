@@ -23,18 +23,30 @@ TEST_CASE( "create server", "[server]" ) {
 }
 
 
-// TODO: Create and test a 'init db' or blank_db
-// TODO: insert character
+// TODO Items:
+/////////////////////////////////////////////////////
+//       Create and test a 'init db' or blank_db
+// TODO: get accounts
+// TODO: get characters
+// TODO: get players
+// TODO: get npcs
+// TODO: get item
+//       insert account
+//       insert character
 // TODO: insert player
 // TODO: insert npc
+// TODO: insert item
+// TODO: delete account - test cascade deletes
 // TODO: delete character - test cascade deletes
 // TODO: delete player
 // TODO: delete npc
-// TODO: insert item
 // TODO: delete item
+// TODO: update account - test cascade updates
 // TODO: update player
 // TODO: update npc
 // TODO: update character - test cascade updates
+// TODO: update item
+/////////////////////////////////////////////////////
 
 
 
