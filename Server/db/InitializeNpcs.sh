@@ -17,7 +17,7 @@ sqlite3 Oldentide.db <<EOF
 delete from npcs;
 .headers on
 .mode csv
-.import Npcs.init npcs
+.import Npcs.init characters
 .quit
 EOF
 echo "NPCs Populated."

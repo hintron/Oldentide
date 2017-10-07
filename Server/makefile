@@ -26,7 +26,7 @@ mkdir :
 	mkdir -p bin db
 
 
-database : mkdir
+database db : mkdir
 	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
 	bash db/InitializeNpcs.sh
 
@@ -115,7 +115,7 @@ sqlitecpp :
 
 
 
-.PHONY: all, clean, cleanall, cleansql, mkdir, database, server, client, unittest, msgpack, catch, sqlitecpp
+.PHONY: all, clean, cleanall, cleansql, mkdir, database, db, server, client, unittest, msgpack, catch, sqlitecpp
 
 
 

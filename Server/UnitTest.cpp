@@ -48,6 +48,14 @@ TEST_CASE( "create server", "[server]" ) {
 // TODO: update item
 /////////////////////////////////////////////////////
 
+
+
+///////////////////////////
+// SQLConnector.cpp
+///////////////////////////
+
+
+
 std::vector<std::string> accounts_to_insert {
     "joe",
     "mike",
@@ -190,9 +198,6 @@ TEST_CASE( "insert npcs", "[sql]" ) {
         dummySkills,
         dummyLocation
     );
-     // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",
-    // int account_id = sql->InsertAccount("player_test_account", "my_email@my.example.com", "deadBEEF019", "deAD1337");
-    // REQUIRE( account_id != 0 );
 
     int npc_id = sql->InsertNpc(griphook);
     REQUIRE( npc_id != 0 );
@@ -210,16 +215,9 @@ TEST_CASE( "insert npcs", "[sql]" ) {
 
 
 
-
-
-
-
-
-
-// TODO: What to break out into test cases, and what to break out into sections?
-
-
-
+///////////////////////////
+// Utils
+///////////////////////////
 
 
 TEST_CASE( "Tokenfy", "[utils]" ) {
