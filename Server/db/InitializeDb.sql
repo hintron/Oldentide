@@ -1,9 +1,4 @@
 DROP TABLE IF EXISTS accounts;
-DROP TABLE IF EXISTS players;
-DROP TABLE IF EXISTS characters;
-DROP TABLE IF EXISTS npcs;
-DROP TABLE IF EXISTS items;
-DROP TABLE IF EXISTS stats;
 CREATE TABLE accounts (
     id integer not null primary key autoincrement,
     valid integer not null,
@@ -15,7 +10,8 @@ CREATE TABLE accounts (
     salt text not null collate nocase
 );
 
--- Characters is the parent table of both nps and players (pcs)
+-- Characters is the parent table of both npcs and players (pcs)
+DROP TABLE IF EXISTS characters;
 CREATE TABLE characters (
     -- Identification:
     id integer not null primary key autoincrement,
@@ -116,6 +112,7 @@ CREATE TABLE characters (
 
 );
 
+DROP TABLE IF EXISTS players;
 CREATE TABLE players (
     id integer not null primary key autoincrement,
     character_id integer not null,
@@ -125,6 +122,7 @@ CREATE TABLE players (
     FOREIGN KEY(character_id) REFERENCES characters(id)
 );
 
+DROP TABLE IF EXISTS npcs;
 CREATE TABLE npcs (
     id integer not null primary key autoincrement,
     character_id integer not null,
@@ -133,6 +131,7 @@ CREATE TABLE npcs (
     FOREIGN KEY(character_id) REFERENCES characters(id)
 );
 
+DROP TABLE IF EXISTS items;
 CREATE TABLE items (
     id integer not null primary key autoincrement,
     character_id integer not null,
@@ -152,15 +151,17 @@ CREATE TABLE items (
 -- Views
 
 
-CREATE VIEW player_view AS
+DROP VIEW IF EXISTS players_view;
+CREATE VIEW players_view AS
 SELECT
     *
-FROM player
+FROM players
 left join
     characters on players.character_id = characters.id
 ;
 
 
+DROP VIEW IF EXISTS npcs_view;
 CREATE VIEW npcs_view AS
 SELECT
     *
