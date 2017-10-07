@@ -12,7 +12,7 @@
 #include "Npc.h"
 #include <string>
 #include <vector>
-#include <set>
+// #include <set>
 
 class SQLConnector{
     public:
@@ -24,8 +24,9 @@ class SQLConnector{
         int InsertCharacter(Character newCharacter);
         int InsertPlayer(Player newPlayer, int account_id);
         void ListAccounts();
+        std::vector<std::string> GetAccounts();
         std::vector<std::string> GetPlayerList(std::string account);
-        std::set<Npc> PopulateNpcList();
+        std::vector<Npc> GetNpcs();
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
     private:

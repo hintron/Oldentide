@@ -26,14 +26,14 @@ TEST_CASE( "create server", "[server]" ) {
 // TODO Items:
 /////////////////////////////////////////////////////
 //       Create and test a 'init db' or blank_db
-// TODO: get accounts
+//       get accounts
 // TODO: get characters
 // TODO: get players
 // TODO: get npcs
 // TODO: get item
 //       insert account
 //       insert character
-// TODO: insert player
+//       insert player
 // TODO: insert npc
 // TODO: insert item
 // TODO: delete account - test cascade deletes
@@ -65,11 +65,8 @@ TEST_CASE( "insert account", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
     REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
-    // Cannot reinsert account with same name
+    // Make sure an insert of the same name that already exists causes a failure
     REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == 0 );
-    // TODO: Test to make sure players looks good
-    std::vector<std::string> players = sql->GetPlayerList("my_account");
-    REQUIRE( players.size() > 0 );
     delete sql;
 }
 
@@ -141,6 +138,9 @@ TEST_CASE( "insert player", "[sql]" ) {
 
     int account_id = 1;
     REQUIRE( sql->InsertPlayer(p, account_id) != 0 );
+    // TODO: Test to make sure players looks good
+    std::vector<std::string> players = sql->GetPlayerList("my_account");
+    REQUIRE( players.size() > 0 );
     delete sql;
 }
 

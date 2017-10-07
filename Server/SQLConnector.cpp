@@ -108,19 +108,29 @@ int SQLConnector::InsertAccount(std::string accountName, std::string email, std:
         std::cout << "Salt is invalid! Cannot insert account record" << std::endl;
         return false;
     }
-    std::string cmd("insert into accounts (accountname, valid, email, playing, key, salt) values (?,?,?,?,?,?)");
-    SQLite::Statement query(db, cmd);
-    query.bind(1, accountName);
-    query.bind(2, true);
-    query.bind(3, email);
-    query.bind(4, true);
-    query.bind(5, key);
-    query.bind(6, salt);
-    while (query.executeStep()) {
-        std::cout << "Executing step for insert account..." << std::endl;
+    std::string query_string("insert into accounts (accountname, valid, email, playing, key, salt) values (?,?,?,?,?,?)");
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(1, accountName);
+        query.bind(2, true);
+        query.bind(3, email);
+        query.bind(4, true);
+        query.bind(5, key);
+        query.bind(6, salt);
+        int rows_modified = query.exec();
+        if(rows_modified < 1) {
+            std::cout << "Could not insert account record! " << rows_modified << " rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            return db.getLastInsertRowid();
+        }
     }
-
-    return true;
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
 }
 
 // Inserts a new player into the database.
@@ -179,7 +189,7 @@ int SQLConnector::InsertPlayer(Player p, int account_id) {
         int rows_modified = query.exec();
 
         if(rows_modified < 1){
-            std::cout << "Could not insert character record! " << rows_modified << "Rows were modified" << std::endl;
+            std::cout << "Could not insert character record! " << rows_modified << " rows were modified" << std::endl;
             return 0;
         }
         else {
@@ -485,7 +495,7 @@ int SQLConnector::InsertCharacter(Character c) {
         query.bind(":yaw", location.yaw);
         int rows_modified = query.exec();
         if(rows_modified < 1){
-            std::cout << "Could not insert character record! " << rows_modified << "Rows were modified" << std::endl;
+            std::cout << "Could not insert character record! " << rows_modified << " rows were modified" << std::endl;
             return 0;
         }
         else {
@@ -502,18 +512,30 @@ int SQLConnector::InsertCharacter(Character c) {
 
 // Lists all the accounts
 void SQLConnector::ListAccounts() {
-    std::string cmd("select * from accounts ORDER BY accountname");
-    SQLite::Statement query(db, cmd);
-    while (query.executeStep()) {
-        std::cout << "Executing step for insert account..." << std::endl;
+    std::vector<std::string> accounts = GetAccounts();
+    std::cout << "ACCOUNTS: " << std::endl;
+    for (int i = 0; i < accounts.size(); ++i) {
+        std::cout << accounts.at(i) << std::endl;
     }
 }
 
-// TODO: Create a view instead of creating a join table right here
+
+std::vector<std::string> SQLConnector::GetAccounts() {
+    std::vector<std::string> accounts;
+
+    std::string cmd("SELECT accountname FROM accounts ORDER BY accountname");
+    SQLite::Statement query(db, cmd);
+    while (query.executeStep()) {
+        accounts.push_back(query.getColumn(0));
+    }
+    return accounts;
+}
+
+
 std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
     std::vector<std::string> players;
 
-    std::string cmd("select firstname, lastname FROM players JOIN accounts ON players.account_id = accounts.id ORDER BY accountname WHERE accountname = ?");
+    std::string cmd("SELECT firstname, lastname, accountname FROM players_view WHERE accountname = ? ORDER BY lastname");
     SQLite::Statement query(db, cmd);
     query.bind(1, accountname);
 
@@ -526,19 +548,49 @@ std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
     return players;
 }
 
-std::set<Npc> SQLConnector::PopulateNpcList() {
-    std::set<Npc> npcs;
-    std::stringstream query;
-    // char *errorMessage = NULL;
-    // query << "SELECT * FROM npcs";
-    // sqls = sqlite3_exec(database, query.str().c_str(), ParseNpcs, (void*)&npcs, &errorMessage);
-    // if (sqls != SQLITE_OK) {
-    //     std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
-    // }
-    // if (errorMessage) {
-    //     std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
-    //     sqlite3_free(errorMessage);
-    // }
+std::vector<Npc> SQLConnector::GetNpcs() {
+    std::vector<Npc> npcs;
+    // TODO: Get equipment, stats, skills, location
+    std::string cmd(R"(SELECT
+        id,
+        firstname,
+        lastname,
+        guild,
+        race,
+        gender,
+        face,
+        skin,
+        zone,
+        profession
+        FROM npcs_view ORDER BY lastname
+    )");
+
+    SQLite::Statement query(db, cmd);
+
+    // TODO: Get the real values
+    equipment_t empty_equipment;
+    stats_t empty_stats;
+    skills_t empty_skills;
+    location_t empty_location;
+    while (query.executeStep()) {
+        Npc temp(
+            query.getColumn(0),
+            query.getColumn(1),
+            query.getColumn(2),
+            query.getColumn(3),
+            query.getColumn(4),
+            query.getColumn(5),
+            query.getColumn(6),
+            query.getColumn(7),
+            query.getColumn(8),
+            query.getColumn(9),
+            empty_equipment,
+            empty_stats,
+            empty_skills,
+            empty_location
+        );
+        npcs.push_back(temp);
+    }
     return npcs;
 }
 
@@ -596,19 +648,3 @@ int SQLConnector::GetAccountKey(char *accountName, char *keyStringHex) {
     // }
     return 1;
 }
-
-// -------------------------------------- Callback Functions ---------------------------------------
-
-// A generic callback function to sqlite3_exec() that copies a c string in the first column
-// // of the returned row into stringToReturn. This function assumes that only one record will be
-// // in the result set, or else the return value will be the value in the last row processed.
-// static int ReturnStringCallback(void *stringToReturn, int argc, char **argv, char **azColName) {
-//     strcpy((char *)stringToReturn, argv[0]);
-//     return 0;
-// }
-
-// static int ParseNpcs(void * npcs, int argc, char ** argv, char ** azColName) {
-//     std::set<Npc> * npcset = (std::set<Npc> *)npcs;
-//     //npcset->insert(Npc temp(argv));
-//     return 0;
-// }

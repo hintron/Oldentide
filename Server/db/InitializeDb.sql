@@ -156,8 +156,8 @@ CREATE VIEW players_view AS
 SELECT
     *
 FROM players
-left join
-    characters on players.character_id = characters.id
+left join characters on players.character_id = characters.id
+left join accounts on players.account_id = accounts.id
 ;
 
 
@@ -166,6 +166,5 @@ CREATE VIEW npcs_view AS
 SELECT
     *
 FROM npcs
-left join
-    characters on npcs.character_id = characters.id
+left join characters on npcs.character_id = characters.id
 ;

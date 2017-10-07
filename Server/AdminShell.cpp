@@ -50,17 +50,17 @@ void AdminShell::Run() {
                     sql->ListAccounts();
                 }
                 if (adminTokens[1] == "players") {
-                    std::set<Player> players = gameState->getPlayers();
-                    for (std::set<Player>::iterator it = players.begin(); it != players.end(); ++it) {
-                        Player temp = *it;
+                    std::vector<Player> players = gameState->getPlayers();
+                    for (int i = 0; i < players.size(); i++) {
+                        Player temp = players.at(i);
                         std::cout << temp.GetFirstname() << " " << temp.GetLastname() << std::endl;
                     }
                 }
                 if (adminTokens[1] == "npcs") {
                     std::cout << "NPCS" << std::endl;
-                    std::set<Npc> npcs = gameState->getNPCs();
-                    for (std::set<Npc>::iterator it = npcs.begin(); it != npcs.end(); ++it) {
-                        Npc temp = *it;
+                    std::vector<Npc> npcs = gameState->getNPCs();
+                    for (int i = 0; i < npcs.size(); i++) {
+                        Npc temp = npcs.at(i);
                         std::cout << temp.GetId() << std::endl;
                     }
                 }

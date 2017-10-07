@@ -31,14 +31,14 @@ class GameState{
         int GenerateSession(int sessionId);
         void SetSessionAccountName(char * accountName, int sessionId);
         std::string GetSessionAccountName(int sessionId);
-        std::set<Player> getPlayers();
-        std::set<Npc> getNPCs();
+        std::vector<Player> getPlayers();
+        std::vector<Npc> getNPCs();
 
     private:
         SQLConnector * sql;
         Server * server;
-        std::set<Player> players;
-        std::set<Npc> npcs;
+        std::vector<Player> players;
+        std::vector<Npc> npcs;
         std::set<int> sessions;
         std::set<int> activeSessions;
         std::map<int, std::string> sessionAccounts;
