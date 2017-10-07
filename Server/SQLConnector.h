@@ -23,6 +23,7 @@ class SQLConnector{
         int InsertAccount(std::string, std::string, std::string, std::string);
         int InsertCharacter(Character newCharacter);
         int InsertPlayer(Player newPlayer, int account_id);
+        int InsertNpc(Npc newNpc);
         void ListAccounts();
         std::vector<std::string> GetAccounts();
         std::vector<std::string> GetPlayerList(std::string account);
@@ -31,15 +32,6 @@ class SQLConnector{
         int GetAccountKey(char *, char *);
     private:
         SQLite::Database db;
-        int sqls;
 };
-
-// // This can't be a private method, because it needs to be passed as a pointer to sqlite3_exec()
-// // and methods of a c++ class have a hidden function pointer to the class instance
-// // See http://stackoverflow.com/a/8045331
-// static int ExecuteCallback(void *, int, char **, char **);
-// static int ReturnStringCallback(void *, int, char **, char **);
-// static int ParsePlayerList(void *, int, char **, char **);
-// static int ParseNpcs(void *, int, char **, char **);
 
 #endif // OLDENTIDE_SQLCONNECTOR_H

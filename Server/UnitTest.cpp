@@ -67,6 +67,8 @@ TEST_CASE( "insert account", "[sql]" ) {
     REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
     // Make sure an insert of the same name that already exists causes a failure
     REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == 0 );
+
+
     delete sql;
 }
 
@@ -102,16 +104,13 @@ TEST_CASE( "insert character", "[sql]" ) {
 }
 
 
-// TODO: Tie new player to an account
-// TODO: Should we init the db to a blank slate?
-// TODO: Make a function to programmatically init the db, so we can use here
 TEST_CASE( "insert player", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     sockaddr_in dummyClient;
-    stats_t dummyStats;
-    skills_t dummySkills;
-    equipment_t dummyEquipment;
-    location_t dummyLocation;
+    equipment_t dummyEquipment = {};
+    stats_t dummyStats = {};
+    skills_t dummySkills = {};
+    location_t dummyLocation = {};
 
     Player p(
         dummyClient,
@@ -144,6 +143,51 @@ TEST_CASE( "insert player", "[sql]" ) {
     delete sql;
 }
 
+
+
+// TODO: Tie new player to an account
+// TODO: Should we init the db to a blank slate?
+// TODO: Make a function to programmatically init the db, so we can use here
+TEST_CASE( "insert npcs", "[sql]" ) {
+    SQLConnector* sql = new SQLConnector();
+    equipment_t dummyEquipment = {};
+    stats_t dummyStats = {};
+    skills_t dummySkills = {};
+    location_t dummyLocation = {};
+
+    Npc griphook(
+        0,
+        "Griphook",
+        "",
+        "Gringotts",
+        "Goblin",
+        "Male",
+        "Normal",
+        "Pale",
+        "zone1",
+        "Banker",
+        dummyEquipment,
+        dummyStats,
+        dummySkills,
+        dummyLocation
+    );
+     // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",
+    // int account_id = sql->InsertAccount("player_test_account", "my_email@my.example.com", "deadBEEF019", "deAD1337");
+    // REQUIRE( account_id != 0 );
+
+    int npc_id = sql->InsertNpc(griphook);
+    REQUIRE( npc_id != 0 );
+
+    // Check to see if id getter and setter works
+    griphook.SetId(npc_id);
+    REQUIRE( griphook.GetId() == npc_id );
+
+    std::vector<Npc> npcs = sql->GetNpcs();
+    REQUIRE( npcs.size() > 0 );
+    REQUIRE( npcs.at(0).GetFirstname() == "Griphook" );
+
+    delete sql;
+}
 
 
 

@@ -133,76 +133,6 @@ int SQLConnector::InsertAccount(std::string accountName, std::string email, std:
     }
 }
 
-// Inserts a new player into the database.
-int SQLConnector::InsertPlayer(Player p, int account_id) {
-    std::cout << "Creating player " << p.GetFirstname() << " " << p.GetLastname() << std::endl;
-
-    // First, insert the base character that the player is based off of
-    Character c(
-        p.GetFirstname(),
-        p.GetLastname(),
-        p.GetGuild(),
-        p.GetRace(),
-        p.GetGender(),
-        p.GetFace(),
-        p.GetSkin(),
-        p.GetZone(),
-        p.GetProfession(),
-        p.GetEquipment(),
-        p.GetStats(),
-        p.GetSkills(),
-        p.GetLocation()
-    );
-
-    int character_id = InsertCharacter(c);
-
-    if(character_id == 0){
-        std::cout << "Could not insert player - base character insertion failed" << std::endl;
-        return 0;
-    }
-
-    // TODO: Deal with these fields
-    // sockaddr_in client,
-    // std::string account,
-    // int id,
-    // int session,
-
-    // TODO: Update active player list
-
-
-    // Now insert the player using the newly-created character
-    std::string query_string(R"(
-        INSERT INTO players (
-            character_id,
-            account_id
-        ) VALUES (
-            :character_id,
-            :account_id
-        )
-    )");
-
-
-    try {
-        SQLite::Statement query(db, query_string);
-        query.bind(":character_id", character_id);
-        query.bind(":account_id", account_id);
-        int rows_modified = query.exec();
-
-        if(rows_modified < 1){
-            std::cout << "Could not insert character record! " << rows_modified << " rows were modified" << std::endl;
-            return 0;
-        }
-        else {
-            // Get the id of the newly inserted record
-            return db.getLastInsertRowid();
-        }
-    }
-    catch (std::exception& e) {
-        std::cout << "exception: " << e.what() << std::endl;
-        std::cout << query_string << std::endl;
-        return 0;
-    }
-}
 
 int SQLConnector::InsertCharacter(Character c) {
     std::stringstream query;
@@ -510,6 +440,137 @@ int SQLConnector::InsertCharacter(Character c) {
     }
 }
 
+
+
+int SQLConnector::InsertNpc(Npc n){
+    std::cout << "Creating npc " << n.GetFirstname() << " " << n.GetLastname() << std::endl;
+
+    // First, insert the base character that the player is based off of
+    Character c(
+        n.GetFirstname(),
+        n.GetLastname(),
+        n.GetGuild(),
+        n.GetRace(),
+        n.GetGender(),
+        n.GetFace(),
+        n.GetSkin(),
+        n.GetZone(),
+        n.GetProfession(),
+        n.GetEquipment(),
+        n.GetStats(),
+        n.GetSkills(),
+        n.GetLocation()
+    );
+
+    int character_id = InsertCharacter(c);
+
+    if(character_id == 0){
+        std::cout << "Could not insert npc - base character insertion failed" << std::endl;
+        return 0;
+    }
+
+    // Now insert the player using the newly-created character
+    std::string query_string(R"(
+        INSERT INTO npcs (
+            character_id
+        ) VALUES (
+            :character_id
+        )
+    )");
+
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(":character_id", character_id);
+        int rows_modified = query.exec();
+        if(rows_modified < 1){
+            std::cout << "Could not insert npc record! " << rows_modified << " rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
+
+}
+
+
+// Inserts a new player into the database.
+int SQLConnector::InsertPlayer(Player p, int account_id) {
+    std::cout << "Creating player " << p.GetFirstname() << " " << p.GetLastname() << std::endl;
+
+    // First, insert the base character that the player is based off of
+    Character c(
+        p.GetFirstname(),
+        p.GetLastname(),
+        p.GetGuild(),
+        p.GetRace(),
+        p.GetGender(),
+        p.GetFace(),
+        p.GetSkin(),
+        p.GetZone(),
+        p.GetProfession(),
+        p.GetEquipment(),
+        p.GetStats(),
+        p.GetSkills(),
+        p.GetLocation()
+    );
+
+    int character_id = InsertCharacter(c);
+
+    if(character_id == 0){
+        std::cout << "Could not insert player - base character insertion failed" << std::endl;
+        return 0;
+    }
+
+    // TODO: Deal with these fields
+    // sockaddr_in client,
+    // std::string account,
+    // int id,
+    // int session,
+
+    // TODO: Update active player list
+
+
+    // Now insert the player using the newly-created character
+    std::string query_string(R"(
+        INSERT INTO players (
+            character_id,
+            account_id
+        ) VALUES (
+            :character_id,
+            :account_id
+        )
+    )");
+
+
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(":character_id", character_id);
+        query.bind(":account_id", account_id);
+        int rows_modified = query.exec();
+
+        if(rows_modified < 1){
+            std::cout << "Could not insert player record! " << rows_modified << " rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
+}
+
 // Lists all the accounts
 void SQLConnector::ListAccounts() {
     std::vector<std::string> accounts = GetAccounts();
@@ -603,19 +664,8 @@ bool SQLConnector::GetAccountSalt(char *accountName, char *saltStringHex) {
     char *errorMessage = NULL;
     std::stringstream query;
     query << "select salt from accounts where accountname = \"" << accountName << "\"";
-    // The fourth param is passed to the callback function as a void pointer to the first param
-    // sqls = sqlite3_exec(database, query.str().c_str(), &ReturnStringCallback, saltStringHex, &errorMessage);
-    // if (sqls != SQLITE_OK) {
-    //     std::cout << "Could not Execute SQL query! Return Code:" << sqls << std::endl;
-    // }
-    // if (errorMessage) {
-    //     // Print out the error message if any
-    //     std::cout << "SQL ERROR MESSAGE: " << errorMessage << std::endl;
-    //     // Free the error message, since it was alloced in exec()
-    //     sqlite3_free(errorMessage);
-    //     return false;
-    // }
-    // Check to see if the salt was retrieved
+    // TODO: Get the salt
+
     if (utils::SanitizeHexString(saltStringHex)) {
         return true;
     }
