@@ -86,7 +86,11 @@ bool SQLConnector::Execute(std::string cmd, bool quiet) {
     }
 }
 
-// -------------------------------------- Parent Functions ----------------------------------------
+
+//////////////////////////////
+//      CREATE
+//////////////////////////////
+
 
 // Insert a new account record.
 int SQLConnector::InsertAccount(std::string accountName, std::string email, std::string key, std::string salt) {
@@ -571,15 +575,10 @@ int SQLConnector::InsertPlayer(Player p, int account_id) {
     }
 }
 
-// Lists all the accounts
-void SQLConnector::ListAccounts() {
-    std::vector<std::string> accounts = GetAccounts();
-    std::cout << "ACCOUNTS: " << std::endl;
-    for (int i = 0; i < accounts.size(); ++i) {
-        std::cout << accounts.at(i) << std::endl;
-    }
-}
 
+//////////////////////////////
+//      READ
+//////////////////////////////
 
 std::vector<std::string> SQLConnector::GetAccounts() {
     std::vector<std::string> accounts;
@@ -591,6 +590,23 @@ std::vector<std::string> SQLConnector::GetAccounts() {
     }
     return accounts;
 }
+
+
+std::vector<std::string> SQLConnector::GetCharacters() {
+    std::vector<std::string> characters;
+
+    std::string cmd("SELECT firstname, lastname FROM characters ORDER BY lastname");
+    SQLite::Statement query(db, cmd);
+    while (query.executeStep()) {
+        std::string name = query.getColumn(0);
+        std::string lastname = query.getColumn(1);
+        name.append(" ").append(lastname);
+        characters.push_back(name);
+    }
+    return characters;
+}
+
+
 
 
 std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
@@ -697,4 +713,35 @@ int SQLConnector::GetAccountKey(char *accountName, char *keyStringHex) {
     //     sqlite3_free(errorMessage);
     // }
     return 1;
+}
+
+
+
+//////////////////////////////
+//      UPDATE
+//////////////////////////////
+
+
+
+
+
+//////////////////////////////
+//      DELETE
+//////////////////////////////
+
+
+
+
+//////////////////////////////
+//      PRINT
+//////////////////////////////
+
+
+// Lists all the accounts
+void SQLConnector::ListAccounts() {
+    std::vector<std::string> accounts = GetAccounts();
+    std::cout << "ACCOUNTS: " << std::endl;
+    for (int i = 0; i < accounts.size(); ++i) {
+        std::cout << accounts.at(i) << std::endl;
+    }
 }

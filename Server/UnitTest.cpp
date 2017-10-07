@@ -23,18 +23,18 @@ TEST_CASE( "create server", "[server]" ) {
 }
 
 
-// TODO Items:
+// TODO Implement and test these actions:
 /////////////////////////////////////////////////////
 //       Create and test a 'init db' or blank_db
 //       get accounts
-// TODO: get characters
-// TODO: get players
-// TODO: get npcs
+//       get characters
+//       get players
+//       get npcs
 // TODO: get item
 //       insert account
 //       insert character
 //       insert player
-// TODO: insert npc
+//       insert npc
 // TODO: insert item
 // TODO: delete account - test cascade deletes
 // TODO: delete character - test cascade deletes
@@ -48,6 +48,13 @@ TEST_CASE( "create server", "[server]" ) {
 // TODO: update item
 /////////////////////////////////////////////////////
 
+std::vector<std::string> accounts_to_insert {
+    "joe",
+    "mike",
+    "dave",
+    "adam",
+    "scott",
+};
 
 
 
@@ -56,18 +63,30 @@ TEST_CASE( "init db", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     // Init the db
     REQUIRE( sql->ExecuteSqlFile("db/InitializeDb.sql") == true );
-    // TODO: Check to make sure that db initialization worked
 
     delete sql;
 }
 
+
 TEST_CASE( "insert account", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
-    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
-    REQUIRE( sql->InsertAccount("my_account2", "my_email@my.example.com", "deadBEEF019", "deAD1337") != 0 );
-    // Make sure an insert of the same name that already exists causes a failure
-    REQUIRE( sql->InsertAccount("my_account", "my_email@my.example.com", "deadBEEF019", "deAD1337") == 0 );
+    std::string email("my_email@my.example.com");
+    std::string key("deadBEEF019");
+    std::string salt("deAD1337");
 
+    // Insert the accounts
+    for (int i = 0; i < accounts_to_insert.size(); ++i) {
+        REQUIRE(sql->InsertAccount(accounts_to_insert[i],email,key,salt) != 0);
+    }
+
+    // Make sure reinserting accounts with the same name fails
+    for (int i = 0; i < accounts_to_insert.size(); ++i) {
+        REQUIRE(sql->InsertAccount(accounts_to_insert[i],email,key,salt) == 0);
+    }
+
+    std::vector<std::string> accounts = sql->GetAccounts();
+    // Make sure all the accounts were inserted
+    REQUIRE( accounts.size() == accounts_to_insert.size());
 
     delete sql;
 }
@@ -98,7 +117,10 @@ TEST_CASE( "insert character", "[sql]" ) {
 
     // Init the db
     REQUIRE( sql->InsertCharacter(tony) == true );
-    // TODO: Check to make sure that the character was inserted
+    // Check to make sure that the character was inserted
+    std::vector<std::string> characters = sql->GetCharacters();
+    REQUIRE( characters.size() > 0 );
+    REQUIRE( characters[0] == "Tony Starks" );
 
     delete sql;
 }
@@ -114,7 +136,7 @@ TEST_CASE( "insert player", "[sql]" ) {
 
     Player p(
         dummyClient,
-        "my_account",
+        accounts_to_insert[0],
         17,
         1,
         "Poop",
@@ -131,14 +153,11 @@ TEST_CASE( "insert player", "[sql]" ) {
         dummySkills,
         dummyLocation
     );
-     // 0, 0, 0, 0, 0, 0, 0, "heady", "chest", "army", "handy", "leggy", "footy", "elven cloak", "necklace", "ring1", "ring2", "lrighthand", "lefthand",
-    // int account_id = sql->InsertAccount("player_test_account", "my_email@my.example.com", "deadBEEF019", "deAD1337");
-    // REQUIRE( account_id != 0 );
 
     int account_id = 1;
     REQUIRE( sql->InsertPlayer(p, account_id) != 0 );
-    // TODO: Test to make sure players looks good
-    std::vector<std::string> players = sql->GetPlayerList("my_account");
+    // Test to make sure players looks good
+    std::vector<std::string> players = sql->GetPlayerList(accounts_to_insert[0]);
     REQUIRE( players.size() > 0 );
     delete sql;
 }

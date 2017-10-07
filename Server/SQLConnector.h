@@ -20,16 +20,38 @@ class SQLConnector{
         ~SQLConnector();
         bool Execute(std::string cmd, bool quiet = false);
         bool ExecuteSqlFile(std::string filename);
+
+        //////////
+        // Create
+        //////////
         int InsertAccount(std::string, std::string, std::string, std::string);
         int InsertCharacter(Character newCharacter);
         int InsertPlayer(Player newPlayer, int account_id);
         int InsertNpc(Npc newNpc);
-        void ListAccounts();
+
+        //////////
+        // Read
+        //////////
         std::vector<std::string> GetAccounts();
+        std::vector<std::string> GetCharacters();
         std::vector<std::string> GetPlayerList(std::string account);
         std::vector<Npc> GetNpcs();
         bool GetAccountSalt(char *, char *);
         int GetAccountKey(char *, char *);
+
+        //////////
+        // Update
+        //////////
+
+        //////////
+        // Delete
+        //////////
+
+        //////////
+        // Print
+        //////////
+        void ListAccounts();
+
     private:
         SQLite::Database db;
 };
