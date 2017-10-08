@@ -42,62 +42,6 @@ typedef struct {
 
 
 typedef struct {
-    int axe;
-    int dagger;
-    int unarmed;
-    int hammer;
-    int polearm;
-    int spear;
-    int staff;
-    int sword;
-    int archery;
-    int crossbow;
-    int sling;
-    int thrown;
-    int armor;
-    int dualweapon;
-    int shield;
-    int bardic;
-    int conjuring;
-    int druidic;
-    int illusion;
-    int necromancy;
-    int sorcery;
-    int shamanic;
-    int spellcraft;
-    int summoning;
-    int focus;
-    int armorsmithing;
-    int tailoring;
-    int fletching;
-    int weaponsmithing;
-    int alchemy;
-    int lapidary;
-    int calligraphy;
-    int enchanting;
-    int herbalism;
-    int hunting;
-    int mining;
-    int bargaining;
-    int camping;
-    int firstaid;
-    int lore;
-    int picklocks;
-    int scouting;
-    int search;
-    int stealth;
-    int traps;
-    int aeolandis;
-    int hieroform;
-    int highgundis;
-    int oldpraxic;
-    int praxic;
-    int runic;
-} skills_t;
-
-
-
-typedef struct {
     float x;
     float y;
     float z;
@@ -121,7 +65,6 @@ class Character {
     std::string profession;
     equipment_t equipment;
     stats_t stats;
-    skills_t skills;
     location_t location;
 
     public:
@@ -139,7 +82,6 @@ class Character {
         std::string profession,
         equipment_t equipment,
         stats_t stats,
-        skills_t skills,
         location_t location
     );
 
@@ -157,7 +99,6 @@ class Character {
     std::string GetProfession();
     equipment_t GetEquipment();
     stats_t GetStats();
-    skills_t GetSkills();
     location_t GetLocation();
 
     // Setter Functions
@@ -172,7 +113,6 @@ class Character {
     void SetProfession(std::string);
     void SetEquipment(equipment_t);
     void SetStats(stats_t);
-    void SetSkills(skills_t);
     void SetLocation(location_t);
 
     // Class Functions

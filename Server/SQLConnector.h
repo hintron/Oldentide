@@ -25,7 +25,6 @@ class SQLConnector{
         // Create
         //////////
         int InsertAccount(std::string, std::string, std::string, std::string);
-        int InsertCharacter(Character newCharacter);
         int InsertPlayer(Player newPlayer, int account_id);
         int InsertNpc(Npc newNpc);
 
@@ -33,7 +32,6 @@ class SQLConnector{
         // Read
         //////////
         std::vector<std::string> GetAccounts();
-        std::vector<std::string> GetCharacters();
         std::vector<std::string> GetPlayerList(std::string account);
         std::vector<Npc> GetNpcs();
         bool GetAccountSalt(char *, char *);

@@ -11,12 +11,70 @@
 #include <string>
 #include <netinet/in.h>
 
+
+typedef struct {
+    int axe;
+    int dagger;
+    int unarmed;
+    int hammer;
+    int polearm;
+    int spear;
+    int staff;
+    int sword;
+    int archery;
+    int crossbow;
+    int sling;
+    int thrown;
+    int armor;
+    int dualweapon;
+    int shield;
+    int bardic;
+    int conjuring;
+    int druidic;
+    int illusion;
+    int necromancy;
+    int sorcery;
+    int shamanic;
+    int spellcraft;
+    int summoning;
+    int focus;
+    int armorsmithing;
+    int tailoring;
+    int fletching;
+    int weaponsmithing;
+    int alchemy;
+    int lapidary;
+    int calligraphy;
+    int enchanting;
+    int herbalism;
+    int hunting;
+    int mining;
+    int bargaining;
+    int camping;
+    int firstaid;
+    int lore;
+    int picklocks;
+    int scouting;
+    int search;
+    int stealth;
+    int traps;
+    int aeolandis;
+    int hieroform;
+    int highgundis;
+    int oldpraxic;
+    int praxic;
+    int runic;
+} skills_t;
+
+
 class Player : public Character {
-public:
+    private:
+
     int id;
     int session;
     sockaddr_in client;
     std::string account;
+    skills_t skills;
 
     public:
 
@@ -26,6 +84,7 @@ public:
         std::string account,
         int id,
         int session,
+        skills_t skills,
         std::string firstname,
         std::string lastname,
         std::string guild,
@@ -37,7 +96,6 @@ public:
         std::string profession,
         equipment_t equipment,
         stats_t stats,
-        skills_t skills,
         location_t location
     );
 
@@ -49,6 +107,7 @@ public:
     std::string GetAccount();
     int GetId();
     int GetSession();
+    skills_t GetSkills();
 
     // Setter Functions.
 
@@ -56,6 +115,7 @@ public:
     void SetAccount(std::string account);
     void SetId(int id);
     void SetSession(int session);
+    void SetSkills(skills_t);
 
     // Class Functions.
 };

@@ -99,40 +99,6 @@ TEST_CASE( "insert account", "[sql]" ) {
     delete sql;
 }
 
-TEST_CASE( "insert character", "[sql]" ) {
-    SQLConnector* sql = new SQLConnector();
-
-    equipment_t equip = {};
-    stats_t stats = {};
-    skills_t skills = {};
-    location_t location = {};
-
-    Character tony(
-        "Tony",
-        "Starks",
-        "Marvel",
-        "Human",
-        "Male",
-        "Mustached",
-        "Light",
-        "New York",
-        "Electrical Engineer",
-        equip,
-        stats,
-        skills,
-        location
-    );
-
-    // Init the db
-    REQUIRE( sql->InsertCharacter(tony) == true );
-    // Check to make sure that the character was inserted
-    std::vector<std::string> characters = sql->GetCharacters();
-    REQUIRE( characters.size() > 0 );
-    REQUIRE( characters[0] == "Tony Starks" );
-
-    delete sql;
-}
-
 
 TEST_CASE( "insert player", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
@@ -142,28 +108,28 @@ TEST_CASE( "insert player", "[sql]" ) {
     skills_t dummySkills = {};
     location_t dummyLocation = {};
 
-    Player p(
+    Player tony(
         dummyClient,
         accounts_to_insert[0],
         17,
         1,
-        "Poop",
-        "Stain",
-        "Newcomers_Guild",
+        dummySkills,
+        "Tony",
+        "Starks",
+        "Marvel",
         "Human",
         "Male",
-        "Scarred",
-        "Pale",
+        "Mustached",
+        "White",
         "zone1",
-        "Shaman",
+        "Electrical Engineer",
         dummyEquipment,
         dummyStats,
-        dummySkills,
         dummyLocation
     );
 
     int account_id = 1;
-    REQUIRE( sql->InsertPlayer(p, account_id) != 0 );
+    REQUIRE( sql->InsertPlayer(tony, account_id) != 0 );
     // Test to make sure players looks good
     std::vector<std::string> players = sql->GetPlayerList(accounts_to_insert[0]);
     REQUIRE( players.size() > 0 );
@@ -178,9 +144,8 @@ TEST_CASE( "insert player", "[sql]" ) {
 TEST_CASE( "insert npcs", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     equipment_t dummyEquipment = {};
-    stats_t dummyStats = {};
-    skills_t dummySkills = {};
     location_t dummyLocation = {};
+    stats_t dummyStats = {};
 
     Npc griphook(
         0,
@@ -195,7 +160,6 @@ TEST_CASE( "insert npcs", "[sql]" ) {
         "Banker",
         dummyEquipment,
         dummyStats,
-        dummySkills,
         dummyLocation
     );
 

@@ -27,7 +27,6 @@ Character::Character(
     std::string profession,
     equipment_t equipment,
     stats_t stats,
-    skills_t skills,
     location_t location
 ) {
     SetFirstname(firstname);
@@ -41,7 +40,6 @@ Character::Character(
     SetProfession(profession);
     SetEquipment(equipment);
     SetStats(stats);
-    SetSkills(skills);
     SetLocation(location);
 }
 
@@ -93,9 +91,6 @@ stats_t Character::GetStats() {
     return stats;
 }
 
-skills_t Character::GetSkills() {
-    return skills;
-}
 
 equipment_t Character::GetEquipment() {
     return equipment;
@@ -147,10 +142,6 @@ void Character::SetProfession(std::string profession) {
 
 void Character::SetStats(stats_t stats) {
     this->stats = stats;
-}
-
-void Character::SetSkills(skills_t skills) {
-    this->skills = skills;
 }
 
 void Character::SetEquipment(equipment_t equipment) {

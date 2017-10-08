@@ -138,19 +138,16 @@ int SQLConnector::InsertAccount(std::string accountName, std::string email, std:
 }
 
 
-int SQLConnector::InsertCharacter(Character c) {
-    std::stringstream query;
+int SQLConnector::InsertNpc(Npc n){
+    std::cout << "Creating npc " << n.GetFirstname() << " " << n.GetLastname() << std::endl;
 
-    location_t location = c.GetLocation();
-    equipment_t equip = c.GetEquipment();
-    stats_t stats = c.GetStats();
-    skills_t skills = c.GetSkills();
+    location_t location = n.GetLocation();
+    equipment_t equip = n.GetEquipment();
+    stats_t stats = n.GetStats();
 
-    std::cout << "Creating character " << c.GetFirstname() << " " << c.GetLastname() << std::endl;
-
-    // Multiline string literal!
+    // Now insert the player using the newly-created character
     std::string query_string(R"(
-    INSERT INTO characters (
+    INSERT INTO npcs (
         firstname,
         lastname,
         guild,
@@ -172,6 +169,177 @@ int SQLConnector::InsertCharacter(Character c) {
         constitution,
         intelligence,
         dexterity,
+        head,
+        chest,
+        arms,
+        hands,
+        legs,
+        feet,
+        cloak,
+        necklace,
+        ringone,
+        ringtwo,
+        righthand,
+        lefthand,
+        zone,
+        x,
+        y,
+        z,
+        pitch,
+        yaw
+    ) VALUES (
+        :firstname,
+        :lastname,
+        :guild,
+        :race,
+        :gender,
+        :face,
+        :skin,
+        :profession,
+        :level,
+        :hp,
+        :maxhp,
+        :bp,
+        :maxbp,
+        :mp,
+        :maxmp,
+        :ep,
+        :maxep,
+        :strength,
+        :constitution,
+        :intelligence,
+        :dexterity,
+        :head,
+        :chest,
+        :arms,
+        :hands,
+        :legs,
+        :feet,
+        :cloak,
+        :necklace,
+        :ringone,
+        :ringtwo,
+        :righthand,
+        :lefthand,
+        :zone,
+        :x,
+        :y,
+        :z,
+        :pitch,
+        :yaw
+    )
+    )");
+
+    try {
+        SQLite::Statement query(db, query_string);
+        // Identification
+        query.bind(":firstname", n.GetFirstname());
+        query.bind(":lastname", n.GetLastname());
+        query.bind(":guild", n.GetGuild());
+        query.bind(":race", n.GetRace());
+        query.bind(":gender", n.GetGender());
+        query.bind(":face", n.GetFace());
+        query.bind(":skin", n.GetSkin());
+        query.bind(":profession", n.GetProfession());
+        // Stats
+        query.bind(":level", stats.level);
+        query.bind(":hp", stats.hp);
+        query.bind(":maxhp", stats.maxhp);
+        query.bind(":bp", stats.bp);
+        query.bind(":maxbp", stats.maxbp);
+        query.bind(":mp", stats.mp);
+        query.bind(":maxmp", stats.maxmp);
+        query.bind(":ep", stats.ep);
+        query.bind(":maxep", stats.maxep);
+        query.bind(":strength", stats.strength);
+        query.bind(":constitution", stats.constitution);
+        query.bind(":intelligence", stats.intelligence);
+        query.bind(":dexterity", stats.dexterity);
+        // Equipment
+        query.bind(":head", equip.head);
+        query.bind(":chest", equip.chest);
+        query.bind(":arms", equip.arms);
+        query.bind(":hands", equip.hands);
+        query.bind(":legs", equip.legs);
+        query.bind(":feet", equip.feet);
+        query.bind(":cloak", equip.cloak);
+        query.bind(":necklace", equip.necklace);
+        query.bind(":ringone", equip.ringone);
+        query.bind(":ringtwo", equip.ringtwo);
+        query.bind(":righthand", equip.righthand);
+        query.bind(":lefthand", equip.lefthand);
+        // Location
+        query.bind(":zone", n.GetZone());
+        query.bind(":x", location.x);
+        query.bind(":y", location.y);
+        query.bind(":z", location.z);
+        query.bind(":pitch", location.pitch);
+        query.bind(":yaw", location.yaw);
+        int rows_modified = query.exec();
+        if(rows_modified < 1){
+            std::cout << "Could not insert npc record! " << rows_modified << " rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
+
+}
+
+
+// Inserts a new player into the database.
+int SQLConnector::InsertPlayer(Player p, int account_id) {
+    std::cout << "Creating player " << p.GetFirstname() << " " << p.GetLastname() << std::endl;
+
+    location_t location = p.GetLocation();
+    equipment_t equip = p.GetEquipment();
+    stats_t stats = p.GetStats();
+    skills_t skills = p.GetSkills();
+
+    // TODO: Deal with these fields
+    // sockaddr_in client,
+    // std::string account,
+    // int id,
+    // int session,
+
+    // TODO: Update active player list
+
+
+    // Now insert the player using the newly-created character
+    std::string query_string(R"(
+    INSERT INTO players (
+        account_id,
+        -- Identification:
+        firstname,
+        lastname,
+        guild,
+        race,
+        gender,
+        face,
+        skin,
+        profession,
+        -- Stats:
+        level,
+        hp,
+        maxhp,
+        bp,
+        maxbp,
+        mp,
+        maxmp,
+        ep,
+        maxep,
+        strength,
+        constitution,
+        intelligence,
+        dexterity,
+        -- Skills
         axe,
         dagger,
         unarmed,
@@ -223,6 +391,7 @@ int SQLConnector::InsertCharacter(Character c) {
         oldpraxic,
         praxic,
         runic,
+        -- Equipment:
         head,
         chest,
         arms,
@@ -235,6 +404,7 @@ int SQLConnector::InsertCharacter(Character c) {
         ringtwo,
         righthand,
         lefthand,
+        -- Location
         zone,
         x,
         y,
@@ -242,6 +412,8 @@ int SQLConnector::InsertCharacter(Character c) {
         pitch,
         yaw
     ) VALUES (
+        :account_id,
+        -- Identification
         :firstname,
         :lastname,
         :guild,
@@ -250,6 +422,7 @@ int SQLConnector::InsertCharacter(Character c) {
         :face,
         :skin,
         :profession,
+        -- Stats
         :level,
         :hp,
         :maxhp,
@@ -263,6 +436,7 @@ int SQLConnector::InsertCharacter(Character c) {
         :constitution,
         :intelligence,
         :dexterity,
+        -- Skills
         :axe,
         :dagger,
         :unarmed,
@@ -314,6 +488,7 @@ int SQLConnector::InsertCharacter(Character c) {
         :oldpraxic,
         :praxic,
         :runic,
+        -- Equipment
         :head,
         :chest,
         :arms,
@@ -326,6 +501,7 @@ int SQLConnector::InsertCharacter(Character c) {
         :ringtwo,
         :righthand,
         :lefthand,
+        -- Location
         :zone,
         :x,
         :y,
@@ -333,18 +509,21 @@ int SQLConnector::InsertCharacter(Character c) {
         :pitch,
         :yaw
     )
-    )"); // End query
+    )");
 
     try {
         SQLite::Statement query(db, query_string);
-        query.bind(":firstname", c.GetFirstname());
-        query.bind(":lastname", c.GetLastname());
-        query.bind(":guild", c.GetGuild());
-        query.bind(":race", c.GetRace());
-        query.bind(":gender", c.GetGender());
-        query.bind(":face", c.GetFace());
-        query.bind(":skin", c.GetSkin());
-        query.bind(":profession", c.GetProfession());
+        query.bind(":account_id", account_id);
+        // Identification
+        query.bind(":firstname", p.GetFirstname());
+        query.bind(":lastname", p.GetLastname());
+        query.bind(":guild", p.GetGuild());
+        query.bind(":race", p.GetRace());
+        query.bind(":gender", p.GetGender());
+        query.bind(":face", p.GetFace());
+        query.bind(":skin", p.GetSkin());
+        query.bind(":profession", p.GetProfession());
+        // Stats
         query.bind(":level", stats.level);
         query.bind(":hp", stats.hp);
         query.bind(":maxhp", stats.maxhp);
@@ -358,6 +537,7 @@ int SQLConnector::InsertCharacter(Character c) {
         query.bind(":constitution", stats.constitution);
         query.bind(":intelligence", stats.intelligence);
         query.bind(":dexterity", stats.dexterity);
+        // Skills
         query.bind(":axe", skills.axe);
         query.bind(":dagger", skills.dagger);
         query.bind(":unarmed", skills.unarmed);
@@ -409,6 +589,7 @@ int SQLConnector::InsertCharacter(Character c) {
         query.bind(":oldpraxic", skills.oldpraxic);
         query.bind(":praxic", skills.praxic);
         query.bind(":runic", skills.runic);
+        // Equipment
         query.bind(":head", equip.head);
         query.bind(":chest", equip.chest);
         query.bind(":arms", equip.arms);
@@ -421,142 +602,13 @@ int SQLConnector::InsertCharacter(Character c) {
         query.bind(":ringtwo", equip.ringtwo);
         query.bind(":righthand", equip.righthand);
         query.bind(":lefthand", equip.lefthand);
-        query.bind(":zone", c.GetZone());
+        // Location
+        query.bind(":zone", p.GetZone());
         query.bind(":x", location.x);
         query.bind(":y", location.y);
         query.bind(":z", location.z);
         query.bind(":pitch", location.pitch);
         query.bind(":yaw", location.yaw);
-        int rows_modified = query.exec();
-        if(rows_modified < 1){
-            std::cout << "Could not insert character record! " << rows_modified << " rows were modified" << std::endl;
-            return 0;
-        }
-        else {
-            // Get the id of the newly inserted record
-            return db.getLastInsertRowid();
-        }
-    }
-    catch (std::exception& e) {
-        std::cout << "exception: " << e.what() << std::endl;
-        std::cout << query_string << std::endl;
-        return 0;
-    }
-}
-
-
-
-int SQLConnector::InsertNpc(Npc n){
-    std::cout << "Creating npc " << n.GetFirstname() << " " << n.GetLastname() << std::endl;
-
-    // First, insert the base character that the player is based off of
-    Character c(
-        n.GetFirstname(),
-        n.GetLastname(),
-        n.GetGuild(),
-        n.GetRace(),
-        n.GetGender(),
-        n.GetFace(),
-        n.GetSkin(),
-        n.GetZone(),
-        n.GetProfession(),
-        n.GetEquipment(),
-        n.GetStats(),
-        n.GetSkills(),
-        n.GetLocation()
-    );
-
-    int character_id = InsertCharacter(c);
-
-    if(character_id == 0){
-        std::cout << "Could not insert npc - base character insertion failed" << std::endl;
-        return 0;
-    }
-
-    // Now insert the player using the newly-created character
-    std::string query_string(R"(
-        INSERT INTO npcs (
-            character_id
-        ) VALUES (
-            :character_id
-        )
-    )");
-
-    try {
-        SQLite::Statement query(db, query_string);
-        query.bind(":character_id", character_id);
-        int rows_modified = query.exec();
-        if(rows_modified < 1){
-            std::cout << "Could not insert npc record! " << rows_modified << " rows were modified" << std::endl;
-            return 0;
-        }
-        else {
-            // Get the id of the newly inserted record
-            return db.getLastInsertRowid();
-        }
-    }
-    catch (std::exception& e) {
-        std::cout << "exception: " << e.what() << std::endl;
-        std::cout << query_string << std::endl;
-        return 0;
-    }
-
-}
-
-
-// Inserts a new player into the database.
-int SQLConnector::InsertPlayer(Player p, int account_id) {
-    std::cout << "Creating player " << p.GetFirstname() << " " << p.GetLastname() << std::endl;
-
-    // First, insert the base character that the player is based off of
-    Character c(
-        p.GetFirstname(),
-        p.GetLastname(),
-        p.GetGuild(),
-        p.GetRace(),
-        p.GetGender(),
-        p.GetFace(),
-        p.GetSkin(),
-        p.GetZone(),
-        p.GetProfession(),
-        p.GetEquipment(),
-        p.GetStats(),
-        p.GetSkills(),
-        p.GetLocation()
-    );
-
-    int character_id = InsertCharacter(c);
-
-    if(character_id == 0){
-        std::cout << "Could not insert player - base character insertion failed" << std::endl;
-        return 0;
-    }
-
-    // TODO: Deal with these fields
-    // sockaddr_in client,
-    // std::string account,
-    // int id,
-    // int session,
-
-    // TODO: Update active player list
-
-
-    // Now insert the player using the newly-created character
-    std::string query_string(R"(
-        INSERT INTO players (
-            character_id,
-            account_id
-        ) VALUES (
-            :character_id,
-            :account_id
-        )
-    )");
-
-
-    try {
-        SQLite::Statement query(db, query_string);
-        query.bind(":character_id", character_id);
-        query.bind(":account_id", account_id);
         int rows_modified = query.exec();
 
         if(rows_modified < 1){
@@ -592,27 +644,12 @@ std::vector<std::string> SQLConnector::GetAccounts() {
 }
 
 
-std::vector<std::string> SQLConnector::GetCharacters() {
-    std::vector<std::string> characters;
-
-    std::string cmd("SELECT firstname, lastname FROM characters ORDER BY lastname");
-    SQLite::Statement query(db, cmd);
-    while (query.executeStep()) {
-        std::string name = query.getColumn(0);
-        std::string lastname = query.getColumn(1);
-        name.append(" ").append(lastname);
-        characters.push_back(name);
-    }
-    return characters;
-}
-
-
 
 
 std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
     std::vector<std::string> players;
 
-    std::string cmd("SELECT firstname, lastname, accountname FROM players_view WHERE accountname = ? ORDER BY lastname");
+    std::string cmd("SELECT firstname, lastname, accountname FROM view_players WHERE accountname = ? ORDER BY lastname");
     SQLite::Statement query(db, cmd);
     query.bind(1, accountname);
 
@@ -627,7 +664,7 @@ std::vector<std::string> SQLConnector::GetPlayerList(std::string accountname) {
 
 std::vector<Npc> SQLConnector::GetNpcs() {
     std::vector<Npc> npcs;
-    // TODO: Get equipment, stats, skills, location
+    // TODO: Get equipment, stats, location
     std::string cmd(R"(SELECT
         id,
         firstname,
@@ -639,7 +676,7 @@ std::vector<Npc> SQLConnector::GetNpcs() {
         skin,
         zone,
         profession
-        FROM npcs_view ORDER BY lastname
+        FROM npcs ORDER BY lastname
     )");
 
     SQLite::Statement query(db, cmd);
@@ -647,7 +684,6 @@ std::vector<Npc> SQLConnector::GetNpcs() {
     // TODO: Get the real values
     equipment_t empty_equipment;
     stats_t empty_stats;
-    skills_t empty_skills;
     location_t empty_location;
     while (query.executeStep()) {
         Npc temp(
@@ -663,7 +699,6 @@ std::vector<Npc> SQLConnector::GetNpcs() {
             query.getColumn(9),
             empty_equipment,
             empty_stats,
-            empty_skills,
             empty_location
         );
         npcs.push_back(temp);

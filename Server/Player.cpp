@@ -16,6 +16,7 @@ Player::Player(
     std::string account,
     int id,
     int session,
+    skills_t skills,
     std::string firstname,
     std::string lastname,
     std::string guild,
@@ -27,7 +28,6 @@ Player::Player(
     std::string profession,
     equipment_t equipment,
     stats_t stats,
-    skills_t skills,
     location_t location
 )
 : Character(
@@ -42,7 +42,6 @@ Player::Player(
     profession,
     equipment,
     stats,
-    skills,
     location
 )
 {
@@ -50,6 +49,7 @@ Player::Player(
     SetAccount(account);
     SetId(id);
     SetSession(session);
+    SetSkills(skills);
 }
 
 Player::~Player() {
@@ -76,6 +76,10 @@ int Player::GetSession() {
     return session;
 }
 
+skills_t Player::GetSkills() {
+    return skills;
+}
+
 
 
 //------------------------------------------------------------------------------------------------//
@@ -98,7 +102,9 @@ void Player::SetSession(int session) {
     this->session = session;
 }
 
-
+void Player::SetSkills(skills_t skills) {
+    this->skills = skills;
+}
 
 //------------------------------------------------------------------------------------------------//
 //-------------------                      Class Functions                     -------------------//

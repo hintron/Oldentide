@@ -1,3 +1,8 @@
+
+------------------------
+-- Tables
+------------------------
+
 DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (
     id integer not null primary key autoincrement,
@@ -10,11 +15,11 @@ CREATE TABLE accounts (
     salt text not null collate nocase
 );
 
--- Characters is the parent table of both npcs and players (pcs)
-DROP TABLE IF EXISTS characters;
-CREATE TABLE characters (
-    -- Identification:
+DROP TABLE IF EXISTS players;
+CREATE TABLE players (
     id integer not null primary key autoincrement,
+    account_id integer,
+    -- Identification:
     firstname text not null,
     lastname text not null,
     guild text,
@@ -109,62 +114,111 @@ CREATE TABLE characters (
     z real,
     pitch real,
     yaw real
-
 );
 
-DROP TABLE IF EXISTS players;
-CREATE TABLE players (
-    id integer not null primary key autoincrement,
-    character_id integer not null,
-    account_id integer,
-    -- TODO: Add in other player-specific fields
 
-    FOREIGN KEY(character_id) REFERENCES characters(id)
-);
-
+-- NPCs will have the same fields as player, except for account_id and the skills section
 DROP TABLE IF EXISTS npcs;
 CREATE TABLE npcs (
     id integer not null primary key autoincrement,
-    character_id integer not null,
-    -- TODO: Add in npc-specific fields
-
-    FOREIGN KEY(character_id) REFERENCES characters(id)
+    -- Identification:
+    firstname text not null,
+    lastname text not null,
+    guild text,
+    race text not null,
+    gender text not null,
+    face text,
+    skin text,
+    profession text,
+    level integer not null default 1,
+    -- Stats:
+    hp integer not null default 100,
+    maxhp integer not null default 100,
+    bp integer not null default 0,
+    maxbp integer not null default 0,
+    mp integer not null default 0,
+    maxmp integer not null default 0,
+    ep integer not null default 0,
+    maxep integer not null default 0,
+    strength integer not null default 1,
+    constitution integer not null default 1,
+    intelligence integer not null default 1,
+    dexterity integer not null default 1,
+    -- Equipment:
+    head text,
+    chest text,
+    arms text,
+    hands text,
+    legs text,
+    feet text,
+    cloak text,
+    necklace text,
+    ringone text,
+    ringtwo text,
+    righthand text,
+    lefthand text,
+    -- Location:
+    zone text,
+    x real,
+    y real,
+    z real,
+    pitch real,
+    yaw real
 );
 
 DROP TABLE IF EXISTS items;
 CREATE TABLE items (
     id integer not null primary key autoincrement,
-    character_id integer not null,
+    -- only one of the following two fields should be populated at a time
+    player_id integer,
+    npc_id integer,
     name text not null,
     location text not null,
     weight real not null,
     equip integer not null,
     use integer not null,
-    x integer not null,
-    y integer not null,
+    x integer,
+    y integer,
 
-    FOREIGN KEY(character_id) REFERENCES characters(id)
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(npc_id) REFERENCES npcs(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
 
+------------------------
 -- Views
+------------------------
 
-
-DROP VIEW IF EXISTS players_view;
-CREATE VIEW players_view AS
+DROP VIEW IF EXISTS view_players;
+CREATE VIEW view_players AS
 SELECT
     *
 FROM players
-left join characters on players.character_id = characters.id
-left join accounts on players.account_id = accounts.id
+LEFT JOIN accounts on players.account_id = accounts.id
 ;
 
 
-DROP VIEW IF EXISTS npcs_view;
-CREATE VIEW npcs_view AS
+-- Show all the items currently being possessed by players
+DROP VIEW IF EXISTS view_items_player;
+CREATE VIEW view_items_player AS
 SELECT
     *
-FROM npcs
-left join characters on npcs.character_id = characters.id
+FROM items
+LEFT JOIN players on items.player_id = players.id
+WHERE player_id IS NOT NULL
 ;
+
+-- Show all the items currently being possessed by npcs
+DROP VIEW IF EXISTS view_items_npc;
+CREATE VIEW view_items_npc AS
+SELECT
+    *
+FROM items
+LEFT JOIN npcs on items.npc_id = npcs.id
+WHERE npc_id IS NOT NULL
+;
+
+-- References
+-- How object-oriented class inheritance does NOT fit with sql schemas
+-- https://stackoverflow.com/a/193222
