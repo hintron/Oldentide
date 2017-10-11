@@ -281,6 +281,9 @@ int SQLConnector::InsertNpc(Npc n){
             return 0;
         }
         else {
+            // TODO: Loop through all the items and create them?
+            // inventory
+
             // Get the id of the newly inserted record
             return db.getLastInsertRowid();
         }
@@ -627,6 +630,57 @@ int SQLConnector::InsertPlayer(Player p, int account_id) {
     }
 }
 
+
+
+
+int SQLConnector::InsertItem(Item i) {
+    std::cout << "Creating item " << i.GetName() << std::endl;
+
+    std::string query_string(R"(
+    INSERT INTO items (
+        name,
+        location,
+        weight,
+        equip,
+        use,
+        x,
+        y
+    ) VALUES (
+        :name,
+        :location,
+        :weight,
+        :equip,
+        :use,
+        :x,
+        :y
+    )
+    )");
+
+    try {
+        SQLite::Statement query(db, query_string);
+        query.bind(":name", i.name);
+        query.bind(":location", i.location);
+        query.bind(":weight", i.weight);
+        query.bind(":equip", i.equip);
+        query.bind(":use", i.use);
+        query.bind(":x", i.x);
+        query.bind(":y", i.y);
+        int rows_modified = query.exec();
+        if(rows_modified < 1){
+            std::cout << "Could not insert item record! " << rows_modified << " rows were modified" << std::endl;
+            return 0;
+        }
+        else {
+            // Get the id of the newly inserted record
+            return db.getLastInsertRowid();
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << "exception: " << e.what() << std::endl;
+        std::cout << query_string << std::endl;
+        return 0;
+    }
+}
 
 //////////////////////////////
 //      READ

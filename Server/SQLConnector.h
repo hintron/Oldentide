@@ -9,6 +9,7 @@
 #include "SQLiteCpp/SQLiteCpp.h"
 #include "Character.h"
 #include "Player.h"
+#include "Item.h"
 #include "Npc.h"
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@ class SQLConnector{
         int InsertAccount(std::string, std::string, std::string, std::string);
         int InsertPlayer(Player newPlayer, int account_id);
         int InsertNpc(Npc newNpc);
+        int InsertItem(Item newItem);
 
         //////////
         // Read

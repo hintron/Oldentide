@@ -9,6 +9,7 @@
 #include <catch.hpp>
 #include "AdminShell.h"
 #include "GameState.h"
+#include "Item.h"
 #include "Character.h"
 #include "Player.h"
 #include "Npc.h"
@@ -138,9 +139,6 @@ TEST_CASE( "insert player", "[sql]" ) {
 
 
 
-// TODO: Tie new player to an account
-// TODO: Should we init the db to a blank slate?
-// TODO: Make a function to programmatically init the db, so we can use here
 TEST_CASE( "insert npcs", "[sql]" ) {
     SQLConnector* sql = new SQLConnector();
     equipment_t dummyEquipment = {};
@@ -176,6 +174,31 @@ TEST_CASE( "insert npcs", "[sql]" ) {
 
     delete sql;
 }
+
+
+
+
+TEST_CASE( "insert items", "[sql]" ) {
+    SQLConnector* sql = new SQLConnector();
+    // Character dummyCharacter;
+
+    Item sting(
+        1,
+        "Sting",
+        "dummy_location",
+        "dummy_weight",
+        true,
+        false,
+        17,
+        17
+    );
+
+    int item_id = sql->InsertItem(sting);
+    REQUIRE( item_id != 0 );
+
+    delete sql;
+}
+
 
 
 

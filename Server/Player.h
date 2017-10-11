@@ -8,6 +8,7 @@
 #define OLDENTIDE_PLAYER_H_
 
 #include "Character.h"
+#include <vector>
 #include <string>
 #include <netinet/in.h>
 

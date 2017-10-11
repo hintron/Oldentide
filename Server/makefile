@@ -11,9 +11,9 @@ SQLITE_HEADERS = -I sqlitecpp
 SQLITE_LIBS = -L sqlitecpp
 
 
-SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
+SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Item.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 CLIENT_FILES = 		TestClient.cpp Utils.cpp
-UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
+UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Item.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
 
 # Enable sqlitecpp to use query.getColumnOriginName() via -DSQLITE_ENABLE_COLUMN_METADATA
 # Add -DSQLITE_USE_LEGACY_STRUCT to make sqlitecpp only work with sqlite versions <= 3.18

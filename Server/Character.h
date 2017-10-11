@@ -6,7 +6,9 @@
 #ifndef OLDENTIDE_CHARACTER_H_
 #define OLDENTIDE_CHARACTER_H_
 
+#include <vector>
 #include <string>
+#include "Item.h"
 
 typedef struct {
     std::string head;
@@ -66,6 +68,7 @@ class Character {
     equipment_t equipment;
     stats_t stats;
     location_t location;
+    std::vector<Item *> inventory;
 
     public:
 
@@ -100,6 +103,7 @@ class Character {
     equipment_t GetEquipment();
     stats_t GetStats();
     location_t GetLocation();
+    // std::vector<Item *> GetInventory();
 
     // Setter Functions
     void SetFirstname(std::string);
@@ -116,6 +120,9 @@ class Character {
     void SetLocation(location_t);
 
     // Class Functions
+    // TODO: Add inventory item
+    // TODO: Remove inventory item
+    // TODO: Get inventory item
 };
 
 #endif //OLDENTIDE_CHARACTER_H_
