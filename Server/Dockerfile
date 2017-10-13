@@ -5,16 +5,14 @@
 # make sure the docker daemon is running (dockerd)
 # cd into this directory and run:
 #   docker build -t oldentide_server .
-#   docker run -it oldentide_server
-#   ./bin/Server 1337
-# If it isn't going through (on Windows), then you might need to explicitly
-# specify the ports in order to force the OS to allow it through the firewall:
 #   docker run -it -p 1337:1337/udp oldentide_server
-
+#   ./bin/Server 1337
+# This will map the docker container to localhost's 1337 port
+# Now access it via another shell like so:
+#   ./bin/Client 127.0.0.1 1337
 
 # Base image
-# Do 3.5, because sqlite-dev is < 3.19
-FROM alpine:3.5
+FROM alpine:3.6
 
 # Set the working directory
 WORKDIR /oldentide
@@ -30,8 +28,7 @@ RUN apk --no-cache add \
     make\
     g++ \
     git \
-    sqlite \
-    sqlite-dev
+    sqlite
 
 RUN ["make"]
 
