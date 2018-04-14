@@ -9,3 +9,4 @@ lib
 msgpack
 catch
 sqlitecpp
+msgpack-c
