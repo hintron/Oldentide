@@ -1,6 +1,6 @@
 {
   "name": "Oldentide",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Account creation and login for Oldentide.",
   "main": "oldentide.js",
@@ -13,18 +13,18 @@
     "start": "node ./oldentide.js"
   },
   "engines": {
-    "node": "6.10.2"
+    "node": "latest"
   },
   "dependencies": {
     "bcryptjs": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
-    "dotenv": "^4.0.0",
+    "dotenv": "latest",
     "express": "latest",
     "express-handlebars": "latest",
     "express-session": "latest",
     "express-validator": "latest",
-    "helmet": "^3.5.0",
+    "helmet": "latest",
     "nodemailer": "latest",
     "sqlite3": "latest"
   }

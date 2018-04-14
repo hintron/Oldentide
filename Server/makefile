@@ -27,24 +27,23 @@ mkdir :
 
 
 database db : mkdir
-	sqlite3 db/Oldentide.db < db/InitializeDb.sql; \
-	bash db/InitializeNpcs.sh
+	sqlite3 db/Oldentide.db < db/InitializeDb.sql
 
 npc npcs : mkdir
 	bash db/InitializeNpcs.sh
 
 # NOTE: With gcc/g++, dependent libraries need to be specified BEFORE the library it depends on
 server : mkdir msgpack sqlitecpp
-	g++ -g $(SERVER_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/Server $(DEFS)
+	g++ -g $(SERVER_FILES) -std=c++17 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/Server $(DEFS)
 
 client : mkdir msgpack
-	g++ -g $(CLIENT_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) -lpthread -o bin/Client
+	g++ -g $(CLIENT_FILES) -std=c++17 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(MSGPACK_HEADER) -lpthread -o bin/Client
 
 unittest : mkdir msgpack catch sqlitecpp
-	g++ -g $(UNITTEST_FILES) -std=c++11 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/UnitTest $(DEFS)
+	g++ -g $(UNITTEST_FILES) -std=c++17 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/UnitTest $(DEFS)
 
 clean :
-	rm -f bin/Server bin/Client bin/UnitTest;
+	rm -f bin/Server bin/Client bin/UnitTest db/Oldentide.db
 
 cleanall : clean
 	rm -rf msgpack;
