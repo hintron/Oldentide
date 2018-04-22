@@ -19,7 +19,7 @@ namespace KAM3RA
 		GUIStyle style  = null;
 		public override void OnInspectorGUI()
 		{
-			EditorGUIUtility.LookLikeControls();
+			//EditorGUIUtility.LookLikeControls();
 			Actor actor				= target as Actor;
 			actor.type 				= (Actor.Type)EditorGUILayout.EnumPopup("Type", actor.type);
 			actor.player 			= EditorGUILayout.Toggle("Player", 				actor.player);

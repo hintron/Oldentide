@@ -33,9 +33,6 @@ namespace Oldentide.Networking {
 		public PTYPE type;
 	}
 
-
-
-
 	[MessagePackObject]
 	public class PacketAck {
 	    [Key(0)]
@@ -233,7 +230,4 @@ namespace Oldentide.Networking {
 	    [Key(6)]
 		public int data5;
 	};
-
-
-
 }

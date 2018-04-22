@@ -6,9 +6,9 @@ using Oldentide.Game;
 public class InventoryController : MonoBehaviour {
 
 	private int mites; // Basic unit of money.
-	private int sterlings; // 1 Sterling = 50 mites.
-	private int pinds; // 1 Pind = 16 sterlings.
-	private int metrads; // 1 Metrad = 20 Pinds.
+	private int sterlings; // 1 Sterling = 50 Mites.
+	private int pines; // 1 Pind = 16 Sterlings.
+	private int metrads; // 1 Metrad = 20 Pines.
 	private int bagZeroSize;
 	private int bagOneSize;
 	private int bagTwoSize;

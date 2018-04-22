@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
-using MessagePack;
+using MessagePack; // https://github.com/neuecc/MessagePack-CSharp/releases
 using UnityEngine.UI;
 
 
@@ -42,11 +42,13 @@ public class NetworkInterface : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+
         // Set up Server End Point for sending packets.
         IPHostEntry serverHostEntry = Dns.GetHostEntry(serverConfig.serverIp);
         IPAddress serverIpAddress = serverHostEntry.AddressList[0];
         serverEndPoint = new IPEndPoint(serverIpAddress, serverConfig.serverPort);
         Debug.Log("Server IPEndPoint: " + serverEndPoint.ToString());
+
         // Set up Client End Point for receiving packets.
         IPHostEntry clientHostEntry = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress clientIpAddress = IPAddress.Any;
@@ -57,6 +59,7 @@ public class NetworkInterface : MonoBehaviour {
         }
         clientEndPoint = new IPEndPoint(clientIpAddress, serverConfig.serverPort);
         Debug.Log("Client IPEndPoint: " + clientEndPoint.ToString());
+
         // Create socket for client and bind to Client End Point (Ip/Port).
         clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         try {
@@ -65,18 +68,7 @@ public class NetworkInterface : MonoBehaviour {
         catch (Exception e) {
             Debug.Log("Winsock error: " + e.ToString());
         }
-
-
-
-        // TODO: Get this to work!!!
-        // // Submit the user command
-        // messageInput.OnSubmit.AddListener(delegate(BaseEventData eventData) {
-        //     Debug.Log("Sending command...");
-        //     BroadcastAction(messageInput.text);
-        //     messageInput.text = "";
-        // });
     }
-
 
     // Update is called once per frame
     void Update() {
@@ -94,15 +86,6 @@ public class NetworkInterface : MonoBehaviour {
             messageInput.text = "";
         }
 
-        // if(Input.GetKeyDown(KeyCode.Alpha6)){
-            // messageInput.Select();
-            // messageInput.ActivateInputField();
-            // messageInput.text = "sdf";
-            // Debug.Log("Selecting text input");
-            // Debug.Log(messageInput.enabled);
-        // }
-
-
         ////
         ///     Listen for any packets
         //
@@ -119,8 +102,8 @@ public class NetworkInterface : MonoBehaviour {
                     packetQueue.Enqueue(p);
                 }
                 waitingForPacket = false;
-            }); // End ReceiveDataFrom
-        } // End packetListener while loop
+            });
+        }
 
 
         ////
@@ -141,8 +124,6 @@ public class NetworkInterface : MonoBehaviour {
                 return;
             }
         }
-
-        Debug.Log("Found a packet in the queue!");
 
         switch(returnPacket.type) {
             case Oldentide.Networking.PTYPE.ERROR: {
@@ -204,18 +185,13 @@ public class NetworkInterface : MonoBehaviour {
                 Debug.Log("Unhandled packet type: " + returnPacket.type);
                 break;
             }
-
-        } // End packet switch
-
-
-    } // End update
+        }
+    }
 
     void OnApplicationQuit() {
         Debug.Log("Application ending after " + Time.time + " seconds");
         listenForPackets = false;
         Debug.Log("Closing socket...");
-        // Close the socket the is most likely blocking right now
-        // This should stop it
         clientSocket.Close();
     }
 
@@ -244,7 +220,6 @@ public class NetworkInterface : MonoBehaviour {
 
         byte [] sendMsgpackData = MessagePackSerializer.Serialize(pp);
         SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.LISTCHARACTERS, sendMsgpackData);
-
     }
 
     void BroadcastAction(object command){
@@ -357,20 +332,4 @@ public class NetworkInterface : MonoBehaviour {
         }
         Debug.Log(hexstring);
     }
-
-    // For the MessagePack library, using:
-    // https://github.com/neuecc/MessagePack-CSharp
-    // instead of:
-    // https://github.com/msgpack/msgpack-cli
-
-    // To install, simply download the Unity zip from the releases page:
-    // https://github.com/neuecc/MessagePack-CSharp/releases
-    // Unzip it into a folder NOT under Oldentide/
-    // (don't want unity automatically ingesting the files just yet)
-    // In the Unity editor, click Assets -> Import Package
-    // Select the MessagePack .unitypackage file and click import.
-    // e.g. ...\MessagePack.Unity.1.2.0\MessagePack.Unity.1.2.0.unitypackage"
-    // Now all the MessagePack files are loaded into the project!
-    // To use it in code, put "using MessagePack" at the top of any C# files
-
 }
