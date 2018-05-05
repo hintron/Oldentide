@@ -32,6 +32,7 @@ public class LoginManager : MonoBehaviour {
 			url = GameObject.Find("Server_Address_Box").GetComponent<InputField>().placeholder.GetComponent<Text>().text;
 			url = "https://" + url + "/login";
 		}
+
 		Debug.Log(url);
 		Debug.Log(GameObject.Find("Password_Box").GetComponent<InputField>().text);
 		WWWForm form = new WWWForm();
@@ -42,6 +43,7 @@ public class LoginManager : MonoBehaviour {
 		Debug.Log(form.ToString());
 		WWW download  = new WWW(url, form);
 		yield return download;
+		
 		if(!string.IsNullOrEmpty(download.error)) {
             print( "Error downloading: " + download.error );
         } else {

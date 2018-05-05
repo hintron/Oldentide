@@ -21,7 +21,7 @@ public class Props : MonoBehaviour
 	}
 	protected virtual void Generate()
 	{
-		Random.seed = seed;
+		Random.InitState(seed);
 		foreach (Transform t in transform)
 		{
 			t.eulerAngles 	+= Range.GetRandomVector3(randomEulerX, randomEulerY, randomEulerZ);

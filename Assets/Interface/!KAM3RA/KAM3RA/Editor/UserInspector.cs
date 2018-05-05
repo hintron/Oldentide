@@ -14,7 +14,7 @@ namespace KAM3RA
 	{
 		public override void OnInspectorGUI() 
 		{ 
-			EditorGUIUtility.LookLikeControls();
+			//EditorGUIUtility.LookLikeControls();
 			User user				= target as User;
 			user.sensitivity 		= Vector3Field("Sensitivity", user.sensitivity);
 			user.damping 			= Vector3Field("Damping", user.damping);
