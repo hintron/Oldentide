@@ -5,15 +5,15 @@ LOCAL_LIBS = lib_local
 LOCAL_HEADERS = include_local
 
 # Keep 3rd party files local, to simplify life (no sudo or messing with os files)
-MSGPACK_HEADER = -I msgpack
-CATCH_HEADER = -I catch
-SQLITE_HEADERS = -I sqlitecpp
-SQLITE_LIBS = -L sqlitecpp
+MSGPACK_HEADER = -I src/lib/msgpack
+CATCH_HEADER = -I src/lib/catch
+SQLITE_HEADERS = -I src/lib/sqlitecpp
+SQLITE_LIBS = -L src/lib/sqlitecpp
 
 
-SERVER_FILES = 		Main.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Item.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
-CLIENT_FILES = 		TestClient.cpp Utils.cpp
-UNITTEST_FILES = 	UnitTest.cpp AdminShell.cpp Character.cpp GameState.cpp Npc.cpp Item.cpp Server.cpp Player.cpp SQLConnector.cpp Utils.cpp
+SERVER_FILES = 		src/Main.cpp src/AdminShell.cpp src/Character.cpp src/GameState.cpp src/Npc.cpp src/Item.cpp src/Server.cpp src/Player.cpp src/SQLConnector.cpp src/Utils.cpp
+CLIENT_FILES = 		src/TestClient.cpp src/Utils.cpp
+UNITTEST_FILES = 	src/UnitTest.cpp src/AdminShell.cpp src/Character.cpp src/GameState.cpp src/Npc.cpp src/Item.cpp src/Server.cpp src/Player.cpp src/SQLConnector.cpp src/Utils.cpp
 
 # Enable sqlitecpp to use query.getColumnOriginName() via -DSQLITE_ENABLE_COLUMN_METADATA
 # Add -DSQLITE_USE_LEGACY_STRUCT to make sqlitecpp only work with sqlite versions <= 3.18
@@ -23,7 +23,7 @@ DEFS = -DSQLITE_ENABLE_COLUMN_METADATA
 all : $(BIN)
 
 mkdir :
-	mkdir -p bin db
+	mkdir -p bin db src/lib
 
 
 database db : mkdir
@@ -43,21 +43,21 @@ unittest : mkdir msgpack catch sqlitecpp
 	g++ -g $(UNITTEST_FILES) -std=c++17 -L $(LOCAL_LIBS) -I $(LOCAL_HEADERS) $(CATCH_HEADER) $(MSGPACK_HEADER) $(SQLITE_HEADERS) $(SQLITE_LIBS) -lSQLiteCpp -lsqlite3 -ldl -lpthread -o bin/UnitTest $(DEFS)
 
 clean :
-	rm -f bin/Server bin/Client bin/UnitTest db/Oldentide.db
+	rm -rf bin/Server bin/Client bin/UnitTest db/Oldentide.db
 
 cleanall : clean
-	rm -rf msgpack;
-	rm -rf catch;
-	rm -rf sqlitecpp;
+	rm -rf src/lib/msgpack;
+	rm -rf src/lib/catch;
+	rm -rf src/lib/sqlitecpp;
 
 cleansql :
-	rm -rf sqlitecpp;
-	rm -rf sqlitecpp_temp;
+	rm -rf src/lib/sqlitecpp;
+	rm -rf src/lib/sqlitecpp_temp;
 
 # Download msgpack-c and set it to v2.1.1 if needed
 # Delete the rest of the files and only keep the headers (c++ version is a header-only library)
 msgpack :
-	@if [ ! -d "msgpack" ]; \
+	@if [ ! -d "src/lib/msgpack" ]; \
 	then \
 		echo "Downloading Message Pack..."; \
 		git clone https://github.com/msgpack/msgpack-c.git msgpack_temp; \
@@ -65,14 +65,14 @@ msgpack :
 		echo "Setting msgpack to v2.1.1"; \
 		git checkout cpp-2.1.1 -q; \
 		cd ..; \
-		mv msgpack_temp/include msgpack; \
+		mv msgpack_temp/include src/lib/msgpack; \
 		rm -rf msgpack_temp; \
 	fi
 
 
 # Download the Catch testing framework
 catch :
-	@if [ ! -d "catch" ]; \
+	@if [ ! -d "src/lib/catch" ]; \
 	then \
 		echo "Downloading Catch test framework..."; \
 		git clone https://github.com/philsquared/Catch.git catch_temp; \
@@ -80,13 +80,13 @@ catch :
 		echo "Setting catch to v1.10.0"; \
 		git checkout v1.10.0 -q; \
 		cd ..; \
-		mv catch_temp/single_include catch; \
+		mv catch_temp/single_include src/lib/catch; \
 		rm -rf catch_temp; \
 	fi
 
 # Download the SQLiteCpp and sqlite3 libraries and headers
 sqlitecpp :
-	@if [ ! -d "sqlitecpp" ]; \
+	@if [ ! -d "src/lib/sqlitecpp" ]; \
 	then \
 		echo "Downloading SQLiteCpp test framework..."; \
 		git clone https://github.com/SRombauts/SQLiteCpp.git sqlitecpp_temp; \
@@ -98,11 +98,11 @@ sqlitecpp :
 		cmake ..; \
 		make; \
 		cd ../..; \
-		mkdir -p sqlitecpp; \
-		cp -r sqlitecpp_temp/include/SQLiteCpp sqlitecpp/; \
-		cp sqlitecpp_temp/build/libSQLiteCpp.a sqlitecpp/; \
-		cp sqlitecpp_temp/build/sqlite3/libsqlite3.a sqlitecpp/; \
-		cp sqlitecpp_temp/sqlite3/sqlite3.h sqlitecpp/; \
+		mkdir -p src/lib/sqlitecpp; \
+		cp -r sqlitecpp_temp/include/SQLiteCpp src/lib/sqlitecpp/; \
+		cp sqlitecpp_temp/build/libSQLiteCpp.a src/lib/sqlitecpp/; \
+		cp sqlitecpp_temp/build/sqlite3/libsqlite3.a src/lib/sqlitecpp/; \
+		cp sqlitecpp_temp/sqlite3/sqlite3.h src/lib/sqlitecpp/; \
 		rm -rf sqlitecpp_temp; \
 	fi
 

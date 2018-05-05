@@ -22,8 +22,6 @@
 #include <mutex>
 #include <chrono>
 
-// TODO: Create a helper function to reduce try/catch code with messagepack
-
 Server::Server(int port) {
     sql = new SQLConnector();
     gameState = new GameState(this, sql);
@@ -59,7 +57,7 @@ Server::~Server() {
 void Server::Run() {
     std::thread shell(*adminshell);
 
-    // TODO: There should be 1 active thread per logical core to prevent thrashing
+    // There should be 1 active thread per logical core to prevent thrashing
     int NUM_WORKER_THREADS = 4;
 
     // Initialize all the threads
