@@ -16,11 +16,11 @@
 #include <unistd.h>
 #include <limits.h>
 #include <msgpack.hpp>
-#include <sstream>
+//#include <sstream>
 #include "Utils.h"
 #include <queue>
 #include <mutex>
-#include <chrono>
+// #include <chrono>
 
 Server::Server(int port) {
     sql = new SQLConnector();
@@ -58,7 +58,7 @@ void Server::Run() {
     std::thread shell(*adminshell);
 
     // There should be 1 active thread per logical core to prevent thrashing
-    int NUM_WORKER_THREADS = 4;
+    int NUM_WORKER_THREADS = 6;
 
     // Initialize all the threads
     for (int i = 0; i < NUM_WORKER_THREADS; ++i) {
@@ -91,7 +91,6 @@ void Server::Run() {
 
     shell.join();
 }
-
 
 void Server::WorkerThread(int id) {
     while(1){
@@ -227,7 +226,6 @@ void Server::BroadcastToConnections(std::string msg, std::string user){
     }
 }
 
-
 void Server::SendMessageToConnection(std::string msg, std::string fromUser, std::string toUser){
     bool isAdmin = false;
     std::string formattedMsg;
@@ -277,9 +275,6 @@ void Server::SendMessageToConnection(std::string msg, std::string fromUser, std:
         utils::SendDataTo(sockfd, &buffer, packets::SENDSERVERCOMMAND, &(connection->second));
     }
 }
-
-
-
 
 // Invisible packet case, simply ignore.  We don't want the client to be able to send a generic packet...
 void Server::GenericHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
@@ -508,7 +503,6 @@ void Server::SendPlayerActionHandler(msgpack::object_handle * deserialized_data,
 void Server::SendServerActionHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     std::cout << "SendServerActionHandler!" << std::endl;
 }
-
 
 void Server::UnityHandler(msgpack::object_handle * deserialized_data, sockaddr_in *client) {
     std::cout << "UnityHandler!" << std::endl;

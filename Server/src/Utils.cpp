@@ -90,8 +90,6 @@ namespace utils {
         }
     }
 
-
-
     // CLIENT/SERVER. Checks to makesure the passed string is only alphanumeric characters and underscore.
     // Use regex to check that the account name is only alpha-numeric
     // Regex: \^\w{3,30}$
@@ -162,7 +160,6 @@ namespace utils {
         printf("\n");
     }
 
-
     /*
 
     Oldentide Packet Header
@@ -194,12 +191,6 @@ namespace utils {
 
 
     */
-
-
-
-
-
-
 
     // Adds in the packetType and the size of the msgpack data
     // TODO: Make this more efficient by using memcpy instead of insert?
@@ -234,8 +225,6 @@ namespace utils {
         return shorty_array[0];
     }
 
-
-
     std::string GetMsgpckDataFromPacket(char *packetBuffer){
         uint16_t msgpckSize = utils::GetMsgpckSizeFromPacket(packetBuffer);
 
@@ -249,10 +238,6 @@ namespace utils {
         return std::string(packetBuffer+packets::PACKET_HEADER_SIZE, msgpckSize);
     }
 
-
-
-
-
     // Returns the ip address and port number of the socket
     std::string GetIpAndPortFromSocket(sockaddr_in *socket){
         char host[100];
@@ -262,7 +247,6 @@ namespace utils {
         ss << host << ":" << ntohs(socket->sin_port);
         return ss.str();
     }
-
 
     // Wrapper for recvfrom that returns msgpack data (object handle).
     // The packetType is returned in the uint8_t pointer, and sender info
@@ -277,16 +261,12 @@ namespace utils {
         return GetDataFromPacket(packet, packetTypeOut);
     }
 
-
-
     // Receives a single packet
     // packetBufferOut should point to PACKET_MAX_SIZE allocated bytes
     void ReceivePacketFrom(int sockfd, char *packetBufferOut, sockaddr_in *sourceOut){
         static socklen_t LEN = sizeof(sockaddr_in);
         int n = recvfrom(sockfd, packetBufferOut, packets::PACKET_MAX_SIZE, 0, (struct sockaddr *)sourceOut, &LEN);
     }
-
-
 
     // packetBufferIn must be of length PACKET_MAX_SIZE
     msgpack::object_handle GetDataFromPacket(char *packetBufferIn, uint8_t *packetTypeOut){
@@ -322,10 +302,6 @@ namespace utils {
     // using a pointer.
     // See https://github.com/msgpack/msgpack-c/wiki/v2_0_cpp_unpacker
 
-
-
-
-
     // Wrapper for sendto. Takes data msgpacked into dataIn, prepends a custom header to include the
     // packet type, and sends data in a UDP packet to destIn.
     // Returns the return value of sendto.
@@ -357,11 +333,7 @@ namespace utils {
         msgpack::pack(buffer, returnPacket);
         utils::SendDataTo(sockfd, &buffer, packets::ERROR, destIn);
     }
-
-
-
 }
-
 
 /////////////////////
 // References:

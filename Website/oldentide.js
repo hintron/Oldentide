@@ -45,19 +45,24 @@ console.log("Webserver running on domain \"" + domain + "\"");
 
 // Application Setup:
 var app = express();
+
 // Use the helmet middleware to shore up sundry attack vectors
 app.use(helmet());
+
 // Set handlebars as our template engine.
 app.engine('handlebars', handlebars({defaultLayout: 'main'}));
 app.set('views', __dirname + '/views');
 app.set('layouts', __dirname + '/views/layouts');
 app.set('view engine', 'handlebars');
+
 // Set the public folder as static and viewable by anyone.
 app.use(express.static('public'));
+
 // Enable Body-parser for all requests.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(validator());
+
 // Enable Cookie-parser for all requests.
 app.use(cookieParser());
 
@@ -76,6 +81,7 @@ if(EMAIL_SERVICE && EMAIL_USER && EMAIL_PASSWORD){
             pass: EMAIL_PASSWORD,
         }
     });
+    console.log('Successfully loaded emailer credentials!');
 }
 
 

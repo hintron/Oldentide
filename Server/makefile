@@ -7,9 +7,8 @@ LOCAL_HEADERS = include_local
 # Keep 3rd party files local, to simplify life (no sudo or messing with os files)
 MSGPACK_HEADER = -I src/lib/msgpack
 CATCH_HEADER = -I src/lib/catch
-SQLITE_HEADERS = -I src/lib/sqlitecpp
-SQLITE_LIBS = -L src/lib/sqlitecpp
-
+SQLITE_HEADERS = -I src/lib/sqlitecpp/
+SQLITE_LIBS = -L src/lib/sqlitecpp/
 
 SERVER_FILES = 		src/Main.cpp src/AdminShell.cpp src/Character.cpp src/GameState.cpp src/Npc.cpp src/Item.cpp src/Server.cpp src/Player.cpp src/SQLConnector.cpp src/Utils.cpp
 CLIENT_FILES = 		src/TestClient.cpp src/Utils.cpp
@@ -19,12 +18,10 @@ UNITTEST_FILES = 	src/UnitTest.cpp src/AdminShell.cpp src/Character.cpp src/Game
 # Add -DSQLITE_USE_LEGACY_STRUCT to make sqlitecpp only work with sqlite versions <= 3.18
 DEFS = -DSQLITE_ENABLE_COLUMN_METADATA
 
-
 all : $(BIN)
 
 mkdir :
 	mkdir -p bin db src/lib
-
 
 database db : mkdir
 	sqlite3 db/Oldentide.db < db/InitializeDb.sql
@@ -99,7 +96,7 @@ sqlitecpp :
 		make; \
 		cd ../..; \
 		mkdir -p src/lib/sqlitecpp; \
-		cp -r sqlitecpp_temp/include/SQLiteCpp src/lib/sqlitecpp/; \
+		cp -r sqlitecpp_temp/include/SQLiteCpp/ src/lib/sqlitecpp/; \
 		cp sqlitecpp_temp/build/libSQLiteCpp.a src/lib/sqlitecpp/; \
 		cp sqlitecpp_temp/build/sqlite3/libsqlite3.a src/lib/sqlitecpp/; \
 		cp sqlitecpp_temp/sqlite3/sqlite3.h src/lib/sqlitecpp/; \
@@ -113,13 +110,7 @@ sqlitecpp :
 # 		-DSQLITE_USE_LEGACY_STRUCT=ON
 # and be sure to also add -DSQLITE_USE_LEGACY_STRUCT to the g++ DEFS make variable above, or you'll get some errors in the headers
 
-
-
-
-
 .PHONY: all, clean, cleanall, cleansql, mkdir, database, db, npc, npcs, server, client, unittest, msgpack, catch, sqlitecpp
-
-
 
 # References:
 # How to make a conditional make variable based on files:
