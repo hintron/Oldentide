@@ -24,15 +24,18 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	private IEnumerator SubmitLoginForm () {
+		// Get server address from default value if none is provided.
+		// Need to change to https:// if server has encryption.
 		string url = GameObject.Find("Server_Address_Box").GetComponent<InputField>().text;
 		if (url != "") {
-			url = "https://" + url + "/login";
+			url = "http://" + url + "/login";
 		}
 		else {
 			url = GameObject.Find("Server_Address_Box").GetComponent<InputField>().placeholder.GetComponent<Text>().text;
-			url = "https://" + url + "/login";
+			url = "http://" + url + "/login";
 		}
 
+		// Create a webpage form and post it to our login server.
 		Debug.Log(url);
 		Debug.Log(GameObject.Find("Password_Box").GetComponent<InputField>().text);
 		WWWForm form = new WWWForm();
@@ -44,6 +47,7 @@ public class LoginManager : MonoBehaviour {
 		WWW download  = new WWW(url, form);
 		yield return download;
 		
+		// Extract sessionID if successful.
 		if(!string.IsNullOrEmpty(download.error)) {
             print( "Error downloading: " + download.error );
         } else {
@@ -56,9 +60,7 @@ public class LoginManager : MonoBehaviour {
             	failedLogin.SetActive(false);
             	OldentidePlayerInformation.accountName = username;
             	OldentidePlayerInformation.sessionId = sessionId.Groups[1].Value;
-            	//playerInformation.GetComponent("OldentidePlayerInformation.cs").SetAccountName(username);
-            	//playerInformation.GetComponent("OldentidePlayerInformation.cs").SetSessionId(sessionId);
-            	ChangeScene("Newcomers_Guild");
+            	ChangeScene("Sandbox");
             }
             else {
             	Debug.Log("User failed to login correctly to the server.");

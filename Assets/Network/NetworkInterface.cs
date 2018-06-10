@@ -14,23 +14,22 @@ using UnityEngine.UI;
 
 public class NetworkInterface : MonoBehaviour {
 
-    public InputField messageInput;
-    public Text messages;
-
     ServerConfig serverConfig;
-
     IPEndPoint serverEndPoint;
     IPEndPoint clientEndPoint;
     Socket clientSocket;
 
     Queue<Packet_t> packetQueue = new Queue<Packet_t>();
-
     int packetNumber = 1;
     int session = 0;
 
     // Set this to false to stop the thread, or else it will keep running
-    bool listenForPackets = true;
+    bool listenForPackets = false;
     bool waitingForPacket = false;
+
+    // Player location.
+    public GameObject player_object;
+    Vector3 player_position;
 
     // This is the number of bytes that the oldentide header is
     const int HEADER_SIZE = 3;
@@ -68,28 +67,12 @@ public class NetworkInterface : MonoBehaviour {
         catch (Exception e) {
             Debug.Log("Winsock error: " + e.ToString());
         }
+
+        player_position = player_object.transform.position;
     }
 
     // Update is called once per frame
-    void Update() {
-        if(Input.GetKeyDown(KeyCode.Alpha7)){
-            ConnectToServer();
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha8)){
-            ListCharactersAction();
-        }
-        if(Input.GetKeyDown(KeyCode.Return)){
-            Debug.Log("Sending command...");
-            // Get the text input and send it
-            BroadcastAction(messageInput.text);
-            // Clear the input
-            messageInput.text = "";
-        }
-
-        ////
-        ///     Listen for any packets
-        //
-
+    void FixedUpdate() {
         // Continually wait for a packet to come in from the server
         // If we are already waiting for a packet, give control back to unity
         if(listenForPackets && !waitingForPacket){
@@ -105,10 +88,33 @@ public class NetworkInterface : MonoBehaviour {
             });
         }
 
-
-        ////
-        ///     Service any packets in the packet queue
-        //
+        // Update player position if needed.
+        if (player_position != player_object.transform.position) {
+            player_position = player_object.transform.position;
+            // Send a packed to the server!
+            PacketUpdatepc pp = new PacketUpdatepc();
+            pp.packetId = packetNumber;
+            pp.sessionId = session;
+            pp.firstName = OldentidePlayerInformation.accountName;
+            pp.lastName = "account";
+            pp.race = "Orc";
+            pp.gender = "Male";
+            pp.profession = "Necromancer";
+            pp.level = 51;
+            pp.hp = 350;
+            pp.bp = 190;
+            pp.mp = 500;
+            pp.ep = 300;
+            pp.x = (int)player_position.x;
+            pp.y = (int)player_position.y;
+            pp.z = (int)player_position.z;
+            pp.direction = 0;
+            byte [] msgpackData = MessagePackSerializer.Serialize(pp);
+            // Synchronously send, since it's UDP
+            SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.UPDATEPC, msgpackData);
+            Debug.Log("Send update packet " + pp);
+            packetNumber++;
+        }
 
         // Wait on packets in the packetQueue and service them
         // This thread shouldn't have to wait too long on this lock
@@ -129,7 +135,6 @@ public class NetworkInterface : MonoBehaviour {
             case Oldentide.Networking.PTYPE.ERROR: {
                 var data = MessagePackSerializer.Deserialize<PacketError>(returnPacket.data);
                 Debug.Log("ERROR: " + data.errorMsg);
-                messages.text += "ERROR: " + data.errorMsg;
                 break;
             }
             case Oldentide.Networking.PTYPE.SENDSERVERCOMMAND: {
@@ -139,7 +144,6 @@ public class NetworkInterface : MonoBehaviour {
                     return;
                 }
                 Debug.Log(data.command);
-                messages.text += "\n" + data.command;
                 break;
             }
 
@@ -195,7 +199,6 @@ public class NetworkInterface : MonoBehaviour {
         clientSocket.Close();
     }
 
-
     public void ConnectToServer(){
         Debug.Log("sending a single CONNECT packet via message pack!!");
 
@@ -208,7 +211,6 @@ public class NetworkInterface : MonoBehaviour {
         // Synchronously send, since it's UDP
         SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.CONNECT, msgpackData);
     }
-
 
     void ListCharactersAction(){
         PacketListcharacters pp = new PacketListcharacters();
@@ -234,17 +236,10 @@ public class NetworkInterface : MonoBehaviour {
         SendDataTo(clientSocket, serverEndPoint, Oldentide.Networking.PTYPE.SENDPLAYERCOMMAND, sendMsgpackData);
     }
 
-
-    ////
-    /// Util functions
-    //
+    // Util functions:
 
     // Everything below here is analogous to the Utils C++ class in Server - wrappers to
     // the (UDP) socket functions that will be used multiple times
-
-    // Gameplan: Use a delegate function, so the user can pass in their own callback function
-    // That way, we can hide the complexities of the other stuff
-
     // How to use delegates and async callbacks:
     // http://stackoverflow.com/questions/2082615/pass-method-as-parameter-using-c-sharp
     // http://stackoverflow.com/questions/6866347/lambda-anonymous-function-as-a-parameter
@@ -254,8 +249,6 @@ public class NetworkInterface : MonoBehaviour {
     public class CallbackParams{
         public byte[] buffer;
         public Action<Packet_t> callback;
-        // Note: Action<...> is a no-return delegate; Func<..., retType> has a return type
-        // public Func<string, int> callback;
     }
 
     // Wrapper function for BeginReceiveFrom() that deals with
