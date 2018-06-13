@@ -32,7 +32,6 @@ In order to view the project in Unity, simply open the Unity project browser and
 Navigate to this base directory (repository base) and click open.  Game scenes and Objects should be viewable!<br>
 Feel free to play around with the engine, but if you want to commit, please either use a separate branch, or make a pull request!<br> 
 
-**A readme for Server operation is found within the Server directory.**<br>
-**A readme for Website operation is found within the Website directory.**<br><br>
+**A readme for Server and Website operation is found within the Server directory.**<br>
 
 #### Please contact me immediately if you see any bugs or want to contribute.  I need help developing the game!
