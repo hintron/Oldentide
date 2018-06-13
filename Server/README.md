@@ -28,11 +28,13 @@ Building *Oldentide Dedicated Server* is consistent with the standard ["Go" buil
 
 Dependencies
 ------------
-* [sqlite3][5] - The sqlite3 command-line tool, used to initialize and manage our sqlite databases.
-    * go get github.com/mattn/go-sqlite3
-* [git][6] - Needed for revision control, and for downloading and installing msgpack and go-sqlite3.
+* [git][5] - Needed for revision control, and for downloading and installing msgpack and go-sqlite3.
+    * **sudo apt install -y git-all**
+* [sqlite3][6] - The sqlite3 command-line tool, used to initialize and manage our sqlite databases.
+    * **sudo apt install -y sqlite3 libsqlite3-dev**
+    * **go get github.com/mattn/go-sqlite3**
 * [msgpack-go][7] is used for data serialization for transmitting packets between server and client.
-    * go get github.com/msgpack/msgpack-go
+    * **go get github.com/msgpack/msgpack-go**
 
 Server and Test Client Usage
 ------------
@@ -58,13 +60,13 @@ If everything built properly, cd back to the Oldentide/Server directory and run
 
     bin/Server <Port>
 
-where <Port> is the port the server is using.
+where \<Port\> is the port the server is using.
 
 [1]: http://golang.org/ "The Go Language"
 [2]: http://www.oldentide.com/ "Oldentide, a game where you can be anyone!"
 [3]: http://www.ubuntu.com/ "Ubuntu · The world's most popular free OS"
 [4]: https://golang.org/cmd/go/ "Go Cmd Documentation"
-[5]: https://www.sqlite.org/ "SQLite 3"
-[6]: https://git-scm.com/ "Git"
+[5]: https://git-scm.com/ "Git"
+[6]: https://www.sqlite.org/ "SQLite 3"
 [7]: https://github.com/msgpack/msgpack-go/ "msgpack-go"
 [7]: https://github.com/mattn/go-sqlite3 "go-sqlite3"
