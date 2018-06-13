@@ -12,6 +12,7 @@
 ```
 
 * **Files** should be all lowercase, have the .go suffix, and be stored in an appropriate src/folder\_name location. (named after their namespace and purpose)
+  underscores are acceptable!
 ```Go
     server.go should be found in Oldentide/Server/src/server/server.go
 ```
