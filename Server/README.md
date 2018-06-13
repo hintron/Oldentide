@@ -39,6 +39,11 @@ Dependencies
 Server and Test Client Usage
 ------------
 In linux:
+
+Switch to the db directory and initialize the Oldentide DB:
+
+    sqlite3 Oldentide.db < init_db.sql    
+
 Update your GOPATH to point to our working directory:
 
     echo "export GOPATH=<path to Oldentide/Server/> >> ~/.bashrc"
