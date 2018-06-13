@@ -130,3 +130,10 @@ ehthumbs.db
 # Node generated #
 # ============== #
 Website/node_modules/
+
+# ============== #
+# Go generated   #
+# ============== #
+Server/bin/
+Server/pkg/
+Server/src/github.com/

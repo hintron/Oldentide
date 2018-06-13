@@ -1,138 +1,93 @@
 # Oldentide Style Guide
 
-## C++
+## Go
 
-* **Files** should be named after their class/namespace using UpperCamelCase notation.
-```Cpp
-    Class UserContainer should be in UserContainer.cpp/h
-```
-* **Source Files** should be all have a matching header file (except Main.cpp) use the ".cpp" file ending.
-```Cpp
-    UserContainer.cpp
-```
-* **Header Files** should have a matching source file and use the ".h" file ending.
-```Cpp
-    UserContainer.h
-```
 * **Boilerplate** Every code-containing file should have the same boilerplate at the top of the file.  
   The boilerplate should include the file name, creation date, author's name, and purpose (in that order).
-```Cpp
-    // File:     UserContainer.cpp
+```Go
+    // File:     user.go
     // Created:  January 1, 2016
     // Author:   John Smith
-    // Purpose:  A simple class that contains user information.
+    // Purpose:  A simple package used for manipulating user information.
 ```
-* **Comments** should all be implemented using line comments ("//") when posible.
-```Cpp
-    // This is a description for the foo class.
+
+* **Files** should be all lowercase, have the .go suffix, and be stored in an appropriate src/folder\_name location. (named after their namespace and purpose)
+```Go
+    server.go should be found in Oldentide/Server/src/server/server.go
+```
+
+* **Functions** should be lowerCamelCase.
+```Go
+    func addTwo(x int, y int) int {
+        return x + y
+    }
+```
+
+* **Packages** should be all lowercase, have the .go suffix, and be stored in an appropriate src/folder\_name location. (named after their namespace and purpose)
+* **Package Methods** should be UpperCamelCase.
+```Go
+    // in src/foo/foo.go
+    package foo
+
+    func AddTwo(x int, y int) int {
+        return x + y
+    }
+```
+
+* **Structs** should typically be all lowercase.
+* **Comments** should all be implemented using line comments ("//").
+```Go
+    // This is a description for the foo struct.
     // This is the way to do a multi-line comment.
-    class Foo {
-        private:
-        int bar;    // This is a description for the bar variable.
-        byte baz;   // This is a description for the baz variable.
+    type foo struct {
+        bar int    // This is a description for the bar variable.
+        baz byte   // This is a description for the baz variable.
     }
 ```
-* **Classes** should be named using UpperCamelCase notation, and use descriptive names.
-  They should have private or protected variables.
-  They should use public getter and setter methods for any data member that you would need to edit.
-  Other functions can be public or private as needed.
-  Class declarations should go in header files, and implementation should be in source files.
-```Cpp
-UserContainer.h:
 
-    Class UserContainer {
-        public:
-        User(int id);
-        int GetId();
-        void SetId(int id);
-        
-        private:
-        int id;
+* **Variables** should be named using lowerCamelCase or under\_score notation.
+```Go
+    phoneNumber := 9251234567
+    phone_number := 9251234567
+    fullHomeAddress := "123 Sesame Street, Sacramento, CA 94203"
+    full_home_address := "123 Sesame Street, Sacramento, CA 94203"
+```
+
+* **Braces** should always open on the same line as the declaration, with a space between any other character.  
+  Closing braces should be separated from other characters by a space.  If multi-lined, they should be aligned with the start of the declaration on their own line.
+```Go
+    func foo(bar int) int {
+        return bar
     }
 
-UserContainer.cpp:
-
-    UserContainer::UserContainer(int id) {
-        SetId(id);
-    }
+    baz := []string { "a", "b", "c" }
     
-    int UserContainer::GetId() {
-        return id;
-    }
-    
-    void UserContainer::SetId(int id) {
-        this.id = id;
+    baz := []string {
+        "a",
+        "b",
+        "c",
     }
 ```
-* **Namespaces** should be named using all undercase letters.  The **"using namespace std"** directive should never be used.
-```Cpp
-    namespace testmode {
-        bool CheckObese(int weight) {
-            if (weight > 300) {
-                return true;
-            }
-            return false;
-        }
-    }
-    
-    if (testmode::CheckObese(310)) {
-        std::cout << "You should lose some weight buddy..." << std::endl;
-    }
-    else {
-        std::cout << "Keep eating bro!" << std::endl;
-    }
-```
-* **Functions** should be named using UpperCamelCase notation.  If a function returns nothing, please denote that it returns void.
-  Functional programming is encouraged where possible, but otherwise, parameters are passed inputs first, outputs second.
-```Cpp
-Functional:
 
-    int AddTwoIntegers(int x, int y) {
-        return x + y;
-    }
+* **Brackets and Parenthases** should touch at least one other character on the outside and have no spaces touching their insides.
+```Go
+    names := []int { 1, 2, 3, 4, 5 }
+    fmt.Println(names[3])
+```
 
-Referencial:
-    
-    void AddTwoInteger(int x, int y, int &z) {
-        z = x + y
-    }
-```
-* **Variables** should be named using lowerCamelCase notation.
-```Cpp
-    int phoneNumber = 9251234567;
-    string fullHomeAddress = "123 Sesame Street, Sacramento, CA 94203";
-```
-* **Braces** should always open on the same line as the declaration, with a space between the declaration and the '{'.  
-  Closing braces should always be on their own line, aligned with the declaration.
-```Cpp
-    int Foo(int bar) {
-        return bar;
-    }
-```
-* **Angle Brackets** should follow directly after the container name and have no spaces touching their insides.
-```Cpp
-    std::Vector<std::string> names = new std::vector<std::string>();
-```
-* **Square Brackets** should follow directly after the array name and have no spaces touching their insides.
-```Cpp
-    int phoneNumbers[100];
-    std::cout << "Phone Number 5 is: " << phoneNumbers[4] << std::endl;
-```
-* **Parenthases** should follow directly after the function name and have no spaces touching their insides.
-```Cpp
-    UserContainer joseph = new UserContainer(15);
-    int userId = joseph.getId();
-```
 * **if-else statements** and other similar statements should keep declarations on their own line.
-```Cpp
+```Go
     if (foo) {
-        return bar;
+        return bar
+    }
+    else if (qux){
+        return baz
     }
     else {
-        return baz;
+        return quux
     }
 ```
 
 ## C# 
 
-* **To be implemented!**
+* **To be implemented**

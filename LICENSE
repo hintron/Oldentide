@@ -1,16 +1,17 @@
-The MIT License (MIT)
+The Victory Game Studios License (VGS)
 
-Copyright (c) 2016 Victory Game Studios
+Copyright (c) 2013 Victory Game Studios
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Any content in this file structure that does not contain its own License 
+When in doubt about whether or not you may use a piece of content from this 
+repository, first refer to the license file in the folder you found the content. 
+If there is no license file, please try to determine the source of the content. 
+If the content was originated by one of the contributors to this repository 
+it may be used freely for any purpose (public, private, commercial) with or 
+without attribution.  
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+We dedicate our code and designs to help other developers with 
+the following conditions:
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

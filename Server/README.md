@@ -1,6 +1,6 @@
 Oldentide Dedicated Server
 ==
-The *Oldentide Dedicated Server* is an open source project, built in [C++][1], to implement the
+The *Oldentide Dedicated Server* is an open source project, built in [Go][1], to implement the
 backend game state for the multiplayer online role-playing game [*Oldentide*][2].  This
 directory contains all of the code necessary to build and run the dedicated server.
 
@@ -10,121 +10,61 @@ step used during the development process:
 1. Create the database and generate all of the needed tables.
 2. Populate the database with NPC information.
 3. Compile the dedicated server.
-4. Compile the test client.
+4. Compile the test client. <IP>
 
 Requirements
 ------------
-The *Oldentide Dedicated Server* currently supports a Linux development and runtime environment.
+The *Oldentide Dedicated Server* currently supports a Linux development and runtime environment. (Although it should work on Windows with some hacking)
 
 Operating Systems
 ------------
 All development and testing is currently done on a 64-Bit linux environment.
-[Ubuntu 16.04.1 LTS][3] is recommended, but other distributions have been known to work,
-too, including Debian, Fedora, Alpine, and Windows Bash.
+[Ubuntu 18.04 LTS][3] is recommended (being used by the primary developer).
+Other distributions should work as long as you can run Go and Git.
 
 Compilers
 ------------
-Building *Oldentide Dedicated Server* is currently possible with the following compiler:
-* *g++* - (C++ 17) Currently all development is done on the [g++][4] compiler in a 64-bit
-   environment.  A makefile is included to simplify compilation!
-
-*cmake may possibly be supported in future releases...*
+Building *Oldentide Dedicated Server* is consistent with the standard ["Go" build/install tools][4]
 
 Dependencies
 ------------
-* sqlite3 - The sqlite3 command-line tool, used to initialize and manage sqlite databases [sqlite3][5]
-* git - Needed to download and install msgpack, catch, and sqlitecpp
-* Cmake - Needed to build and compile sqlitecpp and sqlite.
-* msgpck-c 2.1.1 - [msgpack-c][6] is used to efficiently and predictably transmit packet data between server and client. This will automatically be installed the first time you run make.
-* sqlitecpp 2.2.0 - [SQLiteC++][7] is used to provide an easy-to-use C++ wrapper to the sqlite C API. It comes packaged with a recent version (v3.21) of the sqlite C API library
-* Catch 1.10.0 - [Catch][8] is used to run unit and regression tests.
-
+* [sqlite3][5] - The sqlite3 command-line tool, used to initialize and manage our sqlite databases.
+    * go get github.com/mattn/go-sqlite3
+* [git][6] - Needed for revision control, and for downloading and installing msgpack and go-sqlite3.
+* [msgpack-go][7] is used for data serialization for transmitting packets between server and client.
+    * go get github.com/msgpack/msgpack-go
 
 Server and Test Client Usage
 ------------
-In linux, cd into Oldentide/Server/ and run
+In linux:
+Update your GOPATH to point to our working directory:
 
-    make
+    echo "export GOPATH=<path to Oldentide/Server/> >> ~/.bashrc"
+    source ~/.bashrc
 
-If everything built properly, run
+or
+
+    export GOPATH=<path to Oldentide/Server/>
+
+Download necessary dependencies (see above)
+
+    go get ...
+
+cd into the src/server folder and run
+
+    go install
+
+If everything built properly, cd back to the Oldentide/Server directory and run
 
     bin/Server <Port>
 
 where <Port> is the port the server is using.
 
-To test that the server is running, in a separate terminal, run
-
-    bin/Client <IP> <Port>
-
-Where <IP> is the address of the server and <Port> is the port of the server.
-
-
-Docker
-------------
-To use Docker to run the server, first make sure the docker daemon is running (dockerd).
-Then build the image like so:
-
-    docker build -t oldentide_server .
-
-Then create a container instance of the image like so:
-
-    docker run -it -p 1337:1337/udp oldentide_server
-
-Inside the container, run:
-
-    ./bin/Server 1337
-
-Docker Configuration file:
-
-```bash
-# Oldentide Docker File
-
-# How To Use:
-
-# make sure the docker daemon is running (dockerd)
-# cd into this directory and run:
-#   docker build -t oldentide_server .
-#   docker run -it -p 1337:1337/udp oldentide_server
-#   ./bin/Server 1337
-# This will map the docker container to localhost's 1337 port
-# Now access it via another shell like so:
-#   ./bin/Client 127.0.0.1 1337
-
-# Base image
-FROM alpine:3.6
-
-# Set the working directory
-WORKDIR /oldentide
-
-# Copy the current directory contents into the container at the working directory
-ADD . /oldentide
-
-# --no-cache is like --update, but deletes package list cache automatically
-# To search for valid packages, go to https://pkgs.alpinelinux.org/packages
-RUN apk --no-cache add \
-    bash \
-    cmake \
-    make\
-    g++ \
-    git \
-    sqlite
-
-RUN ["make"]
-
-# Make ports available to the world outside this container
-# UDP ports need to be explicitly specified
-EXPOSE 1337/udp
-
-# Spawn a command line interface
-CMD ["bash"]
-```
-
-
-[1]: http://www.cppreference.com/ "C / C++ reference"
+[1]: http://golang.org/ "The Go Language"
 [2]: http://www.oldentide.com/ "Oldentide, a game where you can be anyone!"
 [3]: http://www.ubuntu.com/ "Ubuntu · The world's most popular free OS"
-[4]: https://gcc.gnu.org/ "Gnu C / C++ Compiler"
+[4]: https://golang.org/cmd/go/ "Go Cmd Documentation"
 [5]: https://www.sqlite.org/ "SQLite 3"
-[6]: https://github.com/msgpack/msgpack-c/ "msgpack-c"
-[7]: https://github.com/SRombauts/SQLiteCpp "SQLiteC++"
-[8]: https://github.com/philsquared/Catch "Catch"
+[6]: https://git-scm.com/ "Git"
+[7]: https://github.com/msgpack/msgpack-go/ "msgpack-go"
+[7]: https://github.com/mattn/go-sqlite3 "go-sqlite3"
