@@ -11,17 +11,24 @@ import (
     _ "github.com/mattn/go-sqlite3"
     "log"
     "net"
+    "net/http"
     "os"
     "runtime"
     "strconv"
 )
 
 func main() {
-    fmt.Println("Starting Oldentide Go Server!!!")
+    fmt.Println("Starting Oldentide dedicated server!")
 
     // Opening database.
     db, err := sql.Open("sqlite3", "../../db/Oldentide.db")
     checkErr(err)
+
+    // Kick off html server for registration page.
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", homePage)
+    mux.HandleFunc("/register", registerPage)
+    go http.ListenAndServe(":8080", mux)
 
     // Extract port from command line.
     server_port, err := strconv.Atoi(os.Args[1])
@@ -71,6 +78,55 @@ func listen(connection *net.UDPConn, quit chan struct{}) {
     }
     fmt.Println("Listener failed - ", err)
     quit <- struct{}{}
+}
+
+
+// HTTP Handlers:
+func homePage(w http.ResponseWriter, r *http.Request) {
+    hn, err := os.Hostname()
+    checkErr(err)
+    fmt.Fprintf(w, "<html>")
+    fmt.Fprintf(w, "<p>Welcome to the Oldentide dedicated server running on %s.</p>", hn)
+    fmt.Fprintf(w, "<p>Account Registration:</p>")
+    fmt.Fprintf(w, "<form name=\"registration\" method=\"post\" action=\"/register\" role=\"form\">")
+    fmt.Fprintf(w, "<label for=\"registration_username\">Username (min 3)</label><br>")
+    fmt.Fprintf(w, "<input type=\"text\" id=\"registration_username\" name=\"registration_username\" " +
+                   "placeholder=\"User\" required=\"required\" maxlength=\"30\" pattern=\"[A-Za-z0-9]{3,}\"><br>")
+    fmt.Fprintf(w, "<label for=\"registration_email\">Email</label><br>")
+    fmt.Fprintf(w, "<input type=\"email\" id=\"registration_email\" name=\"registration_email\" " +
+                   "placeholder=\"user@domain.com\" required=\"required\"><br>")
+    fmt.Fprintf(w, "<label for=\"registration_password_first\">Password (min 6)</label><br>")
+    fmt.Fprintf(w, "<input type=\"password\" id=\"registration_password_first\" name=\"registration_password_first\" " +
+                   "placeholder=\"******\" required=\"required\" maxlength=\"30\" pattern=\".{6,}\"><br>")
+    fmt.Fprintf(w, "<label for=\"registration_password_second\">Confirm (min 6)</label><br>")
+    fmt.Fprintf(w, "<input type=\"password\" id=\"registration_password_second\" name=\"registration_password_second\" " +
+                   "placeholder=\"******\" required=\"required\" maxlength=\"30\" pattern=\".{6,}\" oninput=\"check(this)\"><br><br>")
+    fmt.Fprintf(w, "<script language='javascript' type='text/javascript'> function check(input) { " +
+                   "    if (input.value != document.getElementById('registration_password_first').value) " +
+                   "        { input.setCustomValidity('Password Must be Matching.'); " +
+                   "    } else { input.setCustomValidity(''); }	} </script>")
+    fmt.Fprintf(w, "<input class=\"button-primary\" type=\"submit\" value=\"Register\">")
+    fmt.Fprintf(w, "</form>")
+    fmt.Fprintf(w, "</html>")
+}
+
+func registerPage(w http.ResponseWriter, r *http.Request) {
+    if r.Method == "POST" {
+        r.ParseForm()
+        registration_username := r.Form["registration_username"][0]
+        registration_email := r.Form["registration_email"][0]
+        registration_password_first := r.Form["registration_password_first"][0]
+        registration_password_second := r.Form["registration_password_second"][0]
+        if registration_password_first == registration_password_second {
+            fmt.Fprintf(w, "You posted data to the register page.\n\n")
+            fmt.Fprintf(w, "Username: %s\n", registration_username)
+            fmt.Fprintf(w, "Email: %s\n", registration_email)
+        } else {
+            fmt.Fprintf(w, "Your passwords did not match...")
+        }
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
 }
 
 /*

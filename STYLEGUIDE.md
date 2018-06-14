@@ -76,15 +76,13 @@
     fmt.Println(names[3])
 ```
 
-* **if-else statements** and other similar statements should keep declarations on their own line.
+* **if-else statements** are required to be minimize bracket space by sharing declarations with brackets.
 ```Go
     if (foo) {
         return bar
-    }
-    else if (qux){
+    } else if (qux){
         return baz
-    }
-    else {
+    } else {
         return quux
     }
 ```
