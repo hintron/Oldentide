@@ -7,9 +7,10 @@ CREATE TABLE accounts (
     id integer not null primary key autoincrement,
     valid integer not null,
     accountname text not null unique collate nocase,
-    email text not null collate nocase,
-    session text collate nocase,
+    email text not null unique collate nocase,
+    gamesession integer not null,
     playing integer not null,
+    verify text not null unique,
     hash text not null collate nocase,
     salt text not null collate nocase
 );
@@ -27,7 +28,8 @@ CREATE TABLE players (
     face text,
     skin text,
     profession text,
-    level integer not null default 1,
+    plevel integer not null default 1,
+    dp integer not null default 0,
     -- Stats:
     hp integer not null default 1,
     maxhp integer not null default 1,
@@ -111,8 +113,7 @@ CREATE TABLE players (
     x real,
     y real,
     z real,
-    pitch real,
-    yaw real
+    direction real
 );
 
 
@@ -129,7 +130,7 @@ CREATE TABLE npcs (
     face text,
     skin text,
     profession text,
-    level integer not null default 1,
+    nlevel integer not null default 1,
     -- Stats:
     hp integer not null default 1,
     maxhp integer not null default 1,
@@ -158,8 +159,7 @@ CREATE TABLE npcs (
     x real,
     y real,
     z real,
-    pitch real,
-    yaw real
+    direction real
 );
 
 DROP TABLE IF EXISTS items;
@@ -174,10 +174,9 @@ CREATE TABLE items (
     equip integer not null,
     use integer not null,
     x integer,
-    y integer,
-
-    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE ON UPDATE CASCADE
-    FOREIGN KEY(npc_id) REFERENCES npcs(id) ON DELETE CASCADE ON UPDATE CASCADE
+    y integer
+    --FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE ON UPDATE CASCADE
+    --FOREIGN KEY(npc_id) REFERENCES npcs(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -186,31 +185,31 @@ CREATE TABLE items (
 -- Views
 ------------------------
 
-DROP VIEW IF EXISTS view_players;
-CREATE VIEW view_players AS
-SELECT
-    *
-FROM players
-LEFT JOIN accounts on players.account_id = accounts.id
-;
+--DROP VIEW IF EXISTS view_players;
+--CREATE VIEW view_players AS
+--SELECT
+--    *
+--FROM players
+--LEFT JOIN accounts on players.account_id = accounts.id
+--;
 
 
 -- Show all the items currently being possessed by players
-DROP VIEW IF EXISTS view_items_player;
-CREATE VIEW view_items_player AS
-SELECT
-    *
-FROM items
-LEFT JOIN players on items.player_id = players.id
-WHERE player_id IS NOT NULL
-;
+--DROP VIEW IF EXISTS view_items_player;
+--CREATE VIEW view_items_player AS
+--SELECT
+--    *
+--FROM items
+--LEFT JOIN players on items.player_id = players.id
+--WHERE player_id IS NOT NULL
+--;
 
 -- Show all the items currently being possessed by npcs
-DROP VIEW IF EXISTS view_items_npc;
-CREATE VIEW view_items_npc AS
-SELECT
-    *
-FROM items
-LEFT JOIN npcs on items.npc_id = npcs.id
-WHERE npc_id IS NOT NULL
-;
+--DROP VIEW IF EXISTS view_items_npc;
+--CREATE VIEW view_items_npc AS
+--SELECT
+--    *
+--FROM items
+--LEFT JOIN npcs on items.npc_id = npcs.id
+--WHERE npc_id IS NOT NULL
+--;
