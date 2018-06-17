@@ -34,7 +34,8 @@ Dependencies
     * **sudo apt install -y sqlite3 libsqlite3-dev**
     * **go get github.com/mattn/go-sqlite3**
 * [msgpack-go][7] is used for data serialization for transmitting packets between server and client.
-    * **go get github.com/msgpack/msgpack-go**
+    * Msgpack recommends the Vmihailenco implementation of msgpack for go.
+    * **go get github.com/vmihailenco/msgpack**
 
 Server and Test Client Usage
 ------------

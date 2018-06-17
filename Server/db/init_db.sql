@@ -28,6 +28,7 @@ CREATE TABLE players (
     face text,
     skin text,
     profession text,
+    alive int not null default 1,
     plevel integer not null default 1,
     dp integer not null default 0,
     -- Stats:
@@ -130,6 +131,7 @@ CREATE TABLE npcs (
     face text,
     skin text,
     profession text,
+    alive int not null default 1,
     nlevel integer not null default 1,
     -- Stats:
     hp integer not null default 1,

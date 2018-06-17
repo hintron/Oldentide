@@ -13,7 +13,6 @@
 **Languages**: C#, Go, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
 **Wiki**: [Github Wiki](https://github.com/Oldentide/Oldentide/wiki)<br>
-**Tasks**: [Gihub Wiki Task List](https://github.com/Oldentide/Oldentide/wiki/Tasks)<br>
 **Development Server**: [imp.oldentide.com](imp.oldentide.com)<br>
 **Development Game Port**: Port 1337<br>
 **Contact**: jldevictoria@gmail.com
