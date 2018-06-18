@@ -5,34 +5,20 @@
 
 package main
 
+import "database/sql"
+//import "fmt"
+import "log"
+
 // Check if the account name is already taken in the database.
 func accountExists(a string) bool {
-    rows, _ := db.Query("SELECT * FROM accounts WHERE accountname='" + a + "'")
-    //ifErrPrintErr(err)
-    if rows == nil {
-        return false
-    } else {
-        if ! bool(rows.Next()) {
-            return false
-        } else {
-            return true
-        }
-    }
+    rows, err := db.Query("SELECT accountname FROM accounts WHERE accountname='" + a + "'")
+    return foundInRows(rows, err)
 }
 
 // Check if this email already has an account associated with it in the database.
 func emailExists(e string) bool {
-    rows, _ := db.Query("SELECT * FROM accounts WHERE email='" + e + "'")
-    //ifErrPrintErr(err)
-    if rows == nil {
-        return false
-    } else {
-        if ! bool(rows.Next()) {
-            return false
-        } else {
-            return true
-        }
-    }
+    rows, err := db.Query("SELECT accountname FROM accounts WHERE email='" + e + "'")
+    return foundInRows(rows, err)
 }
 
 func createAccount(accountname string, email string, verify_key string, hashed_key string, salt_key string) bool {
@@ -49,15 +35,15 @@ func createAccount(accountname string, email string, verify_key string, hashed_k
 }
 
 func getAccountnameFromVerifyKey(k string) string {
-    rows, err := db.Query("SELECT accountname FROM accounts WHERE verify='" + k + "'")
-    ifErrPrintErr(err)
+    rows, _ := db.Query("SELECT accountname FROM accounts WHERE verify='" + k + "'")
+    //ifErrPrintErr(err)
     var accountname string = ""
     if rows != nil {
         for rows.Next() {
             rows.Scan(&accountname)
-            rows.Close()
         }
     }
+    rows.Close()
     return accountname
 }
 
@@ -86,9 +72,9 @@ func generateUniqueVerify(n int) string {
     findKey := true
     for findKey {
         verify_key := generateRandomLetters(n)
-        rows, _ := db.Query("SELECT accountname FROM accounts WHERE verify='" + verify_key + "'")
+        rows, err := db.Query("SELECT accountname FROM accounts WHERE verify='" + verify_key + "'")
         //ifErrPrintErr(err)
-        if rows == nil {
+        if ! foundInRows(rows, err) {
             return verify_key
         }
     }
@@ -100,11 +86,23 @@ func generateUniqueSalt(n int) string {
     findKey := true
     for findKey {
         salt_key := generateRandomLetters(n)
-        rows, _ := db.Query("SELECT accountname FROM accounts WHERE salt='" + salt_key + "'")
-        //ifErrPrintErr(err)
-        if rows == nil {
+        rows, err := db.Query("SELECT accountname FROM accounts WHERE salt='" + salt_key + "'")
+        if ! foundInRows(rows, err) {
             return salt_key
         }
     }
     return ""
+}
+
+func foundInRows(rows *sql.Rows, err error) bool {
+    found := false
+    if err == sql.ErrNoRows {
+        found = false
+    } else if err != nil {
+        log.Fatal(err)
+    } else if rows.Next() {
+        found = true
+    }
+    rows.Close()
+    return found
 }

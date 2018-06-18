@@ -91,7 +91,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
             }
             msg := []byte("Hello " + registration_username +
                           "\n\nPlease verify your Oldentide account by clicking the following link: " +
-                          "http://" + webaddress + text_wport + "/verify/" + verify_key +
+                          "http://" + webadd + text_wport + "/verify/" + verify_key +
                           " \n\nRegards,\nOldentide Server Admin")
             to := []string { registration_email }
 
@@ -100,6 +100,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
                 fmt.Fprint(w, "Account could not be created, it caused a database error")
                 return
             }
+            fmt.Println("I was trying to get here...")
 
             // Send registration email using 
             err = smtp.SendMail("smtp.gmail.com:587", eauth, email, to, msg)

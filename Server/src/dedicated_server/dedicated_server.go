@@ -25,7 +25,7 @@ var err error
 var gport int
 var wport int
 var everify bool
-var webaddress string
+var webadd string
 var email string
 var epass string
 var eauth smtp.Auth
@@ -35,7 +35,7 @@ func init() {
     flag.IntVar(&gport, "gport", 0, "Port used for dedicated game server.")
     flag.IntVar(&wport, "wport", 0, "Port used for website.")
     flag.BoolVar(&everify, "everify", false, "Use an emailer to verify accounts?")
-    flag.StringVar(&webaddress, "webaddress", "", "Public website root address where accounts will be created.")
+    flag.StringVar(&webadd, "webadd", "", "Public website root address where accounts will be created.")
     flag.StringVar(&email, "email", "", "Gmail email address used to send verification emails.")
     flag.StringVar(&epass, "epass", "", "Gmail email password used to send verification emails.")
     rand.Seed(time.Now().UTC().UnixNano())
@@ -47,7 +47,7 @@ func main() {
     fmt.Println("Server Configurations from command line:")
     fmt.Println("gport:", gport)
     fmt.Println("wport:", wport)
-    fmt.Println("webaddress:", webaddress)
+    fmt.Println("webadd:", webadd)
     fmt.Println("everify:", everify)
     fmt.Println("email:", email)
     fmt.Println("epass:", epass)
@@ -57,8 +57,8 @@ func main() {
     if wport == 0 {
         log.Fatal("Please provide a website port with the command line flag -wport=<number>")
     }
-    if webaddress == "" {
-        log.Fatal("Please provide the website address/ip with the command line flag -webaddress=<www.address.domain>")
+    if webadd == "" {
+        log.Fatal("Please provide the website address/ip with the command line flag -webadd=<www.address.domain>")
     }
     if everify {
         if email == "" {
