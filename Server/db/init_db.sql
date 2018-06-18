@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (
     id integer not null primary key autoincrement,
     valid integer not null,
+    banned integer not null default 0,
     accountname text not null unique collate nocase,
     email text not null unique collate nocase,
     gamesession integer not null,

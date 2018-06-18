@@ -1,7 +1,7 @@
 // Filename:    util.go
 // Author:      Joseph DeVictoria
 // Date:        June_16_2018
-// Purpose:     Utility function used by Oldentide dedicated server.
+// Purpose:     Utility functions used by Oldentide dedicated server.
 
 package main
 

@@ -75,3 +75,7 @@ const (
     // Need to continue adding here...
     // CASTSPELL ptype = , // CLIENT - 
 )
+
+//type packet struct {
+//    
+//}

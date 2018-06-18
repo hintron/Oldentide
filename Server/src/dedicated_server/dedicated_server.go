@@ -16,12 +16,14 @@ import (
     "net/http"
     "net/smtp"
     "runtime"
+    "strconv"
     "time"
 )
 
 // Global program variables.
 var err error
-var port int
+var gport int
+var wport int
 var everify bool
 var webaddress string
 var email string
@@ -30,7 +32,8 @@ var eauth smtp.Auth
 var db *sql.DB
 
 func init() {
-    flag.IntVar(&port, "port", 0, "Port used for dedicated game server.")
+    flag.IntVar(&gport, "gport", 0, "Port used for dedicated game server.")
+    flag.IntVar(&wport, "wport", 0, "Port used for website.")
     flag.BoolVar(&everify, "everify", false, "Use an emailer to verify accounts?")
     flag.StringVar(&webaddress, "webaddress", "", "Public website root address where accounts will be created.")
     flag.StringVar(&email, "email", "", "Gmail email address used to send verification emails.")
@@ -42,19 +45,22 @@ func main() {
     // Extract command line input.
     flag.Parse()
     fmt.Println("Server Configurations from command line:")
-    fmt.Println("port:", port)
-    fmt.Println("everify:", everify)
+    fmt.Println("gport:", gport)
+    fmt.Println("wport:", wport)
     fmt.Println("webaddress:", webaddress)
+    fmt.Println("everify:", everify)
     fmt.Println("email:", email)
     fmt.Println("epass:", epass)
-
-    if port == 0 {
-        log.Fatal("Please provide a port with the command line flag -port=<number>")
+    if gport == 0 {
+        log.Fatal("Please provide a game port with the command line flag -gport=<number>")
+    }
+    if wport == 0 {
+        log.Fatal("Please provide a website port with the command line flag -wport=<number>")
+    }
+    if webaddress == "" {
+        log.Fatal("Please provide the website address/ip with the command line flag -webaddress=<www.address.domain>")
     }
     if everify {
-        if webaddress == "" {
-            log.Fatal("Please provide the website address with the command line flag -webaddress=<www.address.domain>")
-        }
         if email == "" {
             log.Fatal("Please provide a Gmail email account with the command line flag -email=<email@gmail.com>")
         }
@@ -75,12 +81,12 @@ func main() {
     // Kick off http server for registration page.
     mux := http.NewServeMux()
     mux.HandleFunc("/", routeWebTraffic)
-    go http.ListenAndServe(":8080", mux)
+    go http.ListenAndServe(":" + strconv.Itoa(wport), mux)
 
     // Create udp socket description struct.
     server_address := net.UDPAddr {
         IP: net.IP {0, 0, 0, 0},
-        Port: port,
+        Port: gport,
     }
 
     // Bind a udp socket.
@@ -100,8 +106,6 @@ func main() {
     // Close database.
     db.Close()
 }
-
-
 
 // Concurrent listener function:
 func listen(connection *net.UDPConn, quit chan struct{}) {
