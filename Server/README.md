@@ -56,7 +56,7 @@ or
 
 Download necessary dependencies (see above)
 
-    go get ...
+    go get <...>
 
 cd into the src/server folder and run
 
@@ -64,7 +64,7 @@ cd into the src/server folder and run
 
 If everything built properly, cd back to the Oldentide/Server directory and run
 
-    bin/Server <Port>
+    <Oldentide_Base_Path>/Server/bin/dedicated_server <Port>
 
 where \<Port\> is the port the server is using.
 
