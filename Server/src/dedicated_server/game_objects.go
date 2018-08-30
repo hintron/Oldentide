@@ -1,0 +1,45 @@
+package main
+
+type Npc struct {
+	// Identification:
+	Id         int
+	Firstname  string
+	Lastname   string
+	Guild      string
+	Race       string
+	Gender     string
+	Face       string
+	Skin       string
+	Profession string
+	Alive      bool
+	Nlevel     int
+	// Stats:
+	Hp           int
+	Maxhp        int
+	Bp           int
+	Maxbp        int
+	Mp           int
+	Maxmp        int
+	Ep           int
+	Maxep        int
+	Strength     int
+	Constitution int
+	Intelligence int
+	Dexterity    int
+	// Equipment:
+	Head      string
+	Chest     string
+	Arms      string
+	Hands     string
+	Legs      string
+	Feet      string
+	Cloak     string
+	Righthand string
+	Lefthand  string
+	// Location:
+	Zone      string
+	X         float32
+	Y         float32
+	Z         float32
+	Direction float32
+}

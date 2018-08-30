@@ -14,7 +14,7 @@ cd $(dirname $0)
 sqlite3 Oldentide.db <<EOF
 .mode csv
 DROP TABLE IF EXISTS temp_npcs;
-.import Npcs.csv temp_npcs
+.import npcs.csv temp_npcs
 INSERT INTO npcs(
     firstname,
     lastname,
@@ -24,7 +24,8 @@ INSERT INTO npcs(
     face,
     skin,
     profession,
-    level,
+    alive,
+    nlevel,
     hp,
     maxhp,
     bp,
@@ -50,9 +51,9 @@ INSERT INTO npcs(
     x,
     y,
     z,
-    pitch,
-    yaw
-) SELECT * FROM temp_npcs;
+    direction
+) 
+SELECT * FROM temp_npcs;
 DROP TABLE temp_npcs;
 .quit
 EOF

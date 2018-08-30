@@ -16,7 +16,7 @@ import (
 	"net"
 	"net/http"
 	"net/smtp"
-    "runtime"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -100,6 +100,11 @@ func main() {
 	checkErr(err)
 
 	// --------------------------------------------------------------------------------------------
+	// Initialize the game state (populates all of the npcs, and game objects, etc).
+	// --------------------------------------------------------------------------------------------
+    npcs := pullNpcs()
+
+	// --------------------------------------------------------------------------------------------
 	// Start our collecter to pull in packets from the hardware socket.
 	// --------------------------------------------------------------------------------------------
 	RawPacketQueue := make(chan RawPacket, 1000000)
@@ -112,6 +117,7 @@ func main() {
 	for i := 0; i < runtime.NumCPU(); i++ {
 		fmt.Println("Core_", i)
 	}
+    <-QuitChan
 
 	// Close database.
 	db.Close()
@@ -132,11 +138,11 @@ func Collect(connection *net.UDPConn, RawPacketQueue chan RawPacket, QuitChan ch
 // As soon as packets arrive from the collector, identify what type of packet they are.
 // Prepare a worker thread to handle the appropriate packet opcode.
 func Dispatch(RawPacketQueue chan RawPacket, QuitChan chan bool) {
-    for packet := range RawPacketQueue {
-        var tp TestPacket
-        err = msgpack.Unmarshal(packet.Payload, &tp)
-        fmt.Println(packet.Size, packet.Client, packet.Payload[:packet.Size], tp.Payload)
-    }
+	for packet := range RawPacketQueue {
+		var tp TestPacket
+		err = msgpack.Unmarshal(packet.Payload, &tp)
+		fmt.Println(packet.Size, packet.Client, packet.Payload[:packet.Size], tp.Payload)
+	}
 }
 
 /*type Worker struct {
