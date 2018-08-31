@@ -139,8 +139,8 @@ func main() {
 
 // Places all UDP packets that arrive on the hardware socket into a queue for handling.
 func Collect(connection *net.UDPConn, RawPacketQueue chan RawPacket, QuitChan chan bool) {
-	buffer := make([]byte, 512) //65507) // Max IPv4 UDP packet size.
 	for err == nil {
+		buffer := make([]byte, 512) //65507) // Max IPv4 UDP packet size.
 		n, remote_address, err := connection.ReadFromUDP(buffer)
 		checkErr(err)
 		RawPacketQueue <- RawPacket{n, remote_address, buffer}
