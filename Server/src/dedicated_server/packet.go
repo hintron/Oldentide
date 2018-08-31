@@ -21,15 +21,15 @@ const (
 	ERROR        opcode = iota // BOTH - Pass error message.
 	REQCLIST     opcode = iota // CLIENT - Client requests character list.
 	SENDCLIST    opcode = iota // SERVER - Server sends character list.
-	CONNECT      opcode = iota // CLIENT - Player selects a character and connects to server..
-	DISCONNECT   opcode = iota // CLIENT - Player disconnects from the server.
+	CREATEPLAYER opcode = iota // CLIENT - Player sends the data for his newly created character.
+	CONNECT      opcode = iota // CLIENT - Player selects a character and connects to server.
+	DISCONNECT   opcode = iota // BOTH - Player disconnects from the server.
 	SENDPLAYER   opcode = iota // SERVER - Send all of the information to fully update the main player.
 	SENDPC       opcode = iota // SERVER - Send all the needed information to set up or uptade another PC.
 	SENDNPC      opcode = iota // SERVER - Send all the needed information to set up & update an NPC.
 	MOVEPLAYER   opcode = iota // CLIENT - Send position information based on player input/actions.
 	SPENDDP      opcode = iota // CLIENT - Send a request of dp expenditures for validation.
 	TALKCMD      opcode = iota // CLIENT - <PLACEHOLDER> Player initiated talk command (with npc).
-	SHOPCMD      opcode = iota // CLIENT - Player initiated shop command (with npc).
 	ATTACKCMD    opcode = iota // CLIENT - Player initiated attack command (with npc or player).
 	TRADECMD     opcode = iota // CLIENT - Player initiated trade command (with player).
 	INVITECMD    opcode = iota // CLIENT - Player initiated invite command (with player).
@@ -83,6 +83,6 @@ type RawPacket struct {
 	Payload []byte
 }
 
-type TestPacket struct {
-	Payload string
+type OpPacket struct {
+	Opcode opcode
 }

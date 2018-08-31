@@ -153,7 +153,7 @@ func pullNpcs() []Npc {
 			&npc.Direction,
 		)
 		checkErr(err)
-        npcs = append(npcs, npc)
+		npcs = append(npcs, npc)
 	}
 	return npcs
 }
