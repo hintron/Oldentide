@@ -77,12 +77,17 @@ const (
 	// CASTSPELL opcode = , // CLIENT -
 )
 
-type RawPacket struct {
+type raw_packet struct {
 	Size    int
 	Client  *net.UDPAddr
 	Payload []byte
 }
 
-type OpPacket struct {
+type op_packet struct {
 	Opcode opcode
+}
+
+type create_player_packet struct {
+	Opcode opcode
+	Pc     pc
 }

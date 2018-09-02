@@ -35,6 +35,7 @@ const (
 	ERROR        opcode = iota // BOTH - Pass error message.
 	REQCLIST     opcode = iota // CLIENT - Client requests character list.
 	SENDCLIST    opcode = iota // SERVER - Server sends character list.
+	CREATEPLAYER opcode = iota // CLIENT - Player sends the data for his newly created character.
 	CONNECT      opcode = iota // CLIENT - Player selects a character and connects to server..
 	DISCONNECT   opcode = iota // CLIENT - Player disconnects from the server.
 	SENDPLAYER   opcode = iota // SERVER - Send all of the information to fully update the main player.
@@ -90,6 +91,107 @@ const (
 	// CASTSPELL opcode = , // CLIENT -
 )
 
+type pc struct {
+	Id             int32
+	Account_id     int32
+	Firstname      string
+	Lastname       string
+	Guild          string
+	Race           string
+	Gender         string
+	Face           string
+	Skin           string
+	Profession     string
+	Alive          bool
+	Plevel         int32
+	Dp             int32
+	Hp             int32
+	Maxhp          int32
+	Bp             int32
+	Maxbp          int32
+	Mp             int32
+	Maxmp          int32
+	Ep             int32
+	Maxep          int32
+	Strength       int32
+	Constitution   int32
+	Intelligence   int32
+	Dexterity      int32
+	Axe            int32
+	Dagger         int32
+	Unarmed        int32
+	Hammer         int32
+	Polearm        int32
+	Spear          int32
+	Staff          int32
+	Sword          int32
+	Archery        int32
+	Crossbow       int32
+	Sling          int32
+	Thrown         int32
+	Armor          int32
+	Dualweapon     int32
+	Shield         int32
+	Bardic         int32
+	Conjuring      int32
+	Druidic        int32
+	Illusion       int32
+	Necromancy     int32
+	Sorcery        int32
+	Shamanic       int32
+	Spellcraft     int32
+	Summoning      int32
+	Focus          int32
+	Armorsmithing  int32
+	Tailoring      int32
+	Fletching      int32
+	Weaponsmithing int32
+	Alchemy        int32
+	Lapidary       int32
+	Calligraphy    int32
+	Enchanting     int32
+	Herbalism      int32
+	Hunting        int32
+	Mining         int32
+	Bargaining     int32
+	Camping        int32
+	Firstaid       int32
+	Lore           int32
+	Picklocks      int32
+	Scouting       int32
+	Search         int32
+	Stealth        int32
+	Traps          int32
+	Aeolandis      int32
+	Hieroform      int32
+	Highgundis     int32
+	Oldpraxic      int32
+	Praxic         int32
+	Runic          int32
+	Head           string
+	Chest          string
+	Arms           string
+	Hands          string
+	Legs           string
+	Feet           string
+	Cloak          string
+	Necklace       string
+	Ringone        string
+	Ringtwo        string
+	Righthand      string
+	Lefthand       string
+	Zone           string
+	X              float32
+	Y              float32
+	Z              float32
+	Direction      float32
+}
+
+type create_player_packet struct {
+    Opcode opcode
+    Pc pc
+}
+
 func init() {
 	flag.IntVar(&sport, "sport", 0, "Port used for dedicated game server.")
 	flag.StringVar(&sadd, "sadd", "", "Address/ip used for dedicated game server.")
@@ -114,16 +216,25 @@ func main() {
 	server_connection, err := net.Dial("udp", sadd+":"+strconv.Itoa(sport))
 	checkErr(err)
 
-	opcodes := []opcode{EMPTY, GENERIC, ACK, ERROR, REQCLIST, SENDCLIST, CONNECT, DISCONNECT, SENDPLAYER, SENDPC, SENDNPC, MOVEPLAYER, SPENDDP, TALKCMD, ATTACKCMD, TRADECMD, INVITECMD, GINVITECMD, GKICK, GPROMOTE, SAYCMD, YELLCMD, OOCCMD, HELPCMD, GCHATCMD, WHISPERCMD, RELAYSAY, RELAYYELL, RELAYOOC, RELAYHELP, RELAYGCHAT, RELAYWHISPER, ACTIVATECMD, ENVUPDATE, DIALOGTEXT, DIALOGCMD, SENDITEM, INITSHOP, SHOPITEM, BUYITEM, INITLOOT, LOOTITEM, TAKELOOT, INITTRADE, OFFERITEM, PULLITEM, TRADEITEM, REMITEM, ACCTRADE, UNACCTRADE, COMMTRADE, FINTRADE, INITCOMABT, ADDNPCCOMBAT, ADDPCCOMABT, REMNPCCOMBAT, REMPCCOMBAT}
+	//opcodes := []opcode{EMPTY, GENERIC, ACK, ERROR, REQCLIST, SENDCLIST, CONNECT, DISCONNECT, SENDPLAYER, SENDPC, SENDNPC, MOVEPLAYER, SPENDDP, TALKCMD, ATTACKCMD, TRADECMD, INVITECMD, GINVITECMD, GKICK, GPROMOTE, SAYCMD, YELLCMD, OOCCMD, HELPCMD, GCHATCMD, WHISPERCMD, RELAYSAY, RELAYYELL, RELAYOOC, RELAYHELP, RELAYGCHAT, RELAYWHISPER, ACTIVATECMD, ENVUPDATE, DIALOGTEXT, DIALOGCMD, SENDITEM, INITSHOP, SHOPITEM, BUYITEM, INITLOOT, LOOTITEM, TAKELOOT, INITTRADE, OFFERITEM, PULLITEM, TRADEITEM, REMITEM, ACCTRADE, UNACCTRADE, COMMTRADE, FINTRADE, INITCOMABT, ADDNPCCOMBAT, ADDPCCOMABT, REMNPCCOMBAT, REMPCCOMBAT}
 
-	for _, op := range opcodes {
+	/*for _, op := range opcodes {
 		// Build a test packet.
 		p, err := msgpack.Marshal(&OpPacket{Opcode: op})
 		checkErr(err)
 
 		// Fire it off to our server!
 		server_connection.Write(p)
-	}
+	}*/
+
+    p := pc{Id: 0,Account_id: 0,Firstname: "Joseph",Lastname: "DeVictoria",Guild: "Gremlins",Race: "Human",Gender: "Male",Face: "White",Skin: "White",Profession: "Engineer",Alive: true,Plevel: 51,Dp: 12000,Hp: 450,Maxhp: 450,Bp: 250,Maxbp: 250,Mp: 300,Maxmp: 300,Ep: 150,Maxep: 150,Strength: 65,Constitution: 45,Intelligence: 50,Dexterity: 50,Axe: 0,Dagger: 0,Unarmed: 499,Hammer: 0,Polearm: 0,Spear: 0,Staff: 0,Sword: 0,Archery: 0,Crossbow: 0,Sling: 0,Thrown: 0,Armor: 300,Dualweapon: 499,Shield: 0,Bardic: 0,Conjuring: 0,Druidic: 0,Illusion: 0,Necromancy: 0,Sorcery: 0,Shamanic: 0,Spellcraft: 0,Summoning: 0,Focus: 0,Armorsmithing: 0,Tailoring: 0,Fletching: 0,Weaponsmithing: 0,Alchemy: 0,Lapidary: 0,Calligraphy: 0,Enchanting: 0,Herbalism: 0,Hunting: 0,Mining: 0,Bargaining: 0,Camping: 0,Firstaid: 0,Lore: 0,Picklocks: 0,Scouting: 0,Search: 0,Stealth: 0,Traps: 0,Aeolandis: 0,Hieroform: 0,Highgundis: 0,Oldpraxic: 100,Praxic: 100,Runic: 0,Head: "None",Chest: "None",Arms: "None",Hands: "None",Legs: "None",Feet: "None",Cloak: "None",Necklace: "None",Ringone: "None",Ringtwo: "None",Righthand: "None",Lefthand: "None",Zone: "Iskirrian Plains",X: 0,Y: 0,Z: 0,Direction: 47.3,}
+
+    cpp := create_player_packet{Opcode: CREATEPLAYER, Pc: p}
+
+    pac, err := msgpack.Marshal(cpp)
+    checkErr(err)
+
+    server_connection.Write(pac)
 }
 
 // Simple function to check the error status of an operation.

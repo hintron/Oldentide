@@ -113,10 +113,12 @@ func main() {
 		fmt.Println(npc)
 	}
 
+	//pcs := []Pc
+
 	// --------------------------------------------------------------------------------------------
 	// Start our collecter to pull in packets from the hardware socket.
 	// --------------------------------------------------------------------------------------------
-	RawPacketQueue := make(chan RawPacket, 100000)
+	RawPacketQueue := make(chan raw_packet, 100000)
 	QuitChan := make(chan bool)
 	go Collect(socket, RawPacketQueue, QuitChan)
 	fmt.Println("\n* Collector Launched.\n")
@@ -138,27 +140,27 @@ func main() {
 }
 
 // Places all UDP packets that arrive on the hardware socket into a queue for handling.
-func Collect(connection *net.UDPConn, RawPacketQueue chan RawPacket, QuitChan chan bool) {
+func Collect(connection *net.UDPConn, RawPacketQueue chan raw_packet, QuitChan chan bool) {
 	for err == nil {
 		buffer := make([]byte, 512) //65507) // Max IPv4 UDP packet size.
 		n, remote_address, err := connection.ReadFromUDP(buffer)
 		checkErr(err)
-		RawPacketQueue <- RawPacket{n, remote_address, buffer}
+		RawPacketQueue <- raw_packet{n, remote_address, buffer}
 	}
 	fmt.Println("Collector Exited - ", err)
 }
 
 // Handle all arriving packets based on which opcode they are.
-func Handle(RawPacketQueue chan RawPacket, QuitChan chan bool, rid int) {
-	var packet RawPacket
+func Handle(RawPacketQueue chan raw_packet, QuitChan chan bool, rid int) {
+	var packet raw_packet
 	for {
 		select {
 		// This case will run when there is a packet available at the front of the packet queue.
 		case packet = <-RawPacketQueue:
-			fmt.Println("Goroutine ID:", rid, "Size:", packet.Size, "Sender:", packet.Client, "Payload:", packet.Payload[:packet.Size]) //debug
-			var op OpPacket
+			//fmt.Println("Goroutine ID:", rid, "Size:", packet.Size, "Sender:", packet.Client, "Payload:", packet.Payload[:packet.Size]) //debug
+			var op op_packet
 			err = msgpack.Unmarshal(packet.Payload, &op)
-			checkErr(err)
+			ifErrPrintErr(err)
 			// Depending on what packet opcode we recieved, handle the data accordingly.
 			switch op.Opcode {
 			case EMPTY:
@@ -178,7 +180,28 @@ func Handle(RawPacketQueue chan RawPacket, QuitChan chan bool, rid int) {
 				continue
 			case CREATEPLAYER:
 				fmt.Println("Handling a CREATEPLAYER packet.")
-				continue
+				var cpp create_player_packet
+				err = msgpack.Unmarshal(packet.Payload, &cpp)
+				fmt.Println(cpp)
+				// Need to get the account name by session id.
+				account_name := "Jojo"
+				player_name := "Joseph"
+				if getRemainingPlayerSlots(account_name, 10) == 0 {
+					log.Println("Account tried to create too many players.")
+					continue
+				}
+				if playerFirstNameTaken(player_name) {
+					log.Println("Account tried to create a player whose name was already taken.")
+					continue
+				}
+				if validNewPlayer(cpp.Pc) {
+					addNewPlayer(cpp.Pc)
+					log.Println("Account <account> created a new player \"<player>\".")
+				} else {
+					log.Println("Account is trying something fraudulent during account creation!")
+					//banAccount()
+					continue
+				}
 			case CONNECT:
 				fmt.Println("Handling a CONNECT packet.")
 				continue

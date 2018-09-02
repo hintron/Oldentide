@@ -8,7 +8,6 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 	"log"
 	"math/rand"
 )
@@ -22,7 +21,7 @@ func checkErr(err error) {
 
 func ifErrPrintErr(err error) {
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
