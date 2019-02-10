@@ -87,6 +87,25 @@ func main() {
 	checkErr(err)
 	fmt.Println("* Database connected.\n")
 
+	// Initialize the game state (populates all of the npcs, and game objects, etc).
+	// --------------------------------------------------------------------------------------------
+	pcs := pullPcs()
+    fmt.Println("* PCs populated from database:\n")
+    for _, pc := range pcs {
+        fmt.Println(pc)
+    }
+
+	npcs := pullNpcs()
+	fmt.Println("\n* NPCs populated from database:\n")
+	for _, npc := range npcs {
+		fmt.Println(npc)
+	}
+
+
+    // items : pullItems()
+
+    // inventories := pullInventories()
+
 	// --------------------------------------------------------------------------------------------
 	// Kick off http server for registration page.
 	// --------------------------------------------------------------------------------------------
@@ -103,17 +122,6 @@ func main() {
 	}
 	socket, err := net.ListenUDP("udp", &server_address)
 	checkErr(err)
-
-	// --------------------------------------------------------------------------------------------
-	// Initialize the game state (populates all of the npcs, and game objects, etc).
-	// --------------------------------------------------------------------------------------------
-	npcs := pullNpcs()
-	fmt.Println("* NPCs populated from database:\n")
-	for _, npc := range npcs {
-		fmt.Println(npc)
-	}
-
-	//pcs := []Pc
 
 	// --------------------------------------------------------------------------------------------
 	// Start our collecter to pull in packets from the hardware socket.
