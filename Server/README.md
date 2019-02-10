@@ -44,6 +44,7 @@ In linux:
 Switch to the db directory and initialize the Oldentide DB:
 
     sqlite3 Oldentide.db < init_db.sql
+    ./init_npcs.sh
 
 Update your GOPATH to point to our working directory:
 
@@ -53,6 +54,7 @@ Update your GOPATH to point to our working directory:
 or
 
     export GOPATH=<path to Oldentide/Server/>
+    export GOBIN=$GOPATH/bin
 
 Download necessary dependencies (see above)
 
