@@ -90,10 +90,10 @@ func main() {
 	// Initialize the game state (populates all of the npcs, and game objects, etc).
 	// --------------------------------------------------------------------------------------------
 	pcs := pullPcs()
-    fmt.Println("* PCs populated from database:\n")
-    for _, pc := range pcs {
-        fmt.Println(pc)
-    }
+	fmt.Println("* PCs populated from database:\n")
+	for _, pc := range pcs {
+		fmt.Println(pc)
+	}
 
 	npcs := pullNpcs()
 	fmt.Println("\n* NPCs populated from database:\n")
@@ -101,10 +101,9 @@ func main() {
 		fmt.Println(npc)
 	}
 
+	// items : pullItems()
 
-    // items : pullItems()
-
-    // inventories := pullInventories()
+	// inventories := pullInventories()
 
 	// --------------------------------------------------------------------------------------------
 	// Kick off http server for registration page.

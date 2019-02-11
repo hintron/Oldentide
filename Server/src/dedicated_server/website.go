@@ -84,32 +84,43 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			salt_key := generateUniqueSalt(40)
 			hashed_key := saltAndHash(registration_password_first, salt_key)
 
-			// Create email message to send to user.
-			text_wport := ""
-			if wport != 80 {
-				text_wport = ":" + strconv.Itoa(wport)
-			}
-			msg := []byte("Hello " + registration_username +
-				"\n\nPlease verify your Oldentide account by clicking the following link: " +
-				"http://" + webadd + text_wport + "/verify/" + verify_key +
-				" \n\nRegards,\nOldentide Server Admin")
-			to := []string{registration_email}
+			if everify {
+				// Create email message to send to user.
+				text_wport := ""
+				if wport != 80 {
+					text_wport = ":" + strconv.Itoa(wport)
+				}
+				msg := []byte("Hello " + registration_username +
+					"\n\nPlease verify your Oldentide account by clicking the following link: " +
+					"http://" + webadd + text_wport + "/verify/" + verify_key +
+					" \n\nRegards,\nOldentide Server Admin")
+				to := []string{registration_email}
 
-			// Store user account information in the database!
-			if !createAccount(registration_username, registration_email, verify_key, hashed_key, salt_key) {
-				fmt.Fprint(w, "Account could not be created, it caused a database error")
-				return
-			}
-			fmt.Println("I was trying to get here...")
+				// Store user account information in the database!
+				if !createAccount(registration_username, registration_email, verify_key, hashed_key, salt_key) {
+					fmt.Fprint(w, "Account could not be created, it caused a database error")
+					return
+				}
 
-			// Send registration email using
-			err = smtp.SendMail("smtp.gmail.com:587", eauth, email, to, msg)
-			checkErr(err)
-			fmt.Fprintf(w, "<html>You posted data to the register page.<br><br>"+
-				"An email has been sent to verify this information:<br><br>"+
-				"Username: %s<br>Email: %s<br><br>"+
-				"<b>It may take up to 5 minutes for this email to arrive.</b></html>",
-				registration_username, registration_email)
+				// Send registration email using
+				err = smtp.SendMail("smtp.gmail.com:587", eauth, email, to, msg)
+				checkErr(err)
+				fmt.Fprintf(w, "<html>You posted data to the register page.<br><br>"+
+					"An email has been sent to verify this information:<br><br>"+
+					"Username: %s<br>Email: %s<br><br>"+
+					"<b>It may take up to 5 minutes for this email to arrive.</b></html>",
+					registration_username, registration_email)
+			} else {
+				// Store user account information in the database!
+				if !createAccount(registration_username, registration_email, verify_key, hashed_key, salt_key) {
+					fmt.Fprint(w, "Account could not be created, it caused a database error")
+					return
+				}
+				fmt.Fprintf(w, "<html>You posted data to the register page.<br><br>"+
+					"Email verification is disabled, your account has been created.<br>"+
+					"Username: %s<br>Email: %s<br><br>"+
+					registration_username, registration_email)
+			}
 		} else {
 			fmt.Fprintf(w, "Your passwords did not match...")
 		}
