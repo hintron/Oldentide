@@ -168,12 +168,14 @@ CREATE TABLE npcs (
 DROP TABLE IF EXISTS items;
 CREATE TABLE items (
     id integer not null primary key autoincrement,
-    -- only one of the following two fields should be populated at a time
+    item_template_id integer not null,
+    -- entity specific
     player_id integer,
     npc_id integer,
     identified integer not null default 0,
     color text not null default "None",
     item_count not null default 1,
+    name text not null,
     --FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE ON UPDATE CASCADE
     --FOREIGN KEY(npc_id) REFERENCES npcs(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -192,6 +194,8 @@ CREATE TABLE item_templates (
     encumbrance real,
     dyeable integer not null default 0,
     stackable integer not null default 0,
+    usable integer not null default 0,
+    equipable integer not null default 0,
     base_price integer not null default 0,
     strength_requirement integer not null default 0,
     constitution_requirement integer not null default 0,

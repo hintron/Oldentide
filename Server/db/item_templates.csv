@@ -1,0 +1,17 @@
+name,true_name,lore_level,type,slot,icon,weight,encumbrance,dyeable,stackable,usable,equipable,base_price,strength_requirement,constitution_requirement,intelligence_requirement,dexterity_requirement,skill_type_0,skill_requirement_0,skill_type_1,skill_requirement_1,skill_type_2,skill_requirement_2,skill_type_3,skill_requirement_3,skill_type_4,skill_requirement_4
+Training Arrow,Training Arrow,0,weapon,ranged,
+Training Axe,Training Axe,
+Training Bolt,Training Bolt,
+Training Bow,Training Bow,
+Training Crossbow,Training Crossbow,
+Training Dagger,Training Dagger,
+Training Dart,Training Dart,
+Training Hammer,Training Hammer,
+Training Pebble,Training Pebble,
+Training Polearm,Training Polearm,
+Training Sling,Training Sling,
+Training Spear,Training Spear,
+Training Staff,Training Staff,
+Training Sword,Training Sword,
+Training Wrap,Training Weap,
+
