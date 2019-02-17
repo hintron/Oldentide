@@ -175,7 +175,7 @@ CREATE TABLE items (
     identified integer not null default 0,
     color text not null default "None",
     item_count not null default 1,
-    name text not null,
+    name text not null
     --FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE ON UPDATE CASCADE
     --FOREIGN KEY(npc_id) REFERENCES npcs(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -186,7 +186,7 @@ CREATE TABLE item_templates (
     id integer not null primary key autoincrement,
     name text not null,
     true_name text not null,
-    lore_level integer not null default 0
+    lore_level integer not null default 0,
     type text not null,
     slot text not null default "None",
     icon text not null default "Mystery",
@@ -194,6 +194,7 @@ CREATE TABLE item_templates (
     encumbrance real,
     dyeable integer not null default 0,
     stackable integer not null default 0,
+    stack_size integer not null default 1,
     usable integer not null default 0,
     equipable integer not null default 0,
     base_price integer not null default 0,
@@ -210,7 +211,7 @@ CREATE TABLE item_templates (
     skill_type_3 text,
     skill_requirement_3 integer not null default 1,
     skill_type_4 text,
-    skill_requirement_4 integer not null default 1,
+    skill_requirement_4 integer not null default 1
 )
 
 
