@@ -200,3 +200,35 @@ type npc struct {
 	Z            float32
 	Direction    float32
 }
+
+type item_template struct {
+	Id                       int32
+	Name                     string
+	True_name                string
+	Lore_level               int32
+	Item_type                string
+	Slot                     string
+	Icon                     string
+	Weight                   float32
+	Encumbrance              float32
+	Dyeable                  bool
+	Stackable                bool
+	Stack_size               int32
+	Usable                   bool
+	Equipable                bool
+	Base_price               int32
+	Strength_requirement     int32
+	Constitution_requirement int32
+	Intelligence_requirement int32
+	Dexterity_requirement    int32
+	Skill_type_0             string
+	Skill_requirement_0      int32
+	Skill_type_1             string
+	Skill_requirement_1      int32
+	Skill_type_2             string
+	Skill_requirement_2      int32
+	Skill_type_3             string
+	Skill_requirement_3      int32
+	Skill_type_4             string
+	Skill_requirement_4      int32
+}

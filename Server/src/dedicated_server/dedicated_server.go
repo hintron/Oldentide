@@ -101,7 +101,11 @@ func main() {
 		fmt.Println(npc)
 	}
 
-	// items : pullItems()
+	item_templates := pullItemTemplates()
+	fmt.Println("\n* Item templates populated from database:\n")
+	for _, item_template := range item_templates {
+		fmt.Println(item_template)
+	}
 
 	// inventories := pullInventories()
 

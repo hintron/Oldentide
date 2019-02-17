@@ -203,7 +203,8 @@ func pullPcs() []pc {
 			&pc.X,
 			&pc.Y,
 			&pc.Z,
-			&pc.Direction)
+			&pc.Direction,
+		)
 		checkErr(err)
 		pcs = append(pcs, pc)
 	}
@@ -259,6 +260,49 @@ func pullNpcs() []npc {
 		npcs = append(npcs, npc)
 	}
 	return npcs
+}
+
+func pullItemTemplates() []item_template {
+	rows, err := db.Query("Select * FROM item_templates")
+	defer rows.Close()
+	var item_templates []item_template
+	for rows.Next() {
+		var item_template item_template
+		err = rows.Scan(
+			&item_template.Id,
+			&item_template.Name,
+			&item_template.True_name,
+			&item_template.Lore_level,
+			&item_template.Item_type,
+			&item_template.Slot,
+			&item_template.Icon,
+			&item_template.Weight,
+			&item_template.Encumbrance,
+			&item_template.Dyeable,
+			&item_template.Stackable,
+			&item_template.Stack_size,
+			&item_template.Usable,
+			&item_template.Equipable,
+			&item_template.Base_price,
+			&item_template.Strength_requirement,
+			&item_template.Constitution_requirement,
+			&item_template.Intelligence_requirement,
+			&item_template.Dexterity_requirement,
+			&item_template.Skill_type_0,
+			&item_template.Skill_requirement_0,
+			&item_template.Skill_type_1,
+			&item_template.Skill_requirement_1,
+			&item_template.Skill_type_2,
+			&item_template.Skill_requirement_2,
+			&item_template.Skill_type_3,
+			&item_template.Skill_requirement_3,
+			&item_template.Skill_type_4,
+			&item_template.Skill_requirement_4,
+		)
+		checkErr(err)
+		item_templates = append(item_templates, item_template)
+	}
+	return item_templates
 }
 
 func pushNpcs([]npc) {
