@@ -1,0 +1,8 @@
+race,strength_mod,constitution_mod,intelligence_mod,dexterity_mod,axe_mod,dagger_mod,unarmed_mod,hammer_mod,polearm_mod,spear_mod,staff_mod,sword_mod,archery_mod,crossbow_mod,sling_mod,thrown_mod,armor_mod,dualweapon_mod,shield_mod,bardic_mod,conjuring_mod,druidic_mod,illusion_mod,necromancy_mod,shamanic_mod,sorcery_mod,summoning_mod,spellcraft_mod,focus_mod,armorsmithing_mod,tailoring_mod,fletching_mod,weaponsmithing_mod,lapidary_mod,herbalism_mod,hunting_mod,mining_mod,bargaining_mod,camping_mod,firstaid_mod,lore_mod,scouting_mod,aeolandis_mod,hieroform_mod,highgundis_mod,oldpraxic_mod,praxic_mod,runic_mod
+Dwarf,?,?,?,?,10,5,5,5,0,0,0,5,-5,10,5,5,5,0,10,0,5,-5,-5,-5,10,-5,-5,-5,0,10,0,5,10,10,-5,0,10,5,0,0,5,0,0,-5,0,0,5,10
+Elf,?,?,?,?,0,5,-5,-5,0,0,5,10,10,0,5,0,-5,5,0,10,0,10,0,-10,5,0,0,5,10,0,5,10,0,0,10,5,-5,0,5,10,5,10,0,10,0,0,5,-5
+Gnome,?,?,?,?,-5,10,-5,-5,5,0,5,-5,-5,-5,10,0,-5,0,-5,0,10,0,5,10,5,5,5,10,5,-5,0,5,-5,10,0,0,5,10,-5,0,5,0,0,-5,0,0,5,10
+Human,?,?,?,?,0,5,0,0,10,5,5,5,0,0,5,5,0,5,5,0,0,0,0,0,0,0,10,0,0,5,10,5,5,0,0,0,0,5,0,5,0,5,0,0,0,10,5,0
+Leshy,?,?,?,?,-10,5,-5,-10,-5,-5,10,0,-5,-5,5,-10,-10,-5,-5,5,5,5,10,5,5,10,5,10,10,-10,0,0,-10,5,0,0,0,0,-5,0,10,0,10,0,-5,0,5,0
+Ogre,?,?,?,?,5,0,10,10,5,5,5,5,0,0,5,10,10,0,5,-10,0,-5,-10,-5,0,-10,-5,-10,-10,5,-5,-5,5,-5,0,5,0,0,5,0,-1,0,-5,0,10,0,5,0
+Orc,?,?,?,?,5,5,10,5,5,10,0,5,0,5,5,5,5,10,5,-5,-5,-5,-5,5,-10,0,0,-5,5,5,5,5,5,0,0,10,-5,-5,10,0,-5,10,-5,0,10,0,5,0
