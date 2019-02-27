@@ -5,7 +5,9 @@
 
 package main
 
-func checkDp(su skillupdate) bool {
+import "common"
+
+func checkDp(su common.Skillupdate) bool {
 	if su.Predp > 100 {
 		return true
 	} else {
@@ -13,7 +15,7 @@ func checkDp(su skillupdate) bool {
 	}
 }
 
-func validNewPlayer(p pc) bool {
+func validNewPlayer(p common.Pc) bool {
 	// Ned to implement this stuff still...
 	return true
 }

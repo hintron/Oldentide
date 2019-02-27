@@ -6,6 +6,7 @@
 package main
 
 import (
+	"common"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -84,7 +85,7 @@ func main() {
 	// --------------------------------------------------------------------------------------------
 
 	db, err = sql.Open("sqlite3", "../../../Server/db/Oldentide.db")
-	checkErr(err)
+	common.CheckErr(err)
 	fmt.Println("* Database connected.\n")
 
 	// Initialize the game state (populates all of the npcs, and game objects, etc).
@@ -124,12 +125,12 @@ func main() {
 		Port: gport,
 	}
 	socket, err := net.ListenUDP("udp", &server_address)
-	checkErr(err)
+	common.CheckErr(err)
 
 	// --------------------------------------------------------------------------------------------
 	// Start our collecter to pull in packets from the hardware socket.
 	// --------------------------------------------------------------------------------------------
-	RawPacketQueue := make(chan raw_packet, 100000)
+	RawPacketQueue := make(chan common.Raw_packet, 100000)
 	QuitChan := make(chan bool)
 	go Collect(socket, RawPacketQueue, QuitChan)
 	fmt.Println("\n* Collector Launched.\n")
@@ -151,47 +152,47 @@ func main() {
 }
 
 // Places all UDP packets that arrive on the hardware socket into a queue for handling.
-func Collect(connection *net.UDPConn, RawPacketQueue chan raw_packet, QuitChan chan bool) {
+func Collect(connection *net.UDPConn, RawPacketQueue chan common.Raw_packet, QuitChan chan bool) {
 	for err == nil {
 		buffer := make([]byte, 512) //65507) // Max IPv4 UDP packet size.
 		n, remote_address, err := connection.ReadFromUDP(buffer)
-		checkErr(err)
-		RawPacketQueue <- raw_packet{n, remote_address, buffer}
+		common.CheckErr(err)
+		RawPacketQueue <- common.Raw_packet{n, remote_address, buffer}
 	}
 	fmt.Println("Collector Exited - ", err)
 }
 
 // Handle all arriving packets based on which opcode they are.
-func Handle(RawPacketQueue chan raw_packet, QuitChan chan bool, rid int) {
-	var packet raw_packet
+func Handle(RawPacketQueue chan common.Raw_packet, QuitChan chan bool, rid int) {
+	var packet common.Raw_packet
 	for {
 		select {
 		// This case will run when there is a packet available at the front of the packet queue.
 		case packet = <-RawPacketQueue:
 			//fmt.Println("Goroutine ID:", rid, "Size:", packet.Size, "Sender:", packet.Client, "Payload:", packet.Payload[:packet.Size]) //debug
-			var op op_packet
+			var op common.Opcode_packet
 			err = msgpack.Unmarshal(packet.Payload, &op)
-			ifErrPrintErr(err)
+			common.IfErrPrintErr(err)
 			// Depending on what packet opcode we recieved, handle the data accordingly.
 			switch op.Opcode {
-			case EMPTY:
+			case common.EMPTY:
 				fmt.Println("Handling an EMPTY packet.")
 				continue
-			case GENERIC:
+			case common.GENERIC:
 				fmt.Println("Handling a GENERIC packet.")
 				continue
-			case ACK:
+			case common.ACK:
 				fmt.Println("Handling an ACK packet.")
 				continue
-			case ERROR:
+			case common.ERROR:
 				fmt.Println("Handling an ERROR packet.")
 				continue
-			case REQCLIST:
+			case common.REQCLIST:
 				fmt.Println("Handling a REQCLIST packet.")
 				continue
-			case CREATEPLAYER:
+			case common.CREATEPLAYER:
 				fmt.Println("Handling a CREATEPLAYER packet.")
-				var cpp create_player_packet
+				var cpp common.Create_player_packet
 				err = msgpack.Unmarshal(packet.Payload, &cpp)
 				fmt.Println(cpp)
 				// Need to get the account name by session id.
@@ -213,79 +214,79 @@ func Handle(RawPacketQueue chan raw_packet, QuitChan chan bool, rid int) {
 					//banAccount()
 					continue
 				}
-			case CONNECT:
+			case common.CONNECT:
 				fmt.Println("Handling a CONNECT packet.")
 				continue
-			case DISCONNECT:
+			case common.DISCONNECT:
 				fmt.Println("Handling a DISCONNECT packet.")
 				continue
-			case MOVEPLAYER:
+			case common.MOVEPLAYER:
 				fmt.Println("Handling a MOVEPLAYER packet.")
 				continue
-			case SPENDDP:
+			case common.SPENDDP:
 				fmt.Println("Handling a SPENDDP packet.")
 				continue
-			case TALKCMD:
+			case common.TALKCMD:
 				fmt.Println("Handling a TALKCMD packet.")
 				continue
-			case ATTACKCMD:
+			case common.ATTACKCMD:
 				fmt.Println("Handling a ATTACKCMD packet.")
 				continue
-			case TRADECMD:
+			case common.TRADECMD:
 				fmt.Println("Handling a TRADECMD packet.")
 				continue
-			case INVITECMD:
+			case common.INVITECMD:
 				fmt.Println("Handling a INVITECMD packet.")
 				continue
-			case GINVITECMD:
+			case common.GINVITECMD:
 				fmt.Println("Handling a GINVITECMD packet.")
 				continue
-			case GKICK:
+			case common.GKICK:
 				fmt.Println("Handling a GKICK packet.")
 				continue
-			case GPROMOTE:
+			case common.GPROMOTE:
 				fmt.Println("Handling a GPROMOTE packet.")
 				continue
-			case SAYCMD:
+			case common.SAYCMD:
 				fmt.Println("Handling a SAYCMD packet.")
 				continue
-			case YELLCMD:
+			case common.YELLCMD:
 				fmt.Println("Handling a YELLCMD packet.")
 				continue
-			case OOCCMD:
+			case common.OOCCMD:
 				fmt.Println("Handling a OOCCMD packet.")
 				continue
-			case HELPCMD:
+			case common.HELPCMD:
 				fmt.Println("Handling a HELPCMD packet.")
 				continue
-			case GCHATCMD:
+			case common.GCHATCMD:
 				fmt.Println("Handling a GCHATCMD packet.")
 				continue
-			case WHISPERCMD:
+			case common.WHISPERCMD:
 				fmt.Println("Handling a WHISPERCMD packet.")
 				continue
-			case ACTIVATECMD:
+			case common.ACTIVATECMD:
 				fmt.Println("Handling a ACTIVATECMD packet.")
 				continue
-			case DIALOGCMD:
+			case common.DIALOGCMD:
 				fmt.Println("Handling a DIALOGCMD packet.")
 				continue
-			case BUYITEM:
+			case common.BUYITEM:
 				fmt.Println("Handling a BUYITEM packet.")
 				continue
-			case TAKELOOT:
+			case common.TAKELOOT:
 				fmt.Println("Handling a TAKELOOT packet.")
 				continue
-			case OFFERITEM:
+			case common.OFFERITEM:
 				fmt.Println("Handling a OFFERITEM packet.")
 				continue
-			case PULLITEM:
+			case common.PULLITEM:
 				fmt.Println("Handling a PULLITEM packet.")
 				continue
-			case ACCTRADE:
+			case common.ACCTRADE:
 				fmt.Println("Handling a ACCTRADE packet.")
 				continue
-			case UNACCTRADE:
+			case common.UNACCTRADE:
 				fmt.Println("Handling a UNACCTRADE packet.")
 				continue
 			default:

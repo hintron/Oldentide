@@ -5,6 +5,7 @@
 
 package main
 
+import "common"
 import "database/sql"
 import "fmt"
 import "log"
@@ -24,7 +25,7 @@ func emailExists(e string) bool {
 func createAccount(accountname string, email string, verify_key string, hashed_key string, salt_key string) bool {
 	// Prepare insert statement.
 	ins, err := db.Prepare("INSERT INTO accounts(valid, banned, accountname, email, gamesession, playing, verify, hash, salt) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	checkErr(err)
+	common.CheckErr(err)
 	// Try to populate and execute an SQL statment.
 	_, err = ins.Exec("0", "0", accountname, email, "0", "0", verify_key, hashed_key, salt_key)
 	if err == nil {
@@ -71,7 +72,7 @@ func banAccount(a string) bool {
 func generateUniqueVerify(n int) string {
 	findKey := true
 	for findKey {
-		verify_key := generateRandomLetters(n)
+		verify_key := common.GenerateRandomLetters(n)
 		rows, err := db.Query("SELECT accountname FROM accounts WHERE verify='" + verify_key + "'")
 		//ifErrPrintErr(err)
 		if !foundInRows(rows, err) {
@@ -85,7 +86,7 @@ func generateUniqueVerify(n int) string {
 func generateUniqueSalt(n int) string {
 	findKey := true
 	for findKey {
-		salt_key := generateRandomLetters(n)
+		salt_key := common.GenerateRandomLetters(n)
 		rows, err := db.Query("SELECT accountname FROM accounts WHERE salt='" + salt_key + "'")
 		if !foundInRows(rows, err) {
 			return salt_key
@@ -107,12 +108,12 @@ func foundInRows(rows *sql.Rows, err error) bool {
 	return found
 }
 
-func pullPcs() []pc {
+func pullPcs() []common.Pc {
 	rows, err := db.Query("Select * FROM players")
 	defer rows.Close()
-	var pcs []pc
+	var pcs []common.Pc
 	for rows.Next() {
-		var pc pc
+		var pc common.Pc
 		err = rows.Scan(
 			&pc.Id,
 			&pc.Accountid,
@@ -205,18 +206,18 @@ func pullPcs() []pc {
 			&pc.Z,
 			&pc.Direction,
 		)
-		checkErr(err)
+		common.CheckErr(err)
 		pcs = append(pcs, pc)
 	}
 	return pcs
 }
 
-func pullNpcs() []npc {
+func pullNpcs() []common.Npc {
 	rows, err := db.Query("Select * FROM npcs")
 	defer rows.Close()
-	var npcs []npc
+	var npcs []common.Npc
 	for rows.Next() {
-		var npc npc
+		var npc common.Npc
 		err = rows.Scan(
 			&npc.Id,
 			&npc.Firstname,
@@ -256,18 +257,18 @@ func pullNpcs() []npc {
 			&npc.Z,
 			&npc.Direction,
 		)
-		checkErr(err)
+		common.CheckErr(err)
 		npcs = append(npcs, npc)
 	}
 	return npcs
 }
 
-func pullItemTemplates() []item_template {
+func pullItemTemplates() []common.Item_template {
 	rows, err := db.Query("Select * FROM item_templates")
 	defer rows.Close()
-	var item_templates []item_template
+	var item_templates []common.Item_template
 	for rows.Next() {
-		var item_template item_template
+		var item_template common.Item_template
 		err = rows.Scan(
 			&item_template.Id,
 			&item_template.Name,
@@ -299,19 +300,19 @@ func pullItemTemplates() []item_template {
 			&item_template.Skill_type_4,
 			&item_template.Skill_requirement_4,
 		)
-		checkErr(err)
+		common.CheckErr(err)
 		item_templates = append(item_templates, item_template)
 	}
 	return item_templates
 }
 
-func pushNpcs([]npc) {
+func pushNpcs([]common.Npc) {
 	fmt.Println("Not yet implemented")
 }
 
 func getRemainingPlayerSlots(account_name string, max_player_slots int) int {
 	rows, err := db.Query("Select * FROM players INNER JOIN accounts ON players.account_id=accounts.id WHERE accountname=?", account_name)
-	checkErr(err)
+	common.CheckErr(err)
 	defer rows.Close()
 	num_players := max_player_slots
 	for rows.Next() {
@@ -322,14 +323,14 @@ func getRemainingPlayerSlots(account_name string, max_player_slots int) int {
 
 func playerFirstNameTaken(player_firstname string) bool {
 	rows, err := db.Query("Select * FROM players WHERE firstname=?", player_firstname)
-	checkErr(err)
+	common.CheckErr(err)
 	return foundInRows(rows, err)
 }
 
-func addNewPlayer(player pc) {
+func addNewPlayer(player common.Pc) {
 	// Need to add this...
 	ins, err := db.Prepare("INSERT INTO players(account_id, firstname, lastname, guild, race, gender, face, skin, profession, alive, plevel, dp, hp, maxhp, bp, maxbp, mp, maxmp, ep, maxep, strength, constitution, intelligence, dexterity, axe, dagger, unarmed, hammer, polearm, spear, staff, sword, archery, crossbow, sling, thrown, armor, dualweapon, shield, bardic, conjuring, druidic, illusion, necromancy, sorcery, shamanic, spellcraft, summoning, focus, armorsmithing, tailoring, fletching, weaponsmithing, alchemy, lapidary, calligraphy, enchanting, herbalism, hunting, mining, bargaining, camping, firstaid, lore, picklocks, scouting, search, stealth, traps, aeolandis, hieroform, highgundis, oldpraxic, praxic, runic, head, chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, righthand, lefthand, zone, x, y, z, direction) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	checkErr(err)
+	common.CheckErr(err)
 	// Try to populate and execute an SQL statment.
 	_, err = ins.Exec(
 		player.Accountid,
@@ -425,5 +426,5 @@ func addNewPlayer(player pc) {
 		player.Z,
 		player.Direction,
 	)
-	checkErr(err)
+	common.CheckErr(err)
 }

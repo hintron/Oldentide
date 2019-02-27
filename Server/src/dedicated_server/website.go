@@ -6,6 +6,7 @@
 package main
 
 import (
+	"common"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
@@ -36,7 +37,7 @@ func routeWebTraffic(w http.ResponseWriter, r *http.Request) {
 // Web handler that loads the home page.
 func homePage(w http.ResponseWriter, r *http.Request) {
 	hn, err := os.Hostname()
-	checkErr(err)
+	common.CheckErr(err)
 	fmt.Fprintf(w, "<html>"+
 		"<p>Welcome to the Oldentide dedicated server running on %s.</p>"+
 		"<p>Account Registration:</p>"+
@@ -82,7 +83,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 
 			verify_key := generateUniqueVerify(20)
 			salt_key := generateUniqueSalt(40)
-			hashed_key := saltAndHash(registration_password_first, salt_key)
+			hashed_key := common.SaltAndHash(registration_password_first, salt_key)
 
 			if everify {
 				// Create email message to send to user.
@@ -104,7 +105,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 
 				// Send registration email using
 				err = smtp.SendMail("smtp.gmail.com:587", eauth, email, to, msg)
-				checkErr(err)
+				common.CheckErr(err)
 				fmt.Fprintf(w, "<html>You posted data to the register page.<br><br>"+
 					"An email has been sent to verify this information:<br><br>"+
 					"Username: %s<br>Email: %s<br><br>"+
