@@ -300,6 +300,7 @@ func pullItemTemplates() []common.Item_template {
 			&item_template.Skill_type_4,
 			&item_template.Skill_requirement_4,
 		)
+        fmt.Println(&item_template.Name)
 		common.CheckErr(err)
 		item_templates = append(item_templates, item_template)
 	}

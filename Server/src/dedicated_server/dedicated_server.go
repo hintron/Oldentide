@@ -258,6 +258,7 @@ func Handle(RawPacketQueue chan common.Raw_packet, QuitChan chan bool, rid int) 
 				continue
 			case common.HELPCMD:
 				fmt.Println("Handling a HELPCMD packet.")
+                handleHelpMessage(packet)
 				continue
 			case common.GCHATCMD:
 				fmt.Println("Handling a GCHATCMD packet.")

@@ -5,12 +5,6 @@
 
 package main
 
-//var Players = make(map[string]Player)
+// var players = make(map[string]Player)
 
-/*func get_player_by_name(name string) Player {
-	for _, p := range pcs {
-		if p.Firstname == name {
-			return p
-		}
-	}
-}*/
+

@@ -89,5 +89,50 @@ type Opcode_packet struct {
 
 type Create_player_packet struct {
 	Opcode Opcode
+    Session_id int
 	Pc     Pc
+}
+
+type Connect_packet struct {
+    Opcode Opcode
+    Session_id int
+    Account string
+    Character string
+}
+
+type Say_packet struct {
+    Opcode Opcode
+    Session_id int
+    Text string
+}
+
+type Yell_packet struct {
+    Opcode Opcode
+    Session_id int
+    Text string
+}
+
+type Ooc_packet struct {
+    Opcode Opcode
+    Session_id int
+    Text string
+}
+
+type Help_packet struct {
+    Opcode Opcode
+    Session_id int
+    Text string
+}
+
+type Gchat_packet struct {
+    Opcode Opcode
+    Session_id int
+    Text string
+}
+
+type Whisper_packet struct {
+    Opcode Opcode
+    Session_id int
+    Target string
+    Text string
 }
