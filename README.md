@@ -2,14 +2,14 @@
 
 ##### A Game Where You Can Be Anyone.
 
-==================================
+=================================
 
 ### Project Information:
 
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
 **Founding Author**: Joseph DeVictoria<br>
-**Client Platform**: [Unity 2018.1.3f1](https://unity3d.com/get-unity/download/archive) (As of 6/9/2018)<br>
+**Client Platform**: [Unity 2018.1.3f1](https://unity3d.com/get-unity/download/archive)
 **Languages**: C#, Go, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
 **Wiki**: [Github Wiki](https://github.com/Oldentide/Oldentide/wiki)<br>
@@ -17,7 +17,7 @@
 **Development Game Port**: Port 1337<br>
 **Contact**: jldevictoria@gmail.com
 
-==================================
+=================================
 
 ### Directories:
 
