@@ -9,7 +9,7 @@
 **Project name**: Oldentide<br>
 **Initial Starting Date**: 2/9/2013<br>
 **Founding Author**: Joseph DeVictoria<br>
-**Client Platform**: [Unity 2018.1.3f1](https://unity3d.com/get-unity/download/archive)
+**Client Platform**: [Unity 2018.1.3f1](https://unity3d.com/get-unity/download/archive)<br>
 **Languages**: C#, Go, SQLite3<br>
 **Project Website**: [www.oldentide.com](http://www.oldentide.com)<br>
 **Wiki**: [Github Wiki](https://github.com/Oldentide/Oldentide/wiki)<br>
