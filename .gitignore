@@ -137,3 +137,5 @@ Website/node_modules/
 Server/bin/
 Server/pkg/
 Server/src/github.com/
+Server/src/golang.org/
+Server/src/gopkg.in/
