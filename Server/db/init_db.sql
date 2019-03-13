@@ -211,7 +211,9 @@ CREATE TABLE item_templates (
     skill_type_3 text,
     skill_requirement_3 integer not null default 1,
     skill_type_4 text,
-    skill_requirement_4 integer not null default 1
+    skill_requirement_4 integer not null default 1,
+    description text,
+    true_description text
 )
 
 

@@ -4,7 +4,7 @@
 # Date:        February_16_2019
 # Purpose:     Simple script populate the item templates table in the databse with item templates.
 
-echo "Populating NPCs..."
+echo "Populating Item Templates..."
 
 # Make sure I am in this directory.
 cd $(dirname $0)
@@ -43,7 +43,9 @@ INSERT INTO item_templates(
     skill_type_3,
     skill_requirement_3,
     skill_type_4,
-    skill_requirement_4
+    skill_requirement_4,
+    description,
+    true_description
 ) 
 SELECT * FROM temp_item_templates;
 DROP TABLE temp_item_templates;
