@@ -261,7 +261,10 @@ for filename in os.listdir(professions_base_path):
 				skill_option_index += 1
 			elif skill == "*":
 				sos = "Skill_" + str(skill_option_index) + "_multi"
-				professions[profession_base_name][sos] = "1"
+				if mod == "0":
+					professions[profession_base_name][sos] = "0"
+				else:
+					professions[profession_base_name][sos] = "1"
 				sos = "Skill_" + str(skill_option_index) + "_value"
 				professions[profession_base_name][sos] = mod
 				skill_option_index += 1
