@@ -298,13 +298,13 @@ for filename in os.listdir(info_path):
 race_mod_file = open(race_modifiers_file, "w+")
 race_mod_file.write("race")
 for header_key in headers:
-	if not "skill_" in header_key:
+	if not "skill_" in header_key and not "hppl" in header_key and not "mppl" in header_key:
 		race_mod_file.write("," + header_key)
 race_mod_file.write("\n")
 for race in sorted(races):
 	race_mod_file.write(race)
 	for skill in skills:
-		if not "Skill_" in skill:
+		if not "Skill_" in skill and not "Hppl" in skill and not "Hppl" in skill:
 			if skill in races[race]:
 				race_mod_file.write("," + str(races[race][skill]))
 			else:
