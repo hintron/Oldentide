@@ -304,10 +304,11 @@ race_mod_file.write("\n")
 for race in sorted(races):
 	race_mod_file.write(race)
 	for skill in skills:
-		if skill in races[race]:
-			race_mod_file.write("," + str(races[race][skill]))
-		else:
-			race_mod_file.write(",0")
+		if not "Skill_" in skill:
+			if skill in races[race]:
+				race_mod_file.write("," + str(races[race][skill]))
+			else:
+				race_mod_file.write(",0")
 	race_mod_file.write("\n")
 
 # Write parsed profession data to a csv file.
