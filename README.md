@@ -1,3 +1,5 @@
+![Oldentide Logo](Concepts/Project/Logo_1.png?raw=true "Oldentide")
+
 # Oldentide
 
 ##### A Game Where You Can Be Anyone.
