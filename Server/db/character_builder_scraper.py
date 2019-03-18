@@ -15,8 +15,8 @@ parser.add_argument('crsm_dir', type=str, help='Full path of the Crsm folder in 
 args = parser.parse_args()
 
 # Initialize path and files.
-race_modifiers_file = 'race_modifiers.csv'
-profession_modifiers_file = 'profession_modifiers.csv'
+race_modifiers_file = 'race_templates.csv'
+profession_modifiers_file = 'profession_templates.csv'
 
 # Initialize modifiers data structures.
 skills = (

@@ -10,11 +10,11 @@ echo "Populating Race Templates..."
 cd $(dirname $0)
 
 # Import to sqlite3
-# Import csv data into a temp table, then insert the data into npcs in order to auto-generate the ids
+# Import csv data into a temp table, then insert the data into race templates in order to auto-generate the ids
 sqlite3 Oldentide.db <<EOF
 .mode csv
 DROP TABLE IF EXISTS temp_race_templates;
-.import race_modifiers.csv temp_race_templates
+.import race_templates.csv temp_race_templates
 INSERT INTO race_templates(
     name,
     true_name,
@@ -47,4 +47,4 @@ INSERT INTO race_templates(
     description,
     true_description
 ) 
-SELECT * FROM temp_item_templates;
+SELECT * FROM temp_race_templates;
