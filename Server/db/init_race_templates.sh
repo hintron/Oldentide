@@ -75,3 +75,7 @@ INSERT INTO race_templates(
     description
 ) 
 SELECT * FROM temp_race_templates;
+DROP TABLE temp_race_templates;
+.quit
+EOF
+echo "Race Templates Populated."

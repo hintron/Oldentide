@@ -92,3 +92,7 @@ INSERT INTO profession_templates(
     description
 ) 
 SELECT * FROM temp_profession_templates;
+DROP TABLE temp_profession_templates;
+.quit
+EOF
+echo "Profession Templates Populated."
