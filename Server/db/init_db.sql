@@ -222,7 +222,7 @@ CREATE TABLE item_templates (
     skill_requirement_4 integer not null default 1,
     description text,
     true_description text
-)
+);
 
 DROP TABLE IF EXISTS race_templates;
 CREATE TABLE race_templates (
@@ -293,7 +293,7 @@ CREATE TABLE race_templates (
     praxic_mod real not null default 0.0,
     runic_mod real not null default 0.0,
     description text not null
-)
+);
 
 DROP TABLE IF EXISTS profession_templates;
 CREATE TABLE profession_templates (
@@ -381,7 +381,7 @@ CREATE TABLE profession_templates (
     skill_5_names text not null default 0,
     skill_5_value integer not null default 0,
     description text not null
-)
+);
 
 
 ------------------------

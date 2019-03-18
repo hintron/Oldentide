@@ -25,7 +25,7 @@ INSERT INTO npcs(
     skin,
     profession,
     alive,
-    nlevel,
+    level,
     hp,
     maxhp,
     bp,
