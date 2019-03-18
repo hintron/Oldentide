@@ -13,6 +13,7 @@ cd $(dirname $0)
 # Import csv data into a temp table, then insert the data into npcs in order to auto-generate the ids
 sqlite3 Oldentide.db <<EOF
 .mode csv
+DELETE FROM npcs;
 DROP TABLE IF EXISTS temp_npcs;
 .import npcs.csv temp_npcs
 INSERT INTO npcs(

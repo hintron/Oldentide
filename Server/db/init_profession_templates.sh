@@ -13,6 +13,7 @@ cd $(dirname $0)
 # Import csv data into a temp table, then insert the data into profession templates in order to auto-generate the ids
 sqlite3 Oldentide.db <<EOF
 .mode csv
+DELETE FROM profession_templates;
 DROP TABLE IF EXISTS temp_profession_templates;
 .import profession_templates.csv temp_profession_templates
 INSERT INTO profession_templates(
