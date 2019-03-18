@@ -66,6 +66,7 @@ skills = (
 	"Camping",
 	"First Aid",
 	"Lore",
+	"Pick Locks",
 	"Scouting",
 	"Search",
 	"Stealth",
