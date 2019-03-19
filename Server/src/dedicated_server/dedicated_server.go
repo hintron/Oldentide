@@ -112,13 +112,13 @@ func main() {
 
 	race_templates := pullRaceTemplates()
 	fmt.Println("\n* Race templates populated from database.\n")
-	for _, race_template : range race_templates {
+	for _, race_template := range race_templates {
 		fmt.Println(race_template)
 	}
 
 	profession_templates := pullProfessionTemplates()
 	fmt.Println("\n* Profession templates populated from database.\n")
-	for _, profession_template : range profession_templates {
+	for _, profession_template := range profession_templates {
 		fmt.Println(profession_template)
 	}
 

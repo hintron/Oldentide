@@ -23,9 +23,9 @@ import (
 )
 
 func handleHelpMessage(packet common.Raw_packet) {
-    fmt.Println("Sending a help message to all players.")
-//    for i, pc := range players {
-//       // send back a RELAYHELP packet.
-//       fmt.Println(pc)
-//    }
+	fmt.Println("Sending a help message to all players.")
+	//    for i, pc := range players {
+	//       // send back a RELAYHELP packet.
+	//       fmt.Println(pc)
+	//    }
 }

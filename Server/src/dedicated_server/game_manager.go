@@ -6,5 +6,3 @@
 package main
 
 // var players = make(map[string]Player)
-
-

@@ -297,6 +297,8 @@ type Race_template struct {
 type Profession_template struct {
     Id int
     Profession string
+    Hppl int
+    Mppl int
     Strength_mod float32
     Constitution_mod float32
     Intelligence_mod float32
