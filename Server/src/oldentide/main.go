@@ -53,7 +53,7 @@ type OldentideClientGamestate struct {
 }
 
 // SetupGui creates all user interface elements
-func (g *OldentideClientGamestate) SetupGui(width, height int) {
+func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	log.Debug("Creating GUI...")
 
 	interface_component_background_color := math32.Color4{50.6, 40.4, 34.1, 1.0}
@@ -63,55 +63,55 @@ func (g *OldentideClientGamestate) SetupGui(width, height int) {
 	//var err error
 
 	// Menu
-	g.menu = gui.NewPanel(100, 100)
-	g.menu.SetColor4(&math32.Color4{0.1, 0.1, 0.1, 0.6})
-	g.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
-		g.menu.SetWidth(g.root.ContentWidth())
-		g.menu.SetHeight(g.root.ContentHeight())
+	ogs.menu = gui.NewPanel(100, 100)
+	ogs.menu.SetColor4(&math32.Color4{0.1, 0.1, 0.1, 0.6})
+	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
+		ogs.menu.SetWidth(ogs.root.ContentWidth())
+		ogs.menu.SetHeight(ogs.root.ContentHeight())
 	})
 
 	// Main panel
-	g.main = gui.NewPanel(600, 300)
+	ogs.main = gui.NewPanel(600, 300)
 	mainLayout := gui.NewVBoxLayout()
 	mainLayout.SetAlignV(gui.AlignHeight)
-	g.main.SetLayout(mainLayout)
-	g.main.SetBorders(2, 2, 2, 2)
-	g.main.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
-	g.main.SetColor4(&interface_component_background_color)
-	g.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
-		g.main.SetPositionX((g.root.Width() - g.main.Width()) / 2)
-		g.main.SetPositionY((g.root.Height()-g.main.Height())/2 + 50)
+	ogs.main.SetLayout(mainLayout)
+	ogs.main.SetBorders(2, 2, 2, 2)
+	ogs.main.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
+	ogs.main.SetColor4(&interface_component_background_color)
+	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
+		ogs.main.SetPositionX((ogs.root.Width() - ogs.main.Width()) / 2)
+		ogs.main.SetPositionY((ogs.root.Height()-ogs.main.Height())/2 + 50)
 	})
 
 	/*
-	topRow := gui.NewPanel(g.main.ContentWidth(), 100)
+	topRow := gui.NewPanel(ogs.main.ContentWidth(), 100)
 	topRowLayout := gui.NewHBoxLayout()
 	topRowLayout.SetAlignH(gui.AlignWidth)
 	topRow.SetLayout(topRowLayout)
 	alignCenterVerical := gui.HBoxLayoutParams{Expand: 0, AlignV: gui.AlignCenter}
 	*/
 
-	g.root.Add(g.menu)
+	ogs.root.Add(ogs.menu)
 
 	// Dispatch a fake OnResize event to update all subscribed elements
-	g.root.Dispatch(gui.OnResize, nil)
+	ogs.root.Dispatch(gui.OnResize, nil)
 
 	log.Debug("Done creating GUI.")
 }
 
 // Update updates the current level if any
-func (g *OldentideClientGamestate) Update(timeDelta float64) {
+func (ogs *OldentideClientGamestate) Update(timeDelta float64) {
 	return
 }
 
 // ToggleFullScreen toggles whether is game is fullscreen or windowed
-func (g *OldentideClientGamestate) ToggleFullScreen() {
+func (ogs *OldentideClientGamestate) ToggleFullScreen() {
 	log.Debug("Toggle FullScreen")
-	g.win.SetFullScreen(!g.win.FullScreen())
+	ogs.win.SetFullScreen(!ogs.win.FullScreen())
 }
 
 // onKey handles keyboard events for the game
-func (g *OldentideClientGamestate) onKey(evname string, ev interface{}) {
+func (ogs *OldentideClientGamestate) onKey(evname string, ev interface{}) {
 	kev := ev.(*window.KeyEvent)
 	switch kev.Keycode {
 	case window.KeyEscape:
@@ -120,40 +120,40 @@ func (g *OldentideClientGamestate) onKey(evname string, ev interface{}) {
 }
 
 // onMouse handles mouse events for the game
-func (g *OldentideClientGamestate) onMouse(evname string, ev interface{}) {
+func (ogs *OldentideClientGamestate) onMouse(evname string, ev interface{}) {
 	mev := ev.(*window.MouseEvent)
-	/*if g.gopherLocked == false && g.leveln > 0 {
+	/*if ogs.gopherLocked == false && ogs.leveln > 0 {
 		// Mouse button pressed
 		if mev.Action == window.Press {
 			// Left button pressed
 			if mev.Button == window.MouseButtonLeft {
-				g.arrowNode.SetVisible(true)
+				ogs.arrowNode.SetVisible(true)
 			}
 		} else if mev.Action == window.Release {
-			g.arrowNode.SetVisible(false)
+			ogs.arrowNode.SetVisible(false)
 		}
 	}*/
 	fmt.Println(mev)
 }
 
 // onCursor handles cursor movement for the game
-func (g *OldentideClientGamestate) onCursor(evname string, ev interface{}) {
+func (ogs *OldentideClientGamestate) onCursor(evname string, ev interface{}) {
 	// Calculate direction of potential movement based on camera angle
 	var dir math32.Vector3
-	g.camera.WorldDirection(&dir)
-	g.stepDelta.Set(0, 0)
+	ogs.camera.WorldDirection(&dir)
+	ogs.stepDelta.Set(0, 0)
 
 	if math32.Abs(dir.Z) > math32.Abs(dir.X) {
 		if dir.Z > 0 {
-			g.stepDelta.Y = 1
+			ogs.stepDelta.Y = 1
 		} else {
-			g.stepDelta.Y = -1
+			ogs.stepDelta.Y = -1
 		}
 	} else {
 		if dir.X > 0 {
-			g.stepDelta.X = 1
+			ogs.stepDelta.X = 1
 		} else {
-			g.stepDelta.X = -1
+			ogs.stepDelta.X = -1
 		}
 	}
 }
@@ -179,7 +179,7 @@ func main() {
 	log.Info("Initializing Oldentide")
 
 	// Create Client Gamestate struct
-	g := new(OldentideClientGamestate)
+	ogs := new(OldentideClientGamestate)
 
 	// Manually scan the $GOPATH directories to find the data directory
 	rawPaths := os.Getenv("GOPATH")
@@ -188,182 +188,182 @@ func main() {
 		// Checks Assets path
 		path := filepath.Join(j, "../Assets")
 		if _, err := os.Stat(path); err == nil {
-			g.assets_dir = path
+			ogs.assets_dir = path
 		}
 	}
 
 	// Get the window manager
 	var err error
-	g.wmgr, err = window.Manager("glfw")
+	ogs.wmgr, err = window.Manager("glfw")
 	if err != nil {
 		panic(err)
 	}
 
 	// Create window and OpenGL context
-	g.win, err = g.wmgr.CreateWindow(1280, 720, "Oldentide", false)
+	ogs.win, err = ogs.wmgr.CreateWindow(1280, 720, "Oldentide", false)
 	if err != nil {
 		panic(err)
 	}
 
 	// Set window icon.
-	// g.wmgr.
+	// ogs.wmgr.
 
 	// Create OpenGL state
-	g.gs, err = gls.New()
+	ogs.gs, err = gls.New()
 	if err != nil {
 		panic(err)
 	}
 
 	// Set Cursor to Oldentide Cursor
-	g.cursor, err = g.wmgr.CreateCursor(g.assets_dir + "/Interface/OldentideCursor30.png", 0, 0)
+	ogs.cursor, err = ogs.wmgr.CreateCursor(ogs.assets_dir + "/Interface/OldentideCursor30.png", 0, 0)
 	if err != nil {
 		fmt.Println("Error creating cursor.")
 		//log.Log().Fatal("Error creating cursor: %s", err)
 	}
-	g.win.SetCustomCursor(g.cursor)
+	ogs.win.SetCustomCursor(ogs.cursor)
 
 	// Speed up a bit by not checking OpenGL errors
-	g.gs.SetCheckErrors(false)
+	ogs.gs.SetCheckErrors(false)
 
 	// Sets window background color
-	g.gs.ClearColor(0.1, 0.1, 0.1, 1.0)
+	ogs.gs.ClearColor(0.1, 0.1, 0.1, 1.0)
 
 	// Sets the OpenGL viewport size the same as the window size
 	// This normally should be updated if the window is resized.
-	width, height := g.win.Size()
-	g.gs.Viewport(0, 0, int32(width), int32(height))
+	width, height := ogs.win.Size()
+	ogs.gs.Viewport(0, 0, int32(width), int32(height))
 
 	// Creates GUI root panel
-	g.root = gui.NewRoot(g.gs, g.win)
-	g.root.SetSize(float32(width), float32(height))
+	ogs.root = gui.NewRoot(ogs.gs, ogs.win)
+	ogs.root.SetSize(float32(width), float32(height))
 
 	// Subscribe to window resize events. When the window is resized:
 	// - Update the viewport size
 	// - Update the root panel size
 	// - Update the camera aspect ratio
-	g.win.Subscribe(window.OnWindowSize, func(evname string, ev interface{}) {
-		width, height := g.win.Size()
-		g.gs.Viewport(0, 0, int32(width), int32(height))
-		g.root.SetSize(float32(width), float32(height))
+	ogs.win.Subscribe(window.OnWindowSize, func(evname string, ev interface{}) {
+		width, height := ogs.win.Size()
+		ogs.gs.Viewport(0, 0, int32(width), int32(height))
+		ogs.root.SetSize(float32(width), float32(height))
 		aspect := float32(width) / float32(height)
-		g.camera.SetAspect(aspect)
+		ogs.camera.SetAspect(aspect)
 	})
 
 	// Subscribe window to events
-	g.win.Subscribe(window.OnKeyDown, g.onKey)
-	g.win.Subscribe(window.OnMouseUp, g.onMouse)
-	g.win.Subscribe(window.OnMouseDown, g.onMouse)
+	ogs.win.Subscribe(window.OnKeyDown, ogs.onKey)
+	ogs.win.Subscribe(window.OnMouseUp, ogs.onMouse)
+	ogs.win.Subscribe(window.OnMouseDown, ogs.onMouse)
 
 	// Creates a renderer and adds default shaders
-	g.renderer = renderer.NewRenderer(g.gs)
-	//g.renderer.SetSortObjects(false)
-	err = g.renderer.AddDefaultShaders()
+	ogs.renderer = renderer.NewRenderer(ogs.gs)
+	//ogs.renderer.SetSortObjects(false)
+	err = ogs.renderer.AddDefaultShaders()
 	if err != nil {
 		panic(err)
 	}
-	g.renderer.SetGui(g.root)
+	ogs.renderer.SetGui(ogs.root)
 
 	// Adds a perspective camera to the scene
 	// The camera aspect ratio should be updated if the window is resized.
 	aspect := float32(width) / float32(height)
-	g.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
-	g.camera.SetPosition(0, 4, 5)
-	g.camera.LookAt(&math32.Vector3{0, 0, 0})
+	ogs.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
+	ogs.camera.SetPosition(0, 4, 5)
+	ogs.camera.LookAt(&math32.Vector3{0, 0, 0})
 
 	// Create orbit control and set limits
-	g.orbit_control = control.NewOrbitControl(g.camera, g.win)
-	g.orbit_control.Enabled = false
-	g.orbit_control.EnablePan = false
-	g.orbit_control.MaxPolarAngle = 2 * math32.Pi / 3
-	g.orbit_control.MinDistance = 5
-	g.orbit_control.MaxDistance = 15
+	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
+	ogs.orbit_control.Enabled = false
+	ogs.orbit_control.EnablePan = false
+	ogs.orbit_control.MaxPolarAngle = 2 * math32.Pi / 3
+	ogs.orbit_control.MinDistance = 5
+	ogs.orbit_control.MaxDistance = 15
 
 	// Create main scene and child levelScene
-	g.scene = core.NewNode()
-	//g.levelScene = core.NewNode()
-	g.scene.Add(g.camera)
-	//g.scene.Add(g.levelScene)
-	g.stepDelta = math32.NewVector2(0, 0)
-	g.renderer.SetScene(g.scene)
+	ogs.scene = core.NewNode()
+	//ogs.levelScene = core.NewNode()
+	ogs.scene.Add(ogs.camera)
+	//ogs.scene.Add(ogs.levelScene)
+	ogs.stepDelta = math32.NewVector2(0, 0)
+	ogs.renderer.SetScene(ogs.scene)
 
 	// Add white ambient light to the scene
 	ambLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.4)
-	g.scene.Add(ambLight)
+	ogs.scene.Add(ambLight)
 
-	//g.levelStyle = NewStandardStyle(g.assets_dir)
+	//ogs.levelStyle = NewStandardStyle(ogs.assets_dir)
 
-	g.SetupGui(width, height)
-	g.RenderFrame()
+	ogs.SetupGui(width, height)
+	ogs.RenderFrame()
 
 /*
 	// Try to open audio libraries
 	err = loadAudioLibs()
 	if err != nil {
 		log.Error("%s", err)
-		g.UpdateMusicButton(false)
-		g.UpdateSfxButton(false)
-		g.musicButton.SetEnabled(false)
-		g.sfxButton.SetEnabled(false)
+		ogs.UpdateMusicButton(false)
+		ogs.UpdateSfxButton(false)
+		ogs.musicButton.SetEnabled(false)
+		ogs.sfxButton.SetEnabled(false)
 	} else {
-		g.audioAvailable = true
-		g.LoadAudio()
-		g.UpdateMusicButton(g.userData.MusicOn)
-		g.UpdateSfxButton(g.userData.SfxOn)
+		ogs.audioAvailable = true
+		ogs.LoadAudio()
+		ogs.UpdateMusicButton(ogs.userData.MusicOn)
+		ogs.UpdateSfxButton(ogs.userData.SfxOn)
 
 		// Queue the music!
-		g.musicPlayerMenu.Play()
+		ogs.musicPlayerMenu.Play()
 	}
 
-	g.LoadSkyBox()
-	g.LoadGopher()
-	g.CreateArrowNode()
-	g.LoadLevels()
+	ogs.LoadSkyBox()
+	ogs.LoadGopher()
+	ogs.CreateArrowNode()
+	ogs.LoadLevels()
 
-	g.win.Subscribe(window.OnCursor, g.onCursor)
+	ogs.win.Subscribe(window.OnCursor, ogs.onCursor)
 
-	if g.userData.LastUnlockedLevel == len(g.levels) {
-		g.titleImage.SetImage(gui.ButtonDisabled, g.assets_dir + "/gui/title3_completed.png")
+	if ogs.userData.LastUnlockedLevel == len(ogs.levels) {
+		ogs.titleImage.SetImage(gui.ButtonDisabled, ogs.assets_dir + "/gui/title3_completed.png")
 	}
 
 	// Done Loading - hide the loading label, show the menu, and initialize the level
-	g.loadingLabel.SetVisible(false)
-	g.menu.Add(g.main)
-	g.InitLevel(g.userData.LastLevel)
-	g.gopherLocked = true
+	ogs.loadingLabel.SetVisible(false)
+	ogs.menu.Add(ogs.main)
+	ogs.InitLevel(ogs.userData.LastLevel)
+	ogs.gopherLocked = true
 */
 	now := time.Now()
 	newNow := time.Now()
 	log.Info("Starting Render Loop")
 
 	// Start the render loop
-	for !g.win.ShouldClose() {
+	for !ogs.win.ShouldClose() {
 
 		newNow = time.Now()
 		timeDelta := now.Sub(newNow)
 		now = newNow
 
-		g.Update(timeDelta.Seconds())
-		g.RenderFrame()
+		ogs.Update(timeDelta.Seconds())
+		ogs.RenderFrame()
 	}
 }
 
 // RenderFrame renders a frame of the scene with the GUI overlaid
-func (g *OldentideClientGamestate) RenderFrame() {
+func (ogs *OldentideClientGamestate) RenderFrame() {
 
 	// Process GUI timers
-	g.root.TimerManager.ProcessTimers()
+	ogs.root.TimerManager.ProcessTimers()
 
 	// Render the scene/gui using the specified camera
-	rendered, err := g.renderer.Render(g.camera)
+	rendered, err := ogs.renderer.Render(ogs.camera)
 	if err != nil {
 		panic(err)
 	}
 
 	// Check I/O events
-	g.wmgr.PollEvents()
+	ogs.wmgr.PollEvents()
 
 	// Update window if necessary
 	if rendered {
-		g.win.SwapBuffers()
+		ogs.win.SwapBuffers()
 	}
 }
