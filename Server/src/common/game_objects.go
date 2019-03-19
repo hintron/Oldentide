@@ -32,12 +32,12 @@ type Pc struct {
 	Dexterity      int32
 	Axe            int32
 	Dagger         int32
-	Unarmed        int32
 	Hammer         int32
 	Polearm        int32
 	Spear          int32
 	Staff          int32
 	Sword          int32
+	Unarmed        int32
 	Archery        int32
 	Crossbow       int32
 	Sling          int32
@@ -50,19 +50,19 @@ type Pc struct {
 	Druidic        int32
 	Illusion       int32
 	Necromancy     int32
-	Sorcery        int32
 	Shamanic       int32
-	Spellcraft     int32
+	Sorcery        int32
 	Summoning      int32
+	Spellcraft     int32
 	Focus          int32
-	Armorsmithing  int32
-	Tailoring      int32
-	Fletching      int32
-	Weaponsmithing int32
 	Alchemy        int32
-	Lapidary       int32
+	Armorsmithing  int32
 	Calligraphy    int32
 	Enchanting     int32
+	Fletching      int32
+	Lapidary       int32
+	Tailoring      int32
+	Weaponsmithing int32
 	Herbalism      int32
 	Hunting        int32
 	Mining         int32
@@ -110,12 +110,12 @@ type Skillupdate struct {
 	Dexterity      int32
 	Axe            int32
 	Dagger         int32
-	Unarmed        int32
 	Hammer         int32
 	Polearm        int32
 	Spear          int32
 	Staff          int32
 	Sword          int32
+	Unarmed        int32
 	Archery        int32
 	Crossbow       int32
 	Sling          int32
@@ -128,19 +128,19 @@ type Skillupdate struct {
 	Druidic        int32
 	Illusion       int32
 	Necromancy     int32
-	Sorcery        int32
 	Shamanic       int32
-	Spellcraft     int32
+	Sorcery        int32
 	Summoning      int32
+	Spellcraft     int32
 	Focus          int32
+	Alchemy        int32
 	Armorsmithing  int32
+	Calligraphy    int32
+	Enchanting     int32
+	Lapidary       int32
 	Tailoring      int32
 	Fletching      int32
 	Weaponsmithing int32
-	Alchemy        int32
-	Lapidary       int32
-	Calligraphy    int32
-	Enchanting     int32
 	Herbalism      int32
 	Hunting        int32
 	Mining         int32
@@ -231,4 +231,14 @@ type Item_template struct {
 	Skill_requirement_3      int32
 	Skill_type_4             string
 	Skill_requirement_4      int32
+}
+
+type race_template struct {
+    Id  int32
+    Race    string
+    Strength_mod
+    Constitution_mod
+    Intelligence_mod
+    Dexterity_mod
+
 }
