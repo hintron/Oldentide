@@ -233,7 +233,7 @@ type Item_template struct {
 	Skill_requirement_4      int32
 }
 
-type race_template struct {
+type Race_template struct {
     Id int
     Race string
     Strength_mod float32
@@ -294,7 +294,7 @@ type race_template struct {
     Description string
 }
 
-type profession_template struct {
+type Profession_template struct {
     Id int
     Profession string
     Strength_mod float32

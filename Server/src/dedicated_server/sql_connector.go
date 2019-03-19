@@ -307,6 +307,165 @@ func pullItemTemplates() []common.Item_template {
 	return item_templates
 }
 
+func pullRaceTemplates() []common.Race_template {
+	rows, err := db.Query("Select * FROM race_templates")
+	defer rows.Close()
+	var race_templates []common.Race_template
+	for rows.Next() {
+		var race_template common.Race_template
+		err = rows.Scan(
+			&race_template.Id
+			&race_template.Race
+			&race_template.Strength_mod
+			&race_template.Constitution_mod
+			&race_template.Intelligence_mod
+			&race_template.Dexterity_mod
+			&race_template.Axe_mod
+			&race_template.Dagger_mod
+			&race_template.Unarmed_mod
+			&race_template.Hammer_mod
+			&race_template.Polearm_mod
+			&race_template.Spear_mod
+			&race_template.Staff_mod
+			&race_template.Sword_mod
+			&race_template.Archery_mod
+			&race_template.Crossbow_mod
+			&race_template.Sling_mod
+			&race_template.Thrown_mod
+			&race_template.Armor_mod
+			&race_template.Dualweapon_mod
+			&race_template.Shield_mod
+			&race_template.Bardic_mod
+			&race_template.Conjuring_mod
+			&race_template.Druidic_mod
+			&race_template.Illusion_mod
+			&race_template.Necromancy_mod
+			&race_template.Sorcery_mod
+			&race_template.Shamanic_mod
+			&race_template.Spellcraft_mod
+			&race_template.Summoning_mod
+			&race_template.Focus_mod
+			&race_template.Armorsmithing_mod
+			&race_template.Tailoring_mod
+			&race_template.Fletching_mod
+			&race_template.Weaponsmithing_mod
+			&race_template.Alchemy_mod
+			&race_template.Lapidary_mod
+			&race_template.Calligraphy_mod
+			&race_template.Enchanting_mod
+			&race_template.Herbalism_mod
+			&race_template.Hunting_mod
+			&race_template.Mining_mod
+			&race_template.Bargaining_mod
+			&race_template.Camping_mod
+			&race_template.Firstaid_mod
+			&race_template.Lore_mod
+			&race_template.Picklocks_mod
+			&race_template.Scouting_mod
+			&race_template.Search_mod
+			&race_template.Stealth_mod
+			&race_template.Traps_mod
+			&race_template.Aeolandis_mod
+			&race_template.Hieroform_mod
+			&race_template.Highgundis_mod
+			&race_template.Oldpraxic_mod
+			&race_template.Praxic_mod
+			&race_template.Runic_mod
+			&race_template.Description
+		)
+		common.CheckErr(err)
+		race_templates = append(race_templates, race_template)
+	}
+	return race_templates
+}
+
+func pullProfessionTemplates() []common.Profession_template {
+	rows, err := db.Query("Select * FROM Profession_templates")
+	defer rows.Close()
+	var Profession_templates []common.Profession_template
+	for rows.Next() {
+		var profession_template common.Profession_template
+		err = rows.Scan(
+			&profession_template.Id
+			&profession_template.Profession
+			&profession_template.Strength_mod
+			&profession_template.Constitution_mod
+			&profession_template.Intelligence_mod
+			&profession_template.Dexterity_mod
+			&profession_template.Axe_mod
+			&profession_template.Dagger_mod
+			&profession_template.Unarmed_mod
+			&profession_template.Hammer_mod
+			&profession_template.Polearm_mod
+			&profession_template.Spear_mod
+			&profession_template.Staff_mod
+			&profession_template.Sword_mod
+			&profession_template.Archery_mod
+			&profession_template.Crossbow_mod
+			&profession_template.Sling_mod
+			&profession_template.Thrown_mod
+			&profession_template.Armor_mod
+			&profession_template.Dualweapon_mod
+			&profession_template.Shield_mod
+			&profession_template.Bardic_mod
+			&profession_template.Conjuring_mod
+			&profession_template.Druidic_mod
+			&profession_template.Illusion_mod
+			&profession_template.Necromancy_mod
+			&profession_template.Sorcery_mod
+			&profession_template.Shamanic_mod
+			&profession_template.Spellcraft_mod
+			&profession_template.Summoning_mod
+			&profession_template.Focus_mod
+			&profession_template.Armorsmithing_mod
+			&profession_template.Tailoring_mod
+			&profession_template.Fletching_mod
+			&profession_template.Weaponsmithing_mod
+			&profession_template.Alchemy_mod
+			&profession_template.Lapidary_mod
+			&profession_template.Calligraphy_mod
+			&profession_template.Enchanting_mod
+			&profession_template.Herbalism_mod
+			&profession_template.Hunting_mod
+			&profession_template.Mining_mod
+			&profession_template.Bargaining_mod
+			&profession_template.Camping_mod
+			&profession_template.Firstaid_mod
+			&profession_template.Lore_mod
+			&profession_template.Picklocks_mod
+			&profession_template.Scouting_mod
+			&profession_template.Search_mod
+			&profession_template.Stealth_mod
+			&profession_template.Traps_mod
+			&profession_template.Aeolandis_mod
+			&profession_template.Hieroform_mod
+			&profession_template.Highgundis_mod
+			&profession_template.Oldpraxic_mod
+			&profession_template.Praxic_mod
+			&profession_template.Runic_mod
+			&profession_template.Skill_1_multi
+			&profession_template.Skill_1_names
+			&profession_template.Skill_1_value
+			&profession_template.Skill_2_multi
+			&profession_template.Skill_2_names
+			&profession_template.Skill_2_value
+			&profession_template.Skill_3_multi
+			&profession_template.Skill_3_names
+			&profession_template.Skill_3_value
+			&profession_template.Skill_4_multi
+			&profession_template.Skill_4_names
+			&profession_template.Skill_4_value
+			&profession_template.Skill_5_multi
+			&profession_template.Skill_5_names
+			&profession_template.Skill_5_value
+			&profession_template.Description
+		)
+		common.CheckErr(err)
+		profession_templates = append(profession_templates, profession_template)
+	}
+	return profession_templates
+}
+
 func pushNpcs([]common.Npc) {
 	fmt.Println("Not yet implemented")
 }
