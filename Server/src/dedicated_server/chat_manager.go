@@ -29,3 +29,27 @@ func handleHelpMessage(packet common.Raw_packet) {
 	//       fmt.Println(pc)
 	//    }
 }
+
+func handleSayMessage(packet common.Raw_packet) {
+	fmt.Println("Sending a say message to nearby players. (10 yards?)")
+}
+
+func handleGuildMessage(packet common.Raw_packet) {
+	fmt.Println("Sending a guild message to fellow online guildmates.")
+}
+
+func handleOocMessage(packet common.Raw_packet) {
+	fmt.Println("Sending an OOC message to everyone in the current zone.")
+}
+
+func handleWhisperMessage(packet common.Raw_packet) {
+	fmt.Println("Sending a whisper message to a target player.")
+}
+
+func handlePartyMessage(packet common.Raw_packet) {
+	fmt.Println("Sending a party message to players in the same party.")
+}
+
+func handleYellMessage(packet common.Raw_packet) {
+	fmt.Println("Sending a yell message to nearby players. (50 yards?)")
+}

@@ -299,8 +299,10 @@ func pullItemTemplates() []common.Item_template {
 			&item_template.Skill_requirement_3,
 			&item_template.Skill_type_4,
 			&item_template.Skill_requirement_4,
+			&item_template.Description,
+			&item_template.True_description,
 		)
-        fmt.Println(&item_template.Name)
+		fmt.Println(&item_template.Name)
 		common.CheckErr(err)
 		item_templates = append(item_templates, item_template)
 	}
@@ -388,8 +390,8 @@ func pullProfessionTemplates() []common.Profession_template {
 		err = rows.Scan(
 			&profession_template.Id,
 			&profession_template.Profession,
-            &profession_template.Hppl,
-            &profession_template.Mppl,
+			&profession_template.Hppl,
+			&profession_template.Mppl,
 			&profession_template.Strength_mod,
 			&profession_template.Constitution_mod,
 			&profession_template.Intelligence_mod,

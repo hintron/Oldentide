@@ -90,6 +90,24 @@ func main() {
 
 	// Initialize the game state (populates all of the npcs, and game objects, etc).
 	// --------------------------------------------------------------------------------------------
+	race_templates := pullRaceTemplates()
+	fmt.Println("\n* Race templates populated from database.\n")
+	for _, race_template := range race_templates {
+		fmt.Println(race_template)
+	}
+
+	profession_templates := pullProfessionTemplates()
+	fmt.Println("\n* Profession templates populated from database.\n")
+	for _, profession_template := range profession_templates {
+		fmt.Println(profession_template)
+	}
+
+	item_templates := pullItemTemplates()
+	fmt.Println("\n* Item templates populated from database:\n")
+	for _, item_template := range item_templates {
+		fmt.Println(item_template)
+	}
+
 	pcs := pullPcs()
 	fmt.Println("* PCs populated from database:\n")
 	for _, pc := range pcs {
@@ -102,25 +120,7 @@ func main() {
 		fmt.Println(npc)
 	}
 
-	//item_templates := pullItemTemplates()
-	//fmt.Println("\n* Item templates populated from database:\n")
-	//for _, item_template := range item_templates {
-	//	fmt.Println(item_template)
-	//}
-
 	// inventories := pullInventories()
-
-	race_templates := pullRaceTemplates()
-	fmt.Println("\n* Race templates populated from database.\n")
-	for _, race_template := range race_templates {
-		fmt.Println(race_template)
-	}
-
-	profession_templates := pullProfessionTemplates()
-	fmt.Println("\n* Profession templates populated from database.\n")
-	for _, profession_template := range profession_templates {
-		fmt.Println(profession_template)
-	}
 
 	// --------------------------------------------------------------------------------------------
 	// Kick off http server for registration page.
@@ -261,22 +261,27 @@ func Handle(RawPacketQueue chan common.Raw_packet, QuitChan chan bool, rid int) 
 				continue
 			case common.SAYCMD:
 				fmt.Println("Handling a SAYCMD packet.")
+				handleSayMessage(packet)
 				continue
 			case common.YELLCMD:
 				fmt.Println("Handling a YELLCMD packet.")
+				handleYellMessage(packet)
 				continue
 			case common.OOCCMD:
 				fmt.Println("Handling a OOCCMD packet.")
+				handleOocMessage(packet)
 				continue
 			case common.HELPCMD:
 				fmt.Println("Handling a HELPCMD packet.")
-                handleHelpMessage(packet)
+				handleHelpMessage(packet)
 				continue
 			case common.GCHATCMD:
 				fmt.Println("Handling a GCHATCMD packet.")
+				handleGuildMessage(packet)
 				continue
 			case common.WHISPERCMD:
 				fmt.Println("Handling a WHISPERCMD packet.")
+				handleWhisperMessage(packet)
 				continue
 			case common.ACTIVATECMD:
 				fmt.Println("Handling a ACTIVATECMD packet.")
