@@ -5,14 +5,14 @@
 package main
 
 import (
-	_ "github.com/g3n/engine/audio"
-	_ "github.com/g3n/engine/audio/al"
-	_ "github.com/g3n/engine/audio/vorbis"
+	"github.com/g3n/engine/audio"
+	"github.com/g3n/engine/audio/al"
+	"github.com/g3n/engine/audio/vorbis"
 	"github.com/g3n/engine/camera"
 	"github.com/g3n/engine/camera/control"
 	"github.com/g3n/engine/core"
 	"github.com/g3n/engine/gls"
-	_ "github.com/g3n/engine/graphic"
+	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/light"
 	_ "github.com/g3n/engine/loader/obj"
@@ -25,12 +25,12 @@ import (
 	"flag"
 	"fmt"
 	_ "io/ioutil"
+	"os"
+	"path/filepath"
 	"runtime"
 	_ "strconv"
-	"time"
-	"os"
 	"strings"
-	"path/filepath"
+	"time"
 )
 
 var log *logger.Logger
@@ -43,13 +43,17 @@ type OldentideClientGamestate struct {
 	scene         *core.Node
 	camera        *camera.Perspective
 	orbit_control *control.OrbitControl
-	assets_dir	  string
+	assets_dir    string
 	root          *gui.Root
 	menu          *gui.Panel
 	main          *gui.Panel
 	controls      *gui.Panel
-	cursor 	      int
+	cursor        int
 	stepDelta     *math32.Vector2
+
+	levelScene *core.Node
+	// Sound & Music players
+	loginMusicPlayer *audio.Player
 }
 
 // SetupGui creates all user interface elements
@@ -84,11 +88,11 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	})
 
 	/*
-	topRow := gui.NewPanel(ogs.main.ContentWidth(), 100)
-	topRowLayout := gui.NewHBoxLayout()
-	topRowLayout.SetAlignH(gui.AlignWidth)
-	topRow.SetLayout(topRowLayout)
-	alignCenterVerical := gui.HBoxLayoutParams{Expand: 0, AlignV: gui.AlignCenter}
+		topRow := gui.NewPanel(ogs.main.ContentWidth(), 100)
+		topRowLayout := gui.NewHBoxLayout()
+		topRowLayout.SetAlignH(gui.AlignWidth)
+		topRow.SetLayout(topRowLayout)
+		alignCenterVerical := gui.HBoxLayoutParams{Expand: 0, AlignV: gui.AlignCenter}
 	*/
 
 	ogs.root.Add(ogs.menu)
@@ -97,6 +101,84 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.root.Dispatch(gui.OnResize, nil)
 
 	log.Debug("Done creating GUI.")
+}
+
+// LoadSkybox loads a space skybox and adds it to the scene
+func (ogs *OldentideClientGamestate) LoadSkyBox(skybox_name string) {
+	log.Debug("Creating Skybox...")
+
+	// Load skybox textures
+	skyboxData := graphic.SkyboxData{
+		(ogs.assets_dir + "/Textures/Skyboxes/" + skybox_name + "/"), "jpg",
+		[6]string{"px", "nx", "py", "ny", "pz", "nz"}}
+
+	skybox, err := graphic.NewSkybox(skyboxData)
+	if err != nil {
+		panic(err)
+	}
+	skybox.SetRenderOrder(-1) // The skybox should always be rendered first
+	/*
+		// For each skybox face - set the material to not use lights and to have emissive color.
+		brightness := float32(0.6)
+		for i := 0; i < len(skybox.Materials()); i++ {
+			sbmat := skybox.Materials()[i].GetMaterial().(*material.Standard)
+			sbmat.SetUseLights(material.UseLightNone)
+			sbmat.SetEmissiveColor(&math32.Color{brightness, brightness, brightness})
+		}*/
+	ogs.scene.Add(skybox)
+
+	log.Debug("Done creating skybox")
+}
+
+// loadAudioLibs
+func loadAudioLibs() error {
+
+	// Open default audio device
+	dev, err := al.OpenDevice("")
+	if dev == nil {
+		return fmt.Errorf("Error: %s opening OpenAL default device", err)
+	}
+
+	// Create audio context
+	acx, err := al.CreateContext(dev, nil)
+	if err != nil {
+		return fmt.Errorf("Error creating audio context:%s", err)
+	}
+
+	// Make the context the current one
+	err = al.MakeContextCurrent(acx)
+	if err != nil {
+		return fmt.Errorf("Error setting audio context current:%s", err)
+	}
+	log.Debug("%s version: %s", al.GetString(al.Vendor), al.GetString(al.Version))
+	log.Debug("%s", vorbis.VersionString())
+	return nil
+}
+
+// LoadAudio loads music and sound effects
+func (ogs *OldentideClientGamestate) LoadAudio() {
+	log.Debug("Load Audio")
+
+	// Create listener and add it to the current camera
+	listener := audio.NewListener()
+	cdir := ogs.camera.Direction()
+	listener.SetDirectionVec(&cdir)
+	ogs.camera.GetCamera().Add(listener)
+
+	// Helper function to create player and handle errors
+	createPlayer := func(fname string) *audio.Player {
+		log.Debug("Loading " + fname)
+		p, err := audio.NewPlayer(fname)
+		if err != nil {
+			log.Error("Failed to create player for: %v", fname)
+		}
+		return p
+	}
+
+	// Load each music file you want to use into memory here. (Be a hog, they are small files!)
+	ogs.loginMusicPlayer = createPlayer(ogs.assets_dir + "/Music/Komiku__End_of_the_trip.ogg")
+	ogs.loginMusicPlayer.SetGain(0.05)
+	ogs.loginMusicPlayer.SetLooping(true)
 }
 
 // Update updates the current level if any
@@ -215,7 +297,7 @@ func main() {
 	}
 
 	// Set Cursor to Oldentide Cursor
-	ogs.cursor, err = ogs.wmgr.CreateCursor(ogs.assets_dir + "/Interface/OldentideCursor30.png", 0, 0)
+	ogs.cursor, err = ogs.wmgr.CreateCursor(ogs.assets_dir+"/Interface/OldentideCursor30.png", 0, 0)
 	if err != nil {
 		fmt.Println("Error creating cursor.")
 		//log.Log().Fatal("Error creating cursor: %s", err)
@@ -272,7 +354,7 @@ func main() {
 
 	// Create orbit control and set limits
 	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
-	ogs.orbit_control.Enabled = false
+	ogs.orbit_control.Enabled = true
 	ogs.orbit_control.EnablePan = false
 	ogs.orbit_control.MaxPolarAngle = 2 * math32.Pi / 3
 	ogs.orbit_control.MinDistance = 5
@@ -280,9 +362,9 @@ func main() {
 
 	// Create main scene and child levelScene
 	ogs.scene = core.NewNode()
-	//ogs.levelScene = core.NewNode()
+	ogs.levelScene = core.NewNode()
 	ogs.scene.Add(ogs.camera)
-	//ogs.scene.Add(ogs.levelScene)
+	ogs.scene.Add(ogs.levelScene)
 	ogs.stepDelta = math32.NewVector2(0, 0)
 	ogs.renderer.SetScene(ogs.scene)
 
@@ -290,47 +372,29 @@ func main() {
 	ambLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.4)
 	ogs.scene.Add(ambLight)
 
-	//ogs.levelStyle = NewStandardStyle(ogs.assets_dir)
-
 	ogs.SetupGui(width, height)
 	ogs.RenderFrame()
 
-/*
 	// Try to open audio libraries
 	err = loadAudioLibs()
 	if err != nil {
 		log.Error("%s", err)
-		ogs.UpdateMusicButton(false)
-		ogs.UpdateSfxButton(false)
-		ogs.musicButton.SetEnabled(false)
-		ogs.sfxButton.SetEnabled(false)
 	} else {
-		ogs.audioAvailable = true
 		ogs.LoadAudio()
-		ogs.UpdateMusicButton(ogs.userData.MusicOn)
-		ogs.UpdateSfxButton(ogs.userData.SfxOn)
-
 		// Queue the music!
-		ogs.musicPlayerMenu.Play()
+		ogs.loginMusicPlayer.Play()
 	}
 
-	ogs.LoadSkyBox()
-	ogs.LoadGopher()
-	ogs.CreateArrowNode()
-	ogs.LoadLevels()
+	//ogs.LoadSkyBox("Blue_Clouds")
+	ogs.LoadSkyBox("Sunny_High_Plains")
 
 	ogs.win.Subscribe(window.OnCursor, ogs.onCursor)
 
-	if ogs.userData.LastUnlockedLevel == len(ogs.levels) {
-		ogs.titleImage.SetImage(gui.ButtonDisabled, ogs.assets_dir + "/gui/title3_completed.png")
-	}
-
 	// Done Loading - hide the loading label, show the menu, and initialize the level
-	ogs.loadingLabel.SetVisible(false)
-	ogs.menu.Add(ogs.main)
-	ogs.InitLevel(ogs.userData.LastLevel)
-	ogs.gopherLocked = true
-*/
+	//ogs.loadingLabel.SetVisible(false)
+	//ogs.menu.Add(ogs.main)
+	//ogs.InitLevel(ogs.userData.LastLevel)
+
 	now := time.Now()
 	newNow := time.Now()
 	log.Info("Starting Render Loop")
