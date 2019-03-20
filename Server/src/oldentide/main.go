@@ -1,6 +1,8 @@
 // Filename:    main.go
 // Author:      Joseph DeVictoria
 // Date:        Mar_7_2019
+// Description: Attempt to make Oldentide in a lower level engine.
+//              Ack. Daniel Salvadori for bulk of base code.
 
 package main
 
@@ -35,7 +37,19 @@ import (
 
 var log *logger.Logger
 
+// Client Game State Unique States
+const (
+	LOGIN_SCREEN                uint8 = iota
+	CHARACTER_SELECT            uint8 = iota
+	CHARACTER_CREATION_PHYSICAL uint8 = iota
+	CHARACTER_CREATION_SKILLS   uint8 = iota
+	CHARACTER_CREATION_FINAL    uint8 = iota
+	LOADING                     uint8 = iota
+	IN_WORLD                    uint8 = iota
+)
+
 type OldentideClientGamestate struct {
+	// g3n window and engine components
 	wmgr          window.IWindowManager
 	win           window.IWindow
 	gs            *gls.GLS
@@ -43,59 +57,112 @@ type OldentideClientGamestate struct {
 	scene         *core.Node
 	camera        *camera.Perspective
 	orbit_control *control.OrbitControl
-	assets_dir    string
-	root          *gui.Root
-	menu          *gui.Panel
-	main          *gui.Panel
-	controls      *gui.Panel
-	cursor        int
 	stepDelta     *math32.Vector2
+	levelScene    *core.Node
 
-	levelScene *core.Node
 	// Sound & Music players
 	loginMusicPlayer *audio.Player
+
+	// Gui components
+	root                 *gui.Root
+	login_menu           *gui.Panel
+	login_username       *gui.Edit
+	login_password       *gui.Edit
+	login_server_address *gui.Edit
+	login_server_port    *gui.Edit
+	login_login_button   *gui.Button
+	login_quit_button    *gui.Button
+
+	// Game specific components
+	assets_dir string
+	cursor     int
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // SetupGui creates all user interface elements
 func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	log.Debug("Creating GUI...")
 
-	interface_component_background_color := math32.Color4{50.6, 40.4, 34.1, 1.0}
+	interface_component_background_color := math32.Color4{50.6 / 256, 40.4 / 256, 34.1 / 256, 0.5}
 
-	//s := gui.StyleDefault()
+	// Layout styles:
+	g_2_layout := gui.NewGridLayout(2)
+	g_2_layout.SetAlignH(gui.AlignCenter)
+	g_2_layout.SetAlignV(gui.AlignCenter)
+	h_layout := gui.NewHBoxLayout()
+	h_layout.SetAlignH(gui.AlignWidth)
+	v_layout := gui.NewVBoxLayout()
+	v_layout.SetAlignV(gui.AlignHeight)
 
 	//var err error
 
-	// Menu
-	ogs.menu = gui.NewPanel(100, 100)
-	ogs.menu.SetColor4(&math32.Color4{0.1, 0.1, 0.1, 0.6})
+	// Login menu -------------------------------
+	ogs.login_menu = gui.NewPanel(600, 300)
+	ogs.login_menu.SetLayout(h_layout)
+	ogs.login_menu.SetColor4(&interface_component_background_color)
+	ogs.login_menu.SetBorders(3, 3, 3, 3)
+	ogs.login_menu.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
 	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
-		ogs.menu.SetWidth(ogs.root.ContentWidth())
-		ogs.menu.SetHeight(ogs.root.ContentHeight())
+		ogs.login_menu.SetPositionX((ogs.root.Width() - ogs.login_menu.Width()) / 2)
+		ogs.login_menu.SetPositionY((ogs.root.Height()-ogs.login_menu.Height())/2 + 100)
 	})
 
-	// Main panel
-	ogs.main = gui.NewPanel(600, 300)
-	mainLayout := gui.NewVBoxLayout()
-	mainLayout.SetAlignV(gui.AlignHeight)
-	ogs.main.SetLayout(mainLayout)
-	ogs.main.SetBorders(2, 2, 2, 2)
-	ogs.main.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
-	ogs.main.SetColor4(&interface_component_background_color)
-	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
-		ogs.main.SetPositionX((ogs.root.Width() - ogs.main.Width()) / 2)
-		ogs.main.SetPositionY((ogs.root.Height()-ogs.main.Height())/2 + 50)
+	login_left := gui.NewPanel(300, 300)
+	login_left.SetLayout(v_layout)
+
+	login_left.Add(gui.NewLabel("Username:"))
+	ogs.login_username = gui.NewEdit(250, "username")
+	ogs.login_username.SetFontSize(16)
+	ogs.login_username.SetPosition(15, 0)
+	//ogs.login_menu.Add(ogs.login_username)
+	login_left.Add(ogs.login_username)
+
+	login_left.Add(gui.NewLabel("Password:"))
+	ogs.login_password = gui.NewEdit(250, "password")
+	ogs.login_password.SetFontSize(16)
+	//ogs.login_menu.Add(ogs.login_password)
+	login_left.Add(ogs.login_password)
+
+	ogs.login_login_button = gui.NewButton("Login")
+	ogs.login_login_button.Label.SetFontSize(16)
+	ogs.login_login_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		log.Debug("Login button was pressed.")
 	})
+	//ogs.login_menu.Add(ogs.login_login_button)
+	login_left.Add(ogs.login_login_button)
 
-	/*
-		topRow := gui.NewPanel(ogs.main.ContentWidth(), 100)
-		topRowLayout := gui.NewHBoxLayout()
-		topRowLayout.SetAlignH(gui.AlignWidth)
-		topRow.SetLayout(topRowLayout)
-		alignCenterVerical := gui.HBoxLayoutParams{Expand: 0, AlignV: gui.AlignCenter}
-	*/
+	login_right := gui.NewPanel(300, 300)
+	login_right.SetLayout(v_layout)
 
-	ogs.root.Add(ogs.menu)
+	login_right.Add(gui.NewLabel("Server Address:"))
+	ogs.login_server_address = gui.NewEdit(250, "imp.oldentide.com")
+	ogs.login_server_address.SetFontSize(16)
+	//ogs.login_menu.Add(ogs.login_server_address)
+	login_right.Add(ogs.login_server_address)
+
+	login_right.Add(gui.NewLabel("Server Port:"))
+	ogs.login_server_port = gui.NewEdit(250, "1337")
+	ogs.login_server_port.SetFontSize(16)
+	//ogs.login_menu.Add(ogs.login_server_port)
+	login_right.Add(ogs.login_server_port)
+
+	ogs.login_quit_button = gui.NewButton("Quit")
+	ogs.login_quit_button.Label.SetFontSize(16)
+	ogs.login_quit_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		log.Debug("Quit button was pressed.")
+	})
+	//ogs.login_menu.Add(ogs.login_quit_button)
+	login_right.Add(ogs.login_quit_button)
+
+	ogs.login_menu.Add(gui.NewPanel(25, 0))
+	ogs.login_menu.Add(login_left)
+	ogs.login_menu.Add(login_right)
+	// ------------------------------------------
 
 	// Dispatch a fake OnResize event to update all subscribed elements
 	ogs.root.Dispatch(gui.OnResize, nil)
@@ -104,35 +171,24 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 }
 
 // LoadSkybox loads a space skybox and adds it to the scene
-func (ogs *OldentideClientGamestate) LoadSkyBox(skybox_name string) {
+func (ogs *OldentideClientGamestate) LoadSkyBox(skybox_name string, file_format string) {
 	log.Debug("Creating Skybox...")
 
-	// Load skybox textures
-	skyboxData := graphic.SkyboxData{
-		(ogs.assets_dir + "/Textures/Skyboxes/" + skybox_name + "/"), "jpg",
-		[6]string{"px", "nx", "py", "ny", "pz", "nz"}}
-
+	// Load skybox textures.
+	skyboxDir := (ogs.assets_dir + "/Textures/Skyboxes/" + skybox_name + "/")
+	skyboxData := graphic.SkyboxData{skyboxDir, file_format, [6]string{"px", "nx", "py", "ny", "pz", "nz"}}
 	skybox, err := graphic.NewSkybox(skyboxData)
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
+
+	// Add skybox to scene.
 	skybox.SetRenderOrder(-1) // The skybox should always be rendered first
-	/*
-		// For each skybox face - set the material to not use lights and to have emissive color.
-		brightness := float32(0.6)
-		for i := 0; i < len(skybox.Materials()); i++ {
-			sbmat := skybox.Materials()[i].GetMaterial().(*material.Standard)
-			sbmat.SetUseLights(material.UseLightNone)
-			sbmat.SetEmissiveColor(&math32.Color{brightness, brightness, brightness})
-		}*/
 	ogs.scene.Add(skybox)
 
 	log.Debug("Done creating skybox")
 }
 
-// loadAudioLibs
+// Attemplts to load audio libraries (from .dll).
 func loadAudioLibs() error {
-
 	// Open default audio device
 	dev, err := al.OpenDevice("")
 	if dev == nil {
@@ -150,6 +206,7 @@ func loadAudioLibs() error {
 	if err != nil {
 		return fmt.Errorf("Error setting audio context current:%s", err)
 	}
+
 	log.Debug("%s version: %s", al.GetString(al.Vendor), al.GetString(al.Version))
 	log.Debug("%s", vorbis.VersionString())
 	return nil
@@ -198,23 +255,24 @@ func (ogs *OldentideClientGamestate) onKey(evname string, ev interface{}) {
 	switch kev.Keycode {
 	case window.KeyEscape:
 		fmt.Println("Escape Key Pressed.")
+	case window.KeyP:
+		fmt.Println("P Key Pressed.") // Bring up party menu.
+	case window.KeyC:
+		fmt.Println("C Key Pressed.") // Bring up character menu.
+	case window.KeyI:
+		fmt.Println("I Key Pressed.") // Bring up inventory menu.
+	case window.KeySlash:
+		fmt.Println("/ Key Pressed.") // Focus the chat window and write "/".
+	case window.KeyM:
+		fmt.Println("M Key Pressed.") // Bring up the map.
+	case window.KeyB:
+		fmt.Println("B Key Pressed.") // Bring up the spellbook (spells and manuevers).
 	}
 }
 
 // onMouse handles mouse events for the game
 func (ogs *OldentideClientGamestate) onMouse(evname string, ev interface{}) {
 	mev := ev.(*window.MouseEvent)
-	/*if ogs.gopherLocked == false && ogs.leveln > 0 {
-		// Mouse button pressed
-		if mev.Action == window.Press {
-			// Left button pressed
-			if mev.Button == window.MouseButtonLeft {
-				ogs.arrowNode.SetVisible(true)
-			}
-		} else if mev.Action == window.Release {
-			ogs.arrowNode.SetVisible(false)
-		}
-	}*/
 	fmt.Println(mev)
 }
 
@@ -240,10 +298,27 @@ func (ogs *OldentideClientGamestate) onCursor(evname string, ev interface{}) {
 	}
 }
 
+// RenderFrame renders a frame of the scene with the GUI overlaid
+func (ogs *OldentideClientGamestate) RenderFrame() {
+
+	// Process GUI timers
+	ogs.root.TimerManager.ProcessTimers()
+
+	// Render the scene/gui using the specified camera
+	rendered, err := ogs.renderer.Render(ogs.camera)
+	checkErr(err)
+
+	// Check I/O events
+	ogs.wmgr.PollEvents()
+
+	// Update window if necessary
+	if rendered {
+		ogs.win.SwapBuffers()
+	}
+}
+
 func main() {
-	// OpenGL functions must be executed in the same thread where
-	// the context was created (by window.New())
-	runtime.LockOSThread()
+	runtime.LockOSThread() // OpenGL functions must be executed in the same thread as window.New()
 
 	// Parse command line flags
 	showLog := flag.Bool("debug", false, "display the debug log")
@@ -277,24 +352,18 @@ func main() {
 	// Get the window manager
 	var err error
 	ogs.wmgr, err = window.Manager("glfw")
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 
 	// Create window and OpenGL context
 	ogs.win, err = ogs.wmgr.CreateWindow(1280, 720, "Oldentide", false)
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 
 	// Set window icon.
 	// ogs.wmgr.
 
 	// Create OpenGL state
 	ogs.gs, err = gls.New()
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 
 	// Set Cursor to Oldentide Cursor
 	ogs.cursor, err = ogs.wmgr.CreateCursor(ogs.assets_dir+"/Interface/OldentideCursor30.png", 0, 0)
@@ -340,9 +409,7 @@ func main() {
 	ogs.renderer = renderer.NewRenderer(ogs.gs)
 	//ogs.renderer.SetSortObjects(false)
 	err = ogs.renderer.AddDefaultShaders()
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	ogs.renderer.SetGui(ogs.root)
 
 	// Adds a perspective camera to the scene
@@ -354,7 +421,7 @@ func main() {
 
 	// Create orbit control and set limits
 	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
-	ogs.orbit_control.Enabled = true
+	ogs.orbit_control.Enabled = false
 	ogs.orbit_control.EnablePan = false
 	ogs.orbit_control.MaxPolarAngle = 2 * math32.Pi / 3
 	ogs.orbit_control.MinDistance = 5
@@ -385,15 +452,13 @@ func main() {
 		ogs.loginMusicPlayer.Play()
 	}
 
-	//ogs.LoadSkyBox("Blue_Clouds")
-	ogs.LoadSkyBox("Sunny_High_Plains")
+	ogs.LoadSkyBox("Blue_Clouds", "jpg")
+	//ogs.LoadSkyBox("Sunny_High_Plains", "jpg")
 
 	ogs.win.Subscribe(window.OnCursor, ogs.onCursor)
 
-	// Done Loading - hide the loading label, show the menu, and initialize the level
-	//ogs.loadingLabel.SetVisible(false)
-	//ogs.menu.Add(ogs.main)
-	//ogs.InitLevel(ogs.userData.LastLevel)
+	// Done Loading - Show login window.
+	ogs.root.Add(ogs.login_menu)
 
 	now := time.Now()
 	newNow := time.Now()
@@ -408,26 +473,5 @@ func main() {
 
 		ogs.Update(timeDelta.Seconds())
 		ogs.RenderFrame()
-	}
-}
-
-// RenderFrame renders a frame of the scene with the GUI overlaid
-func (ogs *OldentideClientGamestate) RenderFrame() {
-
-	// Process GUI timers
-	ogs.root.TimerManager.ProcessTimers()
-
-	// Render the scene/gui using the specified camera
-	rendered, err := ogs.renderer.Render(ogs.camera)
-	if err != nil {
-		panic(err)
-	}
-
-	// Check I/O events
-	ogs.wmgr.PollEvents()
-
-	// Update window if necessary
-	if rendered {
-		ogs.win.SwapBuffers()
 	}
 }

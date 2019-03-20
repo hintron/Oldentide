@@ -25,7 +25,7 @@ letsencrypt
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+# *.dll # turns out we need these for audio libraries.
 
 # Fortran module files
 *.mod
