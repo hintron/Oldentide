@@ -19,6 +19,7 @@ import (
 var homereg = regexp.MustCompile("^/$")
 var regireg = regexp.MustCompile("/register")
 var verireg = regexp.MustCompile("/verify/[a-z,A-Z]{20}")
+var regireg = regexp.MustCompile("/login")
 
 // Router for web traffic.
 func routeWebTraffic(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,8 @@ func routeWebTraffic(w http.ResponseWriter, r *http.Request) {
 		registerPage(w, r)
 	case verireg.MatchString(r.URL.Path):
 		verifyPage(w, r)
+	case loginreg.MatchString(r.URL.Path):
+		loginPage(w, r)
 	default:
 		fmt.Fprintf(w, "Unknown Path.")
 	}
@@ -65,7 +68,9 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 // Web handler that uses the results of the registration POST to initiate a new player account registration.
 func registerPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == "GET" {
+		fmt.Fprintf(w, "Hi this should have the registration page.")
+	} else if r.Method == "POST" {
 		r.ParseForm()
 		registration_username := r.Form["registration_username"][0]
 		registration_email := r.Form["registration_email"][0]
@@ -143,4 +148,9 @@ func verifyPage(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(w, "Found account "+accountname+" but couldn't activate for some reason.")
 		}
 	}
+}
+
+// Web handler that handles logging in a player and returning them a sessionID.
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Need to handle login here...")
 }
