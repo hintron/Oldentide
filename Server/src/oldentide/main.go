@@ -44,7 +44,7 @@ const (
 	LOGIN_SCREEN                uint8 = iota
 	CHARACTER_SELECT            uint8 = iota
 	CHARACTER_CREATION_PHYSICAL uint8 = iota
-	CHARACTER_CREATION_SKILLS   uint8 = iota
+	CHARACTER_CREATION_POINTS   uint8 = iota
 	CHARACTER_CREATION_FINAL    uint8 = iota
 	LOADING                     uint8 = iota
 	IN_WORLD                    uint8 = iota
@@ -66,18 +66,28 @@ type OldentideClientGamestate struct {
 	loginMusicPlayer *audio.Player
 
 	// Gui components
-	root                   *gui.Root
-	login_menu             *gui.Panel
-	login_username         *gui.Edit
-	login_password_edit    *gui.Edit
-	login_server_address   *gui.Edit
-	login_server_web_port  *gui.Edit
-	login_server_game_port *gui.Edit
-	login_login_button     *gui.Button
-	login_quit_button      *gui.Button
-	login_process          *gui.Panel
-	login_process_slider   *gui.Slider
-	login_process_status   *gui.Label
+	root                       *gui.Root
+	login_menu                 *gui.Panel
+	login_username             *gui.Edit
+	login_password_edit        *gui.Edit
+	login_server_address       *gui.Edit
+	login_server_web_port      *gui.Edit
+	login_server_game_port     *gui.Edit
+	login_login_button         *gui.Button
+	login_quit_button          *gui.Button
+	login_process              *gui.Panel
+	login_process_slider       *gui.Slider
+	login_process_status       *gui.Label
+	cs_menu                    *gui.Panel
+	cs_characters              *gui.List
+	cs_enter_world_button      *gui.Button
+	cs_create_character_button *gui.Button
+	cs_back_button             *gui.Button
+	cs_quit_button             *gui.Button
+	cc_physical_menu           *gui.Panel
+
+	cc_points_menu *gui.Panel
+	cc_final_menu  *gui.Panel
 
 	// Game specific components
 	assets_dir        string
@@ -126,7 +136,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.login_menu.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
 	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
 		ogs.login_menu.SetPositionX((ogs.root.Width() - ogs.login_menu.Width()) / 2)
-		ogs.login_menu.SetPositionY((ogs.root.Height()-ogs.login_menu.Height()) / 2 + 100)
+		ogs.login_menu.SetPositionY((ogs.root.Height() - ogs.login_menu.Height()) / 2)
 	})
 
 	login_left := gui.NewPanel(300, 300)
@@ -224,13 +234,85 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.login_process_slider = gui.NewHSlider(350, 35)
 	ogs.login_process_slider.SetValue(0.0)
 	ogs.login_process_slider.SetEnabled(false)
-	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value() * 100))
+	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value()*100))
 	login_process_right.Add(ogs.login_process_slider)
 	ogs.login_process_status = gui.NewLabel("Waiting")
 	login_process_right.Add(ogs.login_process_status)
 
 	ogs.login_process.Add(gui.NewPanel(25, 0))
 	ogs.login_process.Add(login_process_right)
+	// ------------------------------------------
+
+	// Character Select Menu --------------------
+	ogs.cs_menu = gui.NewPanel(250, 400)
+	ogs.cs_menu.SetLayout(v_layout)
+	ogs.cs_menu.SetColor4(&interface_style_brown_2)
+	ogs.cs_menu.SetBorders(3, 3, 3, 3)
+	ogs.cs_menu.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
+	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
+		ogs.cs_menu.SetPositionX((ogs.root.Width() - ogs.cs_menu.Width()) / 2)
+		ogs.cs_menu.SetPositionY((ogs.root.Height() - ogs.cs_menu.Height()) / 2)
+	})
+
+	cs_spacer_panel_top := gui.NewPanel(250, 10)
+	ogs.cs_menu.Add(cs_spacer_panel_top)
+
+	cs_list_panel := gui.NewPanel(250, 300)
+	cs_list_panel.SetLayout(h_layout)
+
+	ogs.cs_characters = gui.NewVList(200, 280)
+	ogs.cs_characters.SetSingle(true)
+	cs_list_panel.Add(ogs.cs_characters)
+
+	ogs.cs_menu.Add(cs_list_panel)
+
+	cs_spacer_panel_mid := gui.NewPanel(250, 10)
+	ogs.cs_menu.Add(cs_spacer_panel_mid)
+
+	cs_button_panel_top := gui.NewPanel(250, 50)
+	cs_button_panel_top.SetLayout(h_layout)
+
+	ogs.cs_enter_world_button = gui.NewButton("Enter World")
+	ogs.cs_enter_world_button.Label.SetFontSize(16)
+	ogs.cs_enter_world_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("Enter World button was pressed.")
+		//ogs.EnterWorld()
+	})
+	cs_button_panel_top.Add(ogs.cs_enter_world_button)
+
+	ogs.cs_create_character_button = gui.NewButton("Create Character")
+	ogs.cs_create_character_button.Label.SetFontSize(16)
+	ogs.cs_create_character_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("Create Character button was pressed.")
+		//ogs.CreateCharacter()
+	})
+	cs_button_panel_top.Add(ogs.cs_create_character_button)
+
+	cs_button_panel_bottom := gui.NewPanel(250, 50)
+	cs_button_panel_bottom.SetLayout(h_layout)
+
+	ogs.cs_back_button = gui.NewButton("Back")
+	ogs.cs_back_button.Label.SetFontSize(16)
+	ogs.cs_back_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("Create Character Back button was pressed.")
+		// Clear list and go back to login window.
+	})
+	cs_button_panel_bottom.Add(ogs.cs_back_button)
+
+	ogs.cs_quit_button = gui.NewButton("Quit")
+	ogs.cs_quit_button.Label.SetFontSize(16)
+	ogs.cs_quit_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("Create Character Quit button was pressed.")
+		ogs.Quit()
+	})
+	cs_button_panel_bottom.Add(ogs.cs_quit_button)
+
+	ogs.cs_menu.Add(cs_button_panel_top)
+	ogs.cs_menu.Add(cs_button_panel_bottom)
+	// ------------------------------------------
+
+	// Character Create Menu --------------------
+
 	// ------------------------------------------
 
 	// Dispatch a fake OnResize event to update all subscribed elements
@@ -241,7 +323,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 
 func (ogs *OldentideClientGamestate) UpdateLoginStatus(pct float32, login_step string) {
 	ogs.login_process_slider.SetValue(pct)
-	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value() * 100))
+	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value()*100))
 	ogs.login_process_status.SetText(login_step)
 }
 
@@ -249,6 +331,11 @@ func (ogs *OldentideClientGamestate) Login() {
 	if ogs.client_game_state != LOGIN_SCREEN {
 		return
 	}
+
+	ogs.root.Remove(ogs.login_menu)
+	ogs.login_menu.SetEnabled(false)
+	ogs.root.Add(ogs.login_process)
+	ogs.login_process.SetEnabled(true)
 
 	steps := 5
 	step := 0
@@ -265,19 +352,38 @@ func (ogs *OldentideClientGamestate) Login() {
 	step += 1
 	login_server_page := "http://" + ogs.login_server_address.Text() + ":" + ogs.login_server_web_port.Text() + "/login"
 	resp, err := http.PostForm(login_server_page, url.Values{"username": {ogs.login_username.Text()}, "password": {ogs.login_password}})
-	if (err != nil) {
-		ogs.root.Add(ogs.login_menu)	
+	if err != nil {
+		ogs.root.Add(ogs.login_menu)
+		ogs.login_menu.SetEnabled(true)
 	}
 	fmt.Println(resp)
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Saving Account Information")
 	step += 1
 
-	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Loading Character List")	
+	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Loading Character List")
 	step += 1
-	ogs.root.Remove(ogs.login_menu)
-	ogs.root.Add(ogs.login_process)
-	//ogs.root.Add(ogs.login_menu)
+
+	ogs.root.Remove(ogs.login_menu) // Debug.
+	ogs.login_menu.SetEnabled(false)
+	ogs.root.Remove(ogs.login_process)
+	ogs.login_process.SetEnabled(false)
+	ogs.root.Add(ogs.cs_menu)
+	ogs.cs_menu.SetEnabled(true)
+	ogs.cs_characters.Add(gui.NewLabel("Character_1"))
+	ogs.cs_characters.Add(gui.NewLabel("Character_2"))
+	ogs.cs_characters.Add(gui.NewLabel("Character_3"))
+	ogs.cs_characters.Add(gui.NewLabel("Character_4"))
+	stop := false
+	for stop == false {
+		if ogs.cs_characters.Selected() != nil {
+			//fmt.Println(ogs.cs_characters.Selected().item.Text())
+			stop = true
+			/*if (ogs.cs_characters.Selected()[0].Text() == "Character_4") {
+				stop = true
+			}*/
+		}
+	}
 }
 
 // Quit saves the user data and quits the game
