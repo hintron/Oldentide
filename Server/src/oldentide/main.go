@@ -21,6 +21,7 @@ import (
 	_ "github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/renderer"
+	"github.com/g3n/engine/text"
 	"github.com/g3n/engine/util/logger"
 	"github.com/g3n/engine/window"
 
@@ -52,42 +53,71 @@ const (
 
 type OldentideClientGamestate struct {
 	// g3n window and engine components
-	wmgr          window.IWindowManager
-	win           window.IWindow
-	gs            *gls.GLS
-	renderer      *renderer.Renderer
-	scene         *core.Node
-	camera        *camera.Perspective
-	orbit_control *control.OrbitControl
-	stepDelta     *math32.Vector2
-	levelScene    *core.Node
+	wmgr              window.IWindowManager
+	win               window.IWindow
+	gs                *gls.GLS
+	renderer          *renderer.Renderer
+	scene             *core.Node
+	camera            *camera.Perspective
+	last_camera_angle *math32.Vector3
+	orbit_control     *control.OrbitControl
+	stepDelta         *math32.Vector2
+	levelScene        *core.Node
 
 	// Sound & Music players
 	loginMusicPlayer *audio.Player
 
-	// Gui components
-	root                       *gui.Root
-	login_menu                 *gui.Panel
-	login_username             *gui.Edit
-	login_password_edit        *gui.Edit
-	login_server_address       *gui.Edit
-	login_server_web_port      *gui.Edit
-	login_server_game_port     *gui.Edit
-	login_login_button         *gui.Button
-	login_quit_button          *gui.Button
-	login_process              *gui.Panel
-	login_process_slider       *gui.Slider
-	login_process_status       *gui.Label
-	cs_menu                    *gui.Panel
-	cs_characters              *gui.List
-	cs_enter_world_button      *gui.Button
-	cs_create_character_button *gui.Button
-	cs_back_button             *gui.Button
-	cs_quit_button             *gui.Button
-	cc_physical_menu           *gui.Panel
+	// Fonts
+	font *text.Font
 
-	cc_points_menu *gui.Panel
-	cc_final_menu  *gui.Panel
+	// Gui components
+	root                        *gui.Root
+	login_menu                  *gui.Panel
+	login_username              *gui.Edit
+	login_password_edit         *gui.Edit
+	login_server_address        *gui.Edit
+	login_server_web_port       *gui.Edit
+	login_server_game_port      *gui.Edit
+	login_login_button          *gui.Button
+	login_quit_button           *gui.Button
+	login_process               *gui.Panel
+	login_process_slider        *gui.Slider
+	login_process_status        *gui.Label
+	cs_menu                     *gui.Panel
+	cs_characters               *gui.List
+	cs_enter_world_button       *gui.Button
+	cs_create_character_button  *gui.Button
+	cs_back_button              *gui.Button
+	cs_quit_button              *gui.Button
+	cc_physical_menu            *gui.Panel
+	cc_physical_first_name      *gui.Edit
+	cc_physical_last_name       *gui.Edit
+	cc_physical_model_panel     *gui.Panel
+	cc_physical_male_button     *gui.Button
+	cc_physical_female_button   *gui.Button
+	cc_phsycial_dwarf_button    *gui.Button
+	cc_phsyical_elf_button      *gui.Button
+	cc_physical_gnome_button    *gui.Button
+	cc_physical_human_button    *gui.Button
+	cc_phsyical_leshy_button    *gui.Button
+	cc_physical_ogre_button     *gui.Button
+	cc_physical_orc_button      *gui.Button
+	cc_physical_back_button     *gui.Button
+	cc_physical_next_button     *gui.Button
+	cc_physical_quit_button     *gui.Button
+	cc_points_menu              *gui.Panel
+	cc_physical_profession_list *gui.List
+	cc_points_attribute_panel   *gui.Panel
+	cc_points_skill_panel       *gui.Panel
+	cc_points_option_panel      *gui.Panel
+	cc_points_back_button       *gui.Button
+	cc_points_next_button       *gui.Button
+	cc_points_quit_button       *gui.Button
+	cc_final_menu               *gui.Panel
+	cc_final_table              *gui.Table
+	cc_final_back_button        *gui.Button
+	cc_final_accept_button      *gui.Button
+	cc_final_quit_button        *gui.Button
 
 	// Game specific components
 	assets_dir        string
@@ -142,13 +172,13 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	login_left := gui.NewPanel(300, 300)
 	login_left.SetLayout(v_layout)
 
-	login_left.Add(gui.NewLabel("Username:"))
+	login_left.Add(gui.NewLabelWithFont("Username:", ogs.font))
 	ogs.login_username = gui.NewEdit(250, "username")
 	ogs.login_username.SetFontSize(16)
 	ogs.login_username.SetPosition(15, 0)
 	login_left.Add(ogs.login_username)
 
-	login_left.Add(gui.NewLabel("Password:"))
+	login_left.Add(gui.NewLabelWithFont("Password:", ogs.font))
 	ogs.login_password_edit = gui.NewEdit(250, "password")
 	ogs.login_password_edit.SetFontSize(16)
 	ogs.login_password_edit.Subscribe(gui.OnChar, func(name string, ev interface{}) {
@@ -195,19 +225,19 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	login_right := gui.NewPanel(300, 300)
 	login_right.SetLayout(v_layout)
 
-	login_right.Add(gui.NewLabel("Server Address:"))
+	login_right.Add(gui.NewLabelWithFont("Server Address:", ogs.font))
 	ogs.login_server_address = gui.NewEdit(250, "imp.oldentide.com")
 	ogs.login_server_address.SetFontSize(16)
 	ogs.login_server_address.SetText("imp.oldentide.com")
 	login_right.Add(ogs.login_server_address)
 
-	login_right.Add(gui.NewLabel("Server Web Port:"))
+	login_right.Add(gui.NewLabelWithFont("Server Web Port:", ogs.font))
 	ogs.login_server_web_port = gui.NewEdit(250, "80")
 	ogs.login_server_web_port.SetFontSize(16)
 	ogs.login_server_web_port.SetText("80")
 	login_right.Add(ogs.login_server_web_port)
 
-	login_right.Add(gui.NewLabel("Server Game Port:"))
+	login_right.Add(gui.NewLabelWithFont("Server Game Port:", ogs.font))
 	ogs.login_server_game_port = gui.NewEdit(250, "1337")
 	ogs.login_server_game_port.SetFontSize(16)
 	ogs.login_server_game_port.SetText("1337")
@@ -230,13 +260,13 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	login_process_right := gui.NewPanel(375, 100)
 	login_process_right.SetLayout(v_layout)
 
-	login_process_right.Add(gui.NewLabel("Login Process:"))
+	login_process_right.Add(gui.NewLabelWithFont("Login Process:", ogs.font))
 	ogs.login_process_slider = gui.NewHSlider(350, 35)
 	ogs.login_process_slider.SetValue(0.0)
 	ogs.login_process_slider.SetEnabled(false)
 	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value()*100))
 	login_process_right.Add(ogs.login_process_slider)
-	ogs.login_process_status = gui.NewLabel("Waiting")
+	ogs.login_process_status = gui.NewLabelWithFont("Waiting", ogs.font)
 	login_process_right.Add(ogs.login_process_status)
 
 	ogs.login_process.Add(gui.NewPanel(25, 0))
@@ -284,7 +314,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.cs_create_character_button.Label.SetFontSize(16)
 	ogs.cs_create_character_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		fmt.Println("Create Character button was pressed.")
-		//ogs.CreateCharacter()
+		ogs.CreateCharacter()
 	})
 	cs_button_panel_top.Add(ogs.cs_create_character_button)
 
@@ -312,6 +342,32 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	// ------------------------------------------
 
 	// Character Create Menu --------------------
+	ogs.cc_physical_menu = gui.NewPanel(600, 400)
+	ogs.cc_physical_menu.SetLayout(v_layout)
+	ogs.cc_physical_menu.SetColor4(&interface_style_brown_2)
+	ogs.cc_physical_menu.SetBorders(3, 3, 3, 3)
+	ogs.cc_physical_menu.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
+	ogs.root.Subscribe(gui.OnResize, func(evname string, ev interface{}) {
+		ogs.cc_physical_menu.SetPositionX((ogs.root.Width() - ogs.cc_physical_menu.Width()) / 2)
+		ogs.cc_physical_menu.SetPositionY((ogs.root.Height() - ogs.cc_physical_menu.Height()) / 2)
+	})
+
+	cc_physical_header := gui.NewPanel(600, 20)
+	cc_physical_header.SetLayout(h_layout)
+	cc_physical_header.Add(gui.NewLabelWithFont("Character Creation", ogs.font))
+	ogs.cc_physical_menu.Add(cc_physical_header)
+
+	cc_physical_name_bar := gui.NewPanel(600, 30)
+	cc_physical_name_bar.SetLayout(h_layout)
+	cc_physical_name_bar.Add(gui.NewLabelWithFont("First Name :", ogs.font))
+	ogs.cc_physical_first_name = gui.NewEdit(100, "")
+	ogs.cc_physical_first_name.SetFontSize(16)
+	cc_physical_name_bar.Add(ogs.cc_physical_first_name)
+	ogs.cc_physical_last_name = gui.NewEdit(100, "")
+	ogs.cc_physical_last_name.SetFontSize(16)
+	cc_physical_name_bar.Add(ogs.cc_physical_last_name)
+	cc_physical_name_bar.Add(gui.NewLabelWithFont(": Last Name", ogs.font))
+	ogs.cc_physical_menu.Add(cc_physical_name_bar)
 
 	// ------------------------------------------
 
@@ -370,10 +426,10 @@ func (ogs *OldentideClientGamestate) Login() {
 	ogs.login_process.SetEnabled(false)
 	ogs.root.Add(ogs.cs_menu)
 	ogs.cs_menu.SetEnabled(true)
-	ogs.cs_characters.Add(gui.NewLabel("Character_1"))
-	ogs.cs_characters.Add(gui.NewLabel("Character_2"))
-	ogs.cs_characters.Add(gui.NewLabel("Character_3"))
-	ogs.cs_characters.Add(gui.NewLabel("Character_4"))
+	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_1", ogs.font))
+	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_2", ogs.font))
+	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_3", ogs.font))
+	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_4", ogs.font))
 	stop := false
 	for stop == false {
 		if ogs.cs_characters.Selected() != nil {
@@ -384,6 +440,13 @@ func (ogs *OldentideClientGamestate) Login() {
 			}*/
 		}
 	}
+}
+
+func (ogs *OldentideClientGamestate) CreateCharacter() {
+	ogs.root.Remove(ogs.cs_menu)
+	ogs.cs_menu.SetEnabled(false)
+	ogs.root.Add(ogs.cc_physical_menu)
+	ogs.cs_menu.SetEnabled(true)
 }
 
 // Quit saves the user data and quits the game
@@ -600,6 +663,10 @@ func main() {
 	}
 	ogs.win.SetCustomCursor(ogs.cursor)
 
+	// Build Font
+	ogs.font, err = text.NewFont(ogs.assets_dir + "/Fonts/Sitka.ttf")
+	checkErr(err)
+
 	// Speed up a bit by not checking OpenGL errors
 	ogs.gs.SetCheckErrors(false)
 
@@ -644,7 +711,7 @@ func main() {
 	aspect := float32(width) / float32(height)
 	ogs.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
 	ogs.camera.SetPosition(0, 4, 5)
-	ogs.camera.LookAt(&math32.Vector3{0, 0, 0})
+	ogs.camera.LookAt(&math32.Vector3{0, 5, 0})
 
 	// Create orbit control and set limits
 	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
@@ -698,7 +765,19 @@ func main() {
 		newNow = time.Now()
 		timeDelta := now.Sub(newNow)
 		now = newNow
-
+		//ogs.last_camera_angle.Copy(*ogs.camera.Target())
+		//ogs.last_camera_angle.X += 1
+		if ogs.client_game_state == LOGIN_SCREEN ||
+			ogs.client_game_state == CHARACTER_SELECT ||
+			ogs.client_game_state == CHARACTER_CREATION_PHYSICAL ||
+			ogs.client_game_state == CHARACTER_CREATION_POINTS ||
+			ogs.client_game_state == CHARACTER_CREATION_FINAL ||
+			ogs.client_game_state == LOADING {
+			lca := ogs.camera.Target()
+			fmt.Println(lca)
+			lca.X += 0.001
+			ogs.camera.LookAt(&lca)
+		}
 		ogs.Update(timeDelta.Seconds())
 		ogs.RenderFrame()
 	}
