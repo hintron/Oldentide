@@ -95,11 +95,15 @@ type OldentideClientGamestate struct {
 	cc_physical_model_panel     *gui.Panel
 	cc_physical_male_button     *gui.Button
 	cc_physical_female_button   *gui.Button
-	cc_phsycial_dwarf_button    *gui.Button
-	cc_phsyical_elf_button      *gui.Button
+	cc_physical_hair_left       *gui.Button
+	cc_physical_hair_right      *gui.Button
+	cc_physical_skin_left       *gui.Button
+	cc_physical_skin_right      *gui.Button
+	cc_physical_dwarf_button    *gui.Button
+	cc_physical_elf_button      *gui.Button
 	cc_physical_gnome_button    *gui.Button
 	cc_physical_human_button    *gui.Button
-	cc_phsyical_leshy_button    *gui.Button
+	cc_physical_leshy_button    *gui.Button
 	cc_physical_ogre_button     *gui.Button
 	cc_physical_orc_button      *gui.Button
 	cc_physical_back_button     *gui.Button
@@ -368,6 +372,76 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	cc_physical_name_bar.Add(ogs.cc_physical_last_name)
 	cc_physical_name_bar.Add(gui.NewLabelWithFont(": Last Name", ogs.font))
 	ogs.cc_physical_menu.Add(cc_physical_name_bar)
+
+	cc_physical_main_bar := gui.NewPanel(600, 300)
+	cc_physical_main_bar.SetLayout(h_layout)
+
+	cc_physical_control_bar := gui.NewPanel(300, 300)
+	cc_physical_control_bar.SetLayout(v_layout)
+
+	cc_physical_hair_panel := gui.NewPanel(300, 30)
+	cc_physical_hair_panel.SetLayout(h_layout)
+	ogs.cc_physical_hair_left = gui.NewButton("Hair Left")
+	ogs.cc_physical_hair_right = gui.NewButton("Hair Right")
+	cc_physical_hair_panel.Add(ogs.cc_physical_hair_left)
+	cc_physical_hair_panel.Add(ogs.cc_physical_hair_right)
+	cc_physical_control_bar.Add(cc_physical_hair_panel)
+
+	cc_physical_skin_panel := gui.NewPanel(300, 30)
+	cc_physical_skin_panel.SetLayout(h_layout)
+	ogs.cc_physical_skin_left = gui.NewButton("Race Left")
+	ogs.cc_physical_skin_right = gui.NewButton("Race Left")
+	cc_physical_skin_panel.Add(ogs.cc_physical_skin_left)
+	cc_physical_skin_panel.Add(ogs.cc_physical_skin_right)
+	cc_physical_control_bar.Add(cc_physical_skin_panel)
+
+	cc_physical_human_panel := gui.NewPanel(300, 30)
+	cc_physical_human_panel.SetLayout(h_layout)
+	ogs.cc_physical_human_button = gui.NewButton("Human")
+	cc_physical_human_panel.Add(ogs.cc_physical_human_button)
+	cc_physical_control_bar.Add(cc_physical_human_panel)
+
+	cc_physical_dwarf_elf_panel := gui.NewPanel(300, 30)
+	cc_physical_dwarf_elf_panel.SetLayout(h_layout)
+	ogs.cc_physical_dwarf_button = gui.NewButton("Dwarf")
+	ogs.cc_physical_elf_button = gui.NewButton("Elf")
+	cc_physical_dwarf_elf_panel.Add(ogs.cc_physical_dwarf_button)
+	cc_physical_dwarf_elf_panel.Add(ogs.cc_physical_elf_button)
+	cc_physical_control_bar.Add(cc_physical_dwarf_elf_panel)
+
+	cc_physical_gnome_leshy_panel := gui.NewPanel(300, 30)
+	cc_physical_gnome_leshy_panel.SetLayout(h_layout)
+	ogs.cc_physical_gnome_button = gui.NewButton("Gnome")
+	ogs.cc_physical_leshy_button = gui.NewButton("Leshy")
+	cc_physical_gnome_leshy_panel.Add(ogs.cc_physical_gnome_button)
+	cc_physical_gnome_leshy_panel.Add(ogs.cc_physical_leshy_button)
+	cc_physical_control_bar.Add(cc_physical_gnome_leshy_panel)
+
+	cc_physical_ogre_orc_panel := gui.NewPanel(300, 30)
+	cc_physical_ogre_orc_panel.SetLayout(h_layout)
+	ogs.cc_physical_ogre_button = gui.NewButton("Ogre")
+	ogs.cc_physical_orc_button = gui.NewButton("Orc")
+	cc_physical_ogre_orc_panel.Add(ogs.cc_physical_ogre_button)
+	cc_physical_ogre_orc_panel.Add(ogs.cc_physical_orc_button)
+	cc_physical_control_bar.Add(cc_physical_ogre_orc_panel)
+
+	cc_physical_main_bar.Add(cc_physical_control_bar)
+
+	cc_physical_preview_bar := gui.NewPanel(300, 300)
+	cc_physical_main_bar.Add(cc_physical_preview_bar)
+
+	ogs.cc_physical_menu.Add(cc_physical_main_bar)
+
+	cc_physical_footer := gui.NewPanel(600, 50)
+	cc_physical_footer.SetLayout(h_layout)
+	ogs.cc_physical_back_button = gui.NewButton("Back")
+	cc_physical_footer.Add(ogs.cc_physical_back_button)
+	ogs.cc_physical_quit_button = gui.NewButton("Quit")
+	cc_physical_footer.Add(ogs.cc_physical_quit_button)
+	ogs.cc_physical_next_button = gui.NewButton("Next")
+	cc_physical_footer.Add(ogs.cc_physical_next_button)
+
+	ogs.cc_physical_menu.Add(cc_physical_footer)
 
 	// ------------------------------------------
 
