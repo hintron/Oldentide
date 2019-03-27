@@ -99,13 +99,13 @@ type OldentideClientGamestate struct {
 	cc_physical_hair_right      *gui.Button
 	cc_physical_skin_left       *gui.Button
 	cc_physical_skin_right      *gui.Button
-	cc_physical_dwarf_button    *gui.Button
-	cc_physical_elf_button      *gui.Button
-	cc_physical_gnome_button    *gui.Button
-	cc_physical_human_button    *gui.Button
-	cc_physical_leshy_button    *gui.Button
-	cc_physical_ogre_button     *gui.Button
-	cc_physical_orc_button      *gui.Button
+	cc_physical_dwarf_button    *gui.ImageButton
+	cc_physical_elf_button      *gui.ImageButton
+	cc_physical_gnome_button    *gui.ImageButton
+	cc_physical_human_button    *gui.ImageButton
+	cc_physical_leshy_button    *gui.ImageButton
+	cc_physical_ogre_button     *gui.ImageButton
+	cc_physical_orc_button      *gui.ImageButton
 	cc_physical_back_button     *gui.Button
 	cc_physical_next_button     *gui.Button
 	cc_physical_quit_button     *gui.Button
@@ -180,6 +180,16 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.login_username = gui.NewEdit(250, "username")
 	ogs.login_username.SetFontSize(16)
 	ogs.login_username.SetPosition(15, 0)
+	ogs.login_username.Subscribe(gui.OnKeyDown, func(name string, ev interface{}) {
+		kev := ev.(*window.KeyEvent)
+		switch kev.Keycode {
+		case window.KeyTab:
+			ogs.root.SetKeyFocus(ogs.login_password_edit)
+		case window.KeyEnter:
+			fmt.Println("Enter pressed on username!!!")
+			ogs.Login()
+		}
+	})
 	login_left.Add(ogs.login_username)
 
 	login_left.Add(gui.NewLabelWithFont("Password:", ogs.font))
@@ -318,7 +328,10 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.cs_create_character_button.Label.SetFontSize(16)
 	ogs.cs_create_character_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		fmt.Println("Create Character button was pressed.")
-		ogs.CreateCharacter()
+		ogs.root.Remove(ogs.cs_menu)
+		ogs.cs_menu.SetEnabled(false)
+		ogs.root.Add(ogs.cc_physical_menu)
+		ogs.cc_physical_menu.SetEnabled(true)
 	})
 	cs_button_panel_top.Add(ogs.cs_create_character_button)
 
@@ -356,7 +369,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 		ogs.cc_physical_menu.SetPositionY((ogs.root.Height() - ogs.cc_physical_menu.Height()) / 2)
 	})
 
-	cc_physical_header := gui.NewPanel(600, 20)
+	cc_physical_header := gui.NewPanel(600, 30)
 	cc_physical_header.SetLayout(h_layout)
 	cc_physical_header.Add(gui.NewLabelWithFont("Character Creation", ogs.font))
 	ogs.cc_physical_menu.Add(cc_physical_header)
@@ -366,6 +379,13 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	cc_physical_name_bar.Add(gui.NewLabelWithFont("First Name :", ogs.font))
 	ogs.cc_physical_first_name = gui.NewEdit(100, "")
 	ogs.cc_physical_first_name.SetFontSize(16)
+	ogs.cc_physical_first_name.Subscribe(gui.OnKeyDown, func(name string, ev interface{}) {
+		kev := ev.(*window.KeyEvent)
+		switch kev.Keycode {
+		case window.KeyTab:
+			ogs.root.SetKeyFocus(ogs.cc_physical_last_name)
+		}
+	})
 	cc_physical_name_bar.Add(ogs.cc_physical_first_name)
 	ogs.cc_physical_last_name = gui.NewEdit(100, "")
 	ogs.cc_physical_last_name.SetFontSize(16)
@@ -381,64 +401,94 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 
 	cc_physical_hair_panel := gui.NewPanel(300, 30)
 	cc_physical_hair_panel.SetLayout(h_layout)
-	ogs.cc_physical_hair_left = gui.NewButton("Hair Left")
-	ogs.cc_physical_hair_right = gui.NewButton("Hair Right")
+	ogs.cc_physical_hair_left = gui.NewButton("Previous Hair")
+	ogs.cc_physical_hair_right = gui.NewButton("Next Hair")
 	cc_physical_hair_panel.Add(ogs.cc_physical_hair_left)
 	cc_physical_hair_panel.Add(ogs.cc_physical_hair_right)
 	cc_physical_control_bar.Add(cc_physical_hair_panel)
 
 	cc_physical_skin_panel := gui.NewPanel(300, 30)
 	cc_physical_skin_panel.SetLayout(h_layout)
-	ogs.cc_physical_skin_left = gui.NewButton("Race Left")
-	ogs.cc_physical_skin_right = gui.NewButton("Race Left")
+	ogs.cc_physical_skin_left = gui.NewButton("Previous Skin")
+	ogs.cc_physical_skin_right = gui.NewButton("Next Skin")
 	cc_physical_skin_panel.Add(ogs.cc_physical_skin_left)
 	cc_physical_skin_panel.Add(ogs.cc_physical_skin_right)
 	cc_physical_control_bar.Add(cc_physical_skin_panel)
 
+	var err error
+
 	cc_physical_human_panel := gui.NewPanel(300, 30)
 	cc_physical_human_panel.SetLayout(h_layout)
-	ogs.cc_physical_human_button = gui.NewButton("Human")
+	ogs.cc_physical_human_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/human.png")
+	checkErr(err)
 	cc_physical_human_panel.Add(ogs.cc_physical_human_button)
 	cc_physical_control_bar.Add(cc_physical_human_panel)
 
 	cc_physical_dwarf_elf_panel := gui.NewPanel(300, 30)
 	cc_physical_dwarf_elf_panel.SetLayout(h_layout)
-	ogs.cc_physical_dwarf_button = gui.NewButton("Dwarf")
-	ogs.cc_physical_elf_button = gui.NewButton("Elf")
+	ogs.cc_physical_dwarf_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/dwarf.png")
+	checkErr(err)
+	ogs.cc_physical_elf_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/elf.png")
+	checkErr(err)
 	cc_physical_dwarf_elf_panel.Add(ogs.cc_physical_dwarf_button)
 	cc_physical_dwarf_elf_panel.Add(ogs.cc_physical_elf_button)
 	cc_physical_control_bar.Add(cc_physical_dwarf_elf_panel)
 
 	cc_physical_gnome_leshy_panel := gui.NewPanel(300, 30)
 	cc_physical_gnome_leshy_panel.SetLayout(h_layout)
-	ogs.cc_physical_gnome_button = gui.NewButton("Gnome")
-	ogs.cc_physical_leshy_button = gui.NewButton("Leshy")
+	ogs.cc_physical_gnome_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/gnome.png")
+	checkErr(err)
+	ogs.cc_physical_leshy_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/Leshy.png")
+	checkErr(err)
 	cc_physical_gnome_leshy_panel.Add(ogs.cc_physical_gnome_button)
 	cc_physical_gnome_leshy_panel.Add(ogs.cc_physical_leshy_button)
 	cc_physical_control_bar.Add(cc_physical_gnome_leshy_panel)
 
 	cc_physical_ogre_orc_panel := gui.NewPanel(300, 30)
 	cc_physical_ogre_orc_panel.SetLayout(h_layout)
-	ogs.cc_physical_ogre_button = gui.NewButton("Ogre")
-	ogs.cc_physical_orc_button = gui.NewButton("Orc")
+	ogs.cc_physical_ogre_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/ogre.png")
+	checkErr(err)
+	ogs.cc_physical_orc_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/elf.png")
+	checkErr(err)
 	cc_physical_ogre_orc_panel.Add(ogs.cc_physical_ogre_button)
 	cc_physical_ogre_orc_panel.Add(ogs.cc_physical_orc_button)
 	cc_physical_control_bar.Add(cc_physical_ogre_orc_panel)
 
 	cc_physical_main_bar.Add(cc_physical_control_bar)
 
-	cc_physical_preview_bar := gui.NewPanel(300, 300)
+	cc_physical_preview_bar := gui.NewPanel(260, 285)
+	cc_physical_preview_bar.SetColor4(&math32.Color4{0.202, 0.188, 0.179, 1.0})
+	cc_physical_preview_bar.SetBorders(2, 2, 2, 2)
+	cc_physical_preview_bar.SetBordersColor4(&math32.Color4{0, 0, 0, 1.0})
 	cc_physical_main_bar.Add(cc_physical_preview_bar)
 
 	ogs.cc_physical_menu.Add(cc_physical_main_bar)
 
-	cc_physical_footer := gui.NewPanel(600, 50)
+	cc_physical_footer := gui.NewPanel(600, 40)
 	cc_physical_footer.SetLayout(h_layout)
 	ogs.cc_physical_back_button = gui.NewButton("Back")
+	ogs.cc_physical_back_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("cc physical back button was pressed.")
+		ogs.root.Remove(ogs.cc_physical_menu)
+		ogs.cc_physical_menu.SetEnabled(false)
+		ogs.root.Add(ogs.cs_menu)
+		ogs.cs_menu.SetEnabled(true)
+	})
 	cc_physical_footer.Add(ogs.cc_physical_back_button)
 	ogs.cc_physical_quit_button = gui.NewButton("Quit")
+	ogs.cc_physical_quit_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("cc physical quit button was pressed.")
+		ogs.Quit()
+	})
 	cc_physical_footer.Add(ogs.cc_physical_quit_button)
 	ogs.cc_physical_next_button = gui.NewButton("Next")
+	ogs.cc_physical_next_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+		fmt.Println("cc physical next button was pressed.")
+		ogs.root.Remove(ogs.cc_physical_menu)
+		ogs.cc_physical_menu.SetEnabled(false)
+		ogs.root.Add(ogs.cc_points_menu)
+		ogs.cc_points_menu.SetEnabled(true)
+	})
 	cc_physical_footer.Add(ogs.cc_physical_next_button)
 
 	ogs.cc_physical_menu.Add(cc_physical_footer)
@@ -517,10 +567,7 @@ func (ogs *OldentideClientGamestate) Login() {
 }
 
 func (ogs *OldentideClientGamestate) CreateCharacter() {
-	ogs.root.Remove(ogs.cs_menu)
-	ogs.cs_menu.SetEnabled(false)
-	ogs.root.Add(ogs.cc_physical_menu)
-	ogs.cs_menu.SetEnabled(true)
+	fmt.Println("Creating Character")
 }
 
 // Quit saves the user data and quits the game
