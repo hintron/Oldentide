@@ -134,8 +134,8 @@ Website/node_modules/
 # ============== #
 # Go generated   #
 # ============== #
-Server/bin/
-Server/pkg/
-Server/src/github.com/
-Server/src/golang.org/
-Server/src/gopkg.in/
+bin/
+pkg/
+src/github.com/
+src/golang.org/
+src/gopkg.in/
