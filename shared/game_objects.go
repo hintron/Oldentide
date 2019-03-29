@@ -2,7 +2,7 @@
 // Author:      Joseph DeVictoria
 // Date:        Aug_30_2018
 
-package common
+package shared
 
 type Pc struct {
 	Id             int32

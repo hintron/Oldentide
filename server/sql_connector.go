@@ -5,7 +5,7 @@
 
 package main
 
-import "common"
+import "Oldentide/shared"
 import "database/sql"
 import "fmt"
 import "log"
@@ -25,7 +25,7 @@ func emailExists(e string) bool {
 func createAccount(accountname string, email string, verify_key string, hashed_key string, salt_key string) bool {
 	// Prepare insert statement.
 	ins, err := db.Prepare("INSERT INTO accounts(valid, banned, accountname, email, gamesession, playing, verify, hash, salt) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	common.CheckErr(err)
+	shared.CheckErr(err)
 	// Try to populate and execute an SQL statment.
 	_, err = ins.Exec("0", "0", accountname, email, "0", "0", verify_key, hashed_key, salt_key)
 	if err == nil {
@@ -72,7 +72,7 @@ func banAccount(a string) bool {
 func generateUniqueVerify(n int) string {
 	findKey := true
 	for findKey {
-		verify_key := common.GenerateRandomLetters(n)
+		verify_key := shared.GenerateRandomLetters(n)
 		rows, err := db.Query("SELECT accountname FROM accounts WHERE verify='" + verify_key + "'")
 		//ifErrPrintErr(err)
 		if !foundInRows(rows, err) {
@@ -86,7 +86,7 @@ func generateUniqueVerify(n int) string {
 func generateUniqueSalt(n int) string {
 	findKey := true
 	for findKey {
-		salt_key := common.GenerateRandomLetters(n)
+		salt_key := shared.GenerateRandomLetters(n)
 		rows, err := db.Query("SELECT accountname FROM accounts WHERE salt='" + salt_key + "'")
 		if !foundInRows(rows, err) {
 			return salt_key
@@ -108,12 +108,12 @@ func foundInRows(rows *sql.Rows, err error) bool {
 	return found
 }
 
-func pullPcs() []common.Pc {
+func pullPcs() []shared.Pc {
 	rows, err := db.Query("Select * FROM players")
 	defer rows.Close()
-	var pcs []common.Pc
+	var pcs []shared.Pc
 	for rows.Next() {
-		var pc common.Pc
+		var pc shared.Pc
 		err = rows.Scan(
 			&pc.Id,
 			&pc.Accountid,
@@ -206,18 +206,18 @@ func pullPcs() []common.Pc {
 			&pc.Z,
 			&pc.Direction,
 		)
-		common.CheckErr(err)
+		shared.CheckErr(err)
 		pcs = append(pcs, pc)
 	}
 	return pcs
 }
 
-func pullNpcs() []common.Npc {
+func pullNpcs() []shared.Npc {
 	rows, err := db.Query("Select * FROM npcs")
 	defer rows.Close()
-	var npcs []common.Npc
+	var npcs []shared.Npc
 	for rows.Next() {
-		var npc common.Npc
+		var npc shared.Npc
 		err = rows.Scan(
 			&npc.Id,
 			&npc.Firstname,
@@ -257,18 +257,18 @@ func pullNpcs() []common.Npc {
 			&npc.Z,
 			&npc.Direction,
 		)
-		common.CheckErr(err)
+		shared.CheckErr(err)
 		npcs = append(npcs, npc)
 	}
 	return npcs
 }
 
-func pullItemTemplates() []common.Item_template {
+func pullItemTemplates() []shared.Item_template {
 	rows, err := db.Query("Select * FROM item_templates")
 	defer rows.Close()
-	var item_templates []common.Item_template
+	var item_templates []shared.Item_template
 	for rows.Next() {
-		var item_template common.Item_template
+		var item_template shared.Item_template
 		err = rows.Scan(
 			&item_template.Id,
 			&item_template.Name,
@@ -303,18 +303,18 @@ func pullItemTemplates() []common.Item_template {
 			&item_template.True_description,
 		)
 		fmt.Println(&item_template.Name)
-		common.CheckErr(err)
+		shared.CheckErr(err)
 		item_templates = append(item_templates, item_template)
 	}
 	return item_templates
 }
 
-func pullRaceTemplates() []common.Race_template {
+func pullRaceTemplates() []shared.Race_template {
 	rows, err := db.Query("Select * FROM race_templates")
 	defer rows.Close()
-	var race_templates []common.Race_template
+	var race_templates []shared.Race_template
 	for rows.Next() {
-		var race_template common.Race_template
+		var race_template shared.Race_template
 		err = rows.Scan(
 			&race_template.Id,
 			&race_template.Race,
@@ -375,18 +375,18 @@ func pullRaceTemplates() []common.Race_template {
 			&race_template.Runic_mod,
 			&race_template.Description,
 		)
-		common.CheckErr(err)
+		shared.CheckErr(err)
 		race_templates = append(race_templates, race_template)
 	}
 	return race_templates
 }
 
-func pullProfessionTemplates() []common.Profession_template {
+func pullProfessionTemplates() []shared.Profession_template {
 	rows, err := db.Query("Select * FROM Profession_templates")
 	defer rows.Close()
-	var profession_templates []common.Profession_template
+	var profession_templates []shared.Profession_template
 	for rows.Next() {
-		var profession_template common.Profession_template
+		var profession_template shared.Profession_template
 		err = rows.Scan(
 			&profession_template.Id,
 			&profession_template.Profession,
@@ -464,19 +464,19 @@ func pullProfessionTemplates() []common.Profession_template {
 			&profession_template.Skill_5_value,
 			&profession_template.Description,
 		)
-		common.CheckErr(err)
+		shared.CheckErr(err)
 		profession_templates = append(profession_templates, profession_template)
 	}
 	return profession_templates
 }
 
-func pushNpcs([]common.Npc) {
+func pushNpcs([]shared.Npc) {
 	fmt.Println("Not yet implemented")
 }
 
 func getRemainingPlayerSlots(account_name string, max_player_slots int) int {
 	rows, err := db.Query("Select * FROM players INNER JOIN accounts ON players.account_id=accounts.id WHERE accountname=?", account_name)
-	common.CheckErr(err)
+	shared.CheckErr(err)
 	defer rows.Close()
 	num_players := max_player_slots
 	for rows.Next() {
@@ -487,14 +487,14 @@ func getRemainingPlayerSlots(account_name string, max_player_slots int) int {
 
 func playerFirstNameTaken(player_firstname string) bool {
 	rows, err := db.Query("Select * FROM players WHERE firstname=?", player_firstname)
-	common.CheckErr(err)
+	shared.CheckErr(err)
 	return foundInRows(rows, err)
 }
 
-func addNewPlayer(player common.Pc) {
+func addNewPlayer(player shared.Pc) {
 	// Need to add this...
 	ins, err := db.Prepare("INSERT INTO players(account_id, firstname, lastname, guild, race, gender, face, skin, profession, alive, plevel, dp, hp, maxhp, bp, maxbp, mp, maxmp, ep, maxep, strength, constitution, intelligence, dexterity, axe, dagger, unarmed, hammer, polearm, spear, staff, sword, archery, crossbow, sling, thrown, armor, dualweapon, shield, bardic, conjuring, druidic, illusion, necromancy, sorcery, shamanic, spellcraft, summoning, focus, armorsmithing, tailoring, fletching, weaponsmithing, alchemy, lapidary, calligraphy, enchanting, herbalism, hunting, mining, bargaining, camping, firstaid, lore, picklocks, scouting, search, stealth, traps, aeolandis, hieroform, highgundis, oldpraxic, praxic, runic, head, chest, arms, hands, legs, feet, cloak, necklace, ringone, ringtwo, righthand, lefthand, zone, x, y, z, direction) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	common.CheckErr(err)
+	shared.CheckErr(err)
 	// Try to populate and execute an SQL statment.
 	_, err = ins.Exec(
 		player.Accountid,
@@ -590,5 +590,5 @@ func addNewPlayer(player common.Pc) {
 		player.Z,
 		player.Direction,
 	)
-	common.CheckErr(err)
+	shared.CheckErr(err)
 }

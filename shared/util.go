@@ -3,7 +3,7 @@
 // Date:        June_16_2018
 // Purpose:     Utility functions used by Oldentide dedicated server.
 
-package common
+package shared
 
 import (
 	"crypto/sha256"

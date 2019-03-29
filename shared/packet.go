@@ -3,7 +3,7 @@
 // Date:        June_16_2018
 // Purpose:     Definition of packets to be used in Oldentide.
 
-package common
+package shared
 
 import (
 	_ "fmt"

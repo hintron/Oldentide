@@ -6,7 +6,7 @@
 package main
 
 import (
-	"common"
+	"Oldentide/shared"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
@@ -19,7 +19,7 @@ import (
 var homereg = regexp.MustCompile("^/$")
 var regireg = regexp.MustCompile("/register")
 var verireg = regexp.MustCompile("/verify/[a-z,A-Z]{20}")
-var regireg = regexp.MustCompile("/login")
+var loginreg = regexp.MustCompile("/login")
 
 // Router for web traffic.
 func routeWebTraffic(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func routeWebTraffic(w http.ResponseWriter, r *http.Request) {
 // Web handler that loads the home page.
 func homePage(w http.ResponseWriter, r *http.Request) {
 	hn, err := os.Hostname()
-	common.CheckErr(err)
+	shared.CheckErr(err)
 	fmt.Fprintf(w, "<html>"+
 		"<p>Welcome to the Oldentide dedicated server running on %s.</p>"+
 		"<p>Account Registration:</p>"+
@@ -88,7 +88,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 
 			verify_key := generateUniqueVerify(20)
 			salt_key := generateUniqueSalt(40)
-			hashed_key := common.SaltAndHash(registration_password_first, salt_key)
+			hashed_key := shared.SaltAndHash(registration_password_first, salt_key)
 
 			if everify {
 				// Create email message to send to user.
@@ -110,7 +110,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 
 				// Send registration email using
 				err = smtp.SendMail("smtp.gmail.com:587", eauth, email, to, msg)
-				common.CheckErr(err)
+				shared.CheckErr(err)
 				fmt.Fprintf(w, "<html>You posted data to the register page.<br><br>"+
 					"An email has been sent to verify this information:<br><br>"+
 					"Username: %s<br>Email: %s<br><br>"+

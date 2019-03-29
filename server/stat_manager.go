@@ -5,9 +5,9 @@
 
 package main
 
-import "common"
+import "Oldentide/shared"
 
-func checkDp(su common.Skillupdate) bool {
+func checkDp(su shared.Skillupdate) bool {
 	if su.Predp > 100 {
 		return true
 	} else {
@@ -15,7 +15,7 @@ func checkDp(su common.Skillupdate) bool {
 	}
 }
 
-func validNewPlayer(p common.Pc) bool {
+func validNewPlayer(p shared.Pc) bool {
 	// Ned to implement this stuff still...
 	return true
 }

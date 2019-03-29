@@ -6,7 +6,7 @@
 package main
 
 import (
-	"common"
+	"Oldentide/shared"
 	//"database/sql"
 	//"flag"
 	"fmt"
@@ -22,7 +22,7 @@ import (
 	//"time"
 )
 
-func handleHelpMessage(packet common.Raw_packet) {
+func handleHelpMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a help message to all players.")
 	//    for i, pc := range players {
 	//       // send back a RELAYHELP packet.
@@ -30,26 +30,26 @@ func handleHelpMessage(packet common.Raw_packet) {
 	//    }
 }
 
-func handleSayMessage(packet common.Raw_packet) {
+func handleSayMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a say message to nearby players. (10 yards?)")
 }
 
-func handleGuildMessage(packet common.Raw_packet) {
+func handleGuildMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a guild message to fellow online guildmates.")
 }
 
-func handleOocMessage(packet common.Raw_packet) {
+func handleOocMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending an OOC message to everyone in the current zone.")
 }
 
-func handleWhisperMessage(packet common.Raw_packet) {
+func handleWhisperMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a whisper message to a target player.")
 }
 
-func handlePartyMessage(packet common.Raw_packet) {
+func handlePartyMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a party message to players in the same party.")
 }
 
-func handleYellMessage(packet common.Raw_packet) {
+func handleYellMessage(packet shared.Raw_packet) {
 	fmt.Println("Sending a yell message to nearby players. (50 yards?)")
 }
