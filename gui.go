@@ -385,7 +385,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 		fmt.Println("Gnome race selected")
 		ogs.new_character_race = "Gnome"
 	})
-	ogs.cc_physical_leshy_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/Leshy.png")
+	ogs.cc_physical_leshy_button, err = gui.NewImageButton(ogs.assets_dir + "/Interface/leshy.png")
 	checkErr(err)
 	ogs.cc_physical_leshy_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		fmt.Println("Leshy race selected")

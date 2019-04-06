@@ -408,7 +408,7 @@ func main() {
 	paths := strings.Split(rawPaths, ":")
 	for _, j := range paths {
 		// Checks Assets path
-		path := filepath.Join(j, "src/Oldentide/assets")
+		path := filepath.Join(j, "src/Oldentide/Assets")
 		if _, err := os.Stat(path); err == nil {
 			ogs.assets_dir = path
 		}
