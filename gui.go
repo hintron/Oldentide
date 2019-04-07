@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"github.com/g3n/engine/gui"
+	"github.com/g3n/engine/text"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/window"
 	"Oldentide/shared"
@@ -62,7 +63,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.root.Add(audio_control)
 
 	// User Dialog Box
-	ogs.user_dialog = CreateUserMsgDialog()
+	ogs.user_dialog = CreateUserMsgDialog(ogs.font)
 
 	login_left := gui.NewPanel(300, 300)
 	login_left.SetLayout(v_layout)
@@ -541,11 +542,14 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	log.Debug("Done creating GUI.")
 }
 
-func CreateUserMsgDialog() *gui.Label {
-	el := gui.NewLabel("")
+func CreateUserMsgDialog(font *text.Font) *gui.Label {
+	el := gui.NewLabelWithFont("", font)
 	el.SetBgColor4(&color_warning)
 	el.SetColor4(&color_black)
 	el.SetBorders(3, 3, 3, 3)
+	el.SetFontSize(32.0)
+	// Set DPI ?
+	// el.SetFontDPI()
 	el.SetBordersColor4(&color_black)
 	return el
 }

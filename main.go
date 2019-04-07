@@ -149,7 +149,12 @@ func (ogs *OldentideClientGamestate) UserMsg(msg string) {
 	ogs.user_dialog.SetText(msg)
 
 	// Center message horizontally
-	ogs.user_dialog.SetPositionX((ogs.root.Width() - ogs.user_dialog.Width()) / 2)
+	if ogs.user_dialog.Width() < ogs.root.Width() {
+		ogs.user_dialog.SetPositionX((ogs.root.Width() - ogs.user_dialog.Width()) / 2)
+	} else {
+		fmt.Println("UserMsg is too large to fit on the screen.")
+		ogs.user_dialog.SetPositionX(0)
+	}
 
 	ogs.user_dialog.SetEnabled(true)
 	ogs.root.Add(ogs.user_dialog)
