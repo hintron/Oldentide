@@ -454,6 +454,10 @@ func (ogs *OldentideClientGamestate) ToggleFullScreen() {
 // handle keyboard events for the game
 var ctrl_left_pressed bool = false
 var ctrl_right_pressed bool = false
+var forward_pressed bool = false
+var backward_pressed bool = false
+var left_pressed bool = false
+var right_pressed bool = false
 func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 	if ogs.client_game_state == IN_WORLD {
 		kev := ev.(*window.KeyEvent)
@@ -465,6 +469,16 @@ func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 		case window.KeyLeftControl:
 			ctrl_left_pressed = true
 			fmt.Println("Left Control Key Pressed.")
+		case window.KeyW:
+			fallthrough
+		case window.KeyUp:
+			forward_pressed = true
+			fmt.Println("Moving forward!")
+		case window.KeyS:
+			fallthrough
+		case window.KeyDown:
+			forward_pressed = true
+			fmt.Println("Moving backward!")
 		case window.KeyEscape:
 			fmt.Println("Escape Key Pressed.")
 		case window.KeyP:
@@ -498,6 +512,16 @@ func (ogs *OldentideClientGamestate) onKeyUp(evname string, ev interface{}) {
 		case window.KeyLeftControl:
 			ctrl_left_pressed = false
 			fmt.Println("Left Control Key Released.")
+		case window.KeyW:
+			fallthrough
+		case window.KeyUp:
+			forward_pressed = false
+			fmt.Println("Stopped moving forward")
+		case window.KeyS:
+			fallthrough
+		case window.KeyDown:
+			forward_pressed = false
+			fmt.Println("Stopped moving backward")
 		}
 	}
 }
