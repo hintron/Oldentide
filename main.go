@@ -207,14 +207,22 @@ func (ogs *OldentideClientGamestate) Login() {
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Checking Login Status")
 	step += 1
-	login_server_page := "http://" + ogs.login_server_address.Text() + ":" + ogs.login_server_web_port.Text() + "/login"
+	addrport := ogs.login_server_address.Text() + ":" + ogs.login_server_web_port.Text()
+	login_server_page := "http://" + addrport + "/login"
 	resp, err := http.PostForm(login_server_page, url.Values{"username": {username}, "password": {ogs.login_password}})
 	if err != nil {
 		ogs.root.Add(ogs.login_menu)
 		ogs.login_menu.SetEnabled(true)
 	}
-	defer resp.Body.Close()
+
+	if resp == nil {
+		msg := fmt.Sprintf("No response from %s", addrport)
+		ogs.UserMsg(msg)
+		return
+	}
+
 	fmt.Println(resp)
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	shared.IfErrPrintErr(err)
 
