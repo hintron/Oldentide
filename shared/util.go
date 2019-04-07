@@ -55,10 +55,15 @@ func GenerateRandomAlnums(n int) string {
 	return string(key)
 }
 
-var regex_name = regexp.MustCompile("^[a-z,A-Z]{3,20}$")
 
-// Util used to generate a string of lowe and upper case letters and numbers.
-// (3-20 letters, alphabetic)
+// Validate a character name. 3-20 letters, alphabetic
+var regex_name = regexp.MustCompile("^[a-zA-Z]{3,20}$")
 func ValidateName(name string) bool {
 	return regex_name.MatchString(name)
+}
+
+// Validate a username. 3-30 characters, alphanumeric
+var regex_username = regexp.MustCompile("^[a-zA-Z0-9]{3,20}$")
+func ValidateUsername(name string) bool {
+	return regex_username.MatchString(name)
 }

@@ -113,7 +113,6 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.login_login_button.Label.SetFontSize(16)
 	ogs.login_login_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		fmt.Println("Login button was pressed.")
-		// TODO add some basic checking here to make sure it could be a possible account name and password?
 		ogs.Login()
 	})
 	login_buttons.Add(ogs.login_login_button)
@@ -464,9 +463,7 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 			ogs.new_character_hair,
 			ogs.new_character_skin)
 		// Check that physical stats are valid
-		msg := ValidateCharacterPhysical(ogs)
-		if msg != "ok" {
-			UserMsg(msg)
+		if !ValidateCharacterPhysical(ogs) {
 			return;
 		}
 		ogs.root.Remove(ogs.cc_physical_menu)
@@ -547,17 +544,20 @@ func UserMsg(msg string) {
 	fmt.Println(msg)
 }
 
+
 // Don't let user click NEXT unless stats are valid
-func ValidateCharacterPhysical(ogs *OldentideClientGamestate) string {
+func ValidateCharacterPhysical(ogs *OldentideClientGamestate) bool {
 	if !shared.ValidateName(ogs.new_character_firstname) {
-		return "First name must be 3-20 alphabetic characters"
+		UserMsg("First name must be 3-20 alphabetic characters")
+		return false
 	}
 
 	if !shared.ValidateName(ogs.new_character_lastname) {
-		return "Last name must be 3-20 alphabetic characters"
+		UserMsg("Last name must be 3-20 alphabetic characters")
+		return false
 	}
 
-	return "ok"
+	return true
 }
 
 func CreateAudioControl(initial_gain float32) *gui.Slider {

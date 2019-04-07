@@ -154,6 +154,11 @@ func (ogs *OldentideClientGamestate) Login() {
 		return
 	}
 
+	if !shared.ValidateUsername(ogs.login_username.Text()) {
+		UserMsg("Username must be 3-30 alphanumeric characters")
+		return
+	}
+
 	ogs.root.Remove(ogs.login_menu)
 	ogs.login_menu.SetEnabled(false)
 	ogs.root.Add(ogs.login_process)
