@@ -147,6 +147,18 @@ func foundInRows(rows *sql.Rows, err error) bool {
 func pullPcs() []shared.Pc {
 	rows, err := db.Query("Select * FROM players")
 	defer rows.Close()
+	shared.CheckErr(err)
+	return pcRowsToStruct(rows)
+}
+
+func getPlayers(account string) []shared.Pc {
+	rows, err := db.Query("Select * FROM players WHERE account=?", account)
+	defer rows.Close()
+	shared.CheckErr(err)
+	return pcRowsToStruct(rows)
+}
+
+func pcRowsToStruct(rows * sql.Rows) []shared.Pc {
 	var pcs []shared.Pc
 	for rows.Next() {
 		var pc shared.Pc

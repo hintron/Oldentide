@@ -249,10 +249,14 @@ func (ogs *OldentideClientGamestate) Login() {
 	ogs.login_process.SetEnabled(false)
 	ogs.root.Add(ogs.cs_menu)
 	ogs.cs_menu.SetEnabled(true)
-	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_1", ogs.font))
-	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_2", ogs.font))
-	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_3", ogs.font))
-	ogs.cs_characters.Add(gui.NewLabelWithFont("Character_4", ogs.font))
+
+	// Get all the characters for the account
+	characters := ogs.GetCharacters(username)
+	for _, character := range characters {
+		name := fmt.Sprintf("%s %s", character.Firstname, character.Lastname)
+		ogs.cs_characters.Add(gui.NewLabelWithFont(name, ogs.font))
+	}
+
 	stop := false
 	for stop == false {
 		if ogs.cs_characters.Selected() != nil {
@@ -299,6 +303,19 @@ func (ogs *OldentideClientGamestate) CreateCharacter(
 		skin)
 	packet := shared.Create_player_packet{Opcode: shared.CREATEPLAYER, Pc: player}
 	ogs.SendPacket(&packet)
+}
+
+func (ogs *OldentideClientGamestate) GetCharacters(account string) []shared.Pc {
+	// TODO: Convert this to HTTP request instead of UDP?
+	fmt.Println("Querying all characters for account", account)
+	packet := shared.Req_clist_packet{Opcode: shared.REQCLIST, Account: account}
+	ogs.SendPacket(&packet)
+
+	// TODO: Block on packet for character list. In the meantime, bogus data
+	var players []shared.Pc
+	players = append(players, shared.Test_make_player("Michael"))
+	players = append(players, shared.Test_make_player("Joseph"))
+	return players
 }
 
 func (ogs *OldentideClientGamestate) EnterWorld() {
