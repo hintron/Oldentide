@@ -32,7 +32,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	_ "strconv"
+	"strconv"
 	"strings"
 	"time"
 	"Oldentide/shared"
@@ -215,6 +215,7 @@ func (ogs *OldentideClientGamestate) Login() {
 	defer resp.Body.Close()
 	fmt.Println(resp)
 	body, err := ioutil.ReadAll(resp.Body)
+	shared.IfErrPrintErr(err)
 
 	if resp.StatusCode != 200 {
 		ogs.UserMsg("Remote login  for user `"+username+"` failed: "+string(body))
@@ -226,7 +227,12 @@ func (ogs *OldentideClientGamestate) Login() {
 		return
 	}
 
-	fmt.Println("Login was a success!")
+	fmt.Println("Body", body)
+	fmt.Println("Body str", string(body))
+	session_id, err := strconv.Atoi(string(body))
+	shared.IfErrPrintErr(err)
+
+	fmt.Println("Login was a success! Session ID = ", session_id)
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Saving Account Information")
 	step += 1

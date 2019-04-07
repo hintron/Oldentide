@@ -74,6 +74,16 @@ func getHashFromAccount(account string) string {
 	return hash
 }
 
+func setSessionId(account string, session int) bool {
+	update, err := db.Prepare("UPDATE accounts SET gamesession=? WHERE accountname=?")
+	_, err = update.Exec(session, account)
+	if err == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
 func activateAccount(a string) bool {
 	update, err := db.Prepare("UPDATE accounts SET valid=? WHERE accountname=?")
 	_, err = update.Exec("1", a)

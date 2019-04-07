@@ -150,6 +150,7 @@ func verifyPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var session_id = 0;
 // Web handler that handles logging in a player and returning them a sessionID.
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -175,13 +176,21 @@ func loginPage(w http.ResponseWriter, r *http.Request) {
 	// Check the hash against what's in the DB
 	supplied_hash := shared.SaltAndHash(password, salt)
 
-	if supplied_hash == hash {
-		// TODO: Set the account as currently logged in?
-		// Success!
-		fmt.Fprintf(w, "Successfully logged in as "+username+".")
-	} else {
-		// Failure
+	if supplied_hash != hash {
 		http.Error(w, "Incorrect password", http.StatusUnauthorized)
+		return
 	}
 
+	// Return session_id and write session_id to db
+	// TODO: Always assume new session ID? Check for old session id first?
+	session_id++
+	if !setSessionId(username, session_id) {
+		http.Error(w, "Could not save the session ID to the DB", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("Login successful! Sending user back session ID =", session_id)
+
+	// Success! Return the session id
+	fmt.Fprintf(w, strconv.Itoa(session_id))
 }
