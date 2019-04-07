@@ -479,6 +479,16 @@ func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 		case window.KeyDown:
 			forward_pressed = true
 			fmt.Println("Moving backward!")
+		case window.KeyA:
+			fallthrough
+		case window.KeyLeft:
+			left_pressed = true
+			fmt.Println("Moving left!")
+		case window.KeyD:
+			fallthrough
+		case window.KeyRight:
+			right_pressed = true
+			fmt.Println("Moving right!")
 		case window.KeyEscape:
 			fmt.Println("Escape Key Pressed.")
 		case window.KeyP:
@@ -522,6 +532,16 @@ func (ogs *OldentideClientGamestate) onKeyUp(evname string, ev interface{}) {
 		case window.KeyDown:
 			forward_pressed = false
 			fmt.Println("Stopped moving backward")
+		case window.KeyA:
+			fallthrough
+		case window.KeyLeft:
+			left_pressed = false
+			fmt.Println("Stopped moving left")
+		case window.KeyD:
+			fallthrough
+		case window.KeyRight:
+			right_pressed = false
+			fmt.Println("Stopped moving right")
 		}
 	}
 }
