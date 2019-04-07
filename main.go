@@ -126,6 +126,7 @@ type OldentideClientGamestate struct {
 	assets_dir                 string
 	cursor                     int
 	login_password             string
+	session_id                 int
 	client_game_state          uint8
 	new_character_firstname    string
 	new_character_lastname     string
@@ -227,12 +228,14 @@ func (ogs *OldentideClientGamestate) Login() {
 		return
 	}
 
-	fmt.Println("Body", body)
-	fmt.Println("Body str", string(body))
+	// fmt.Println("Body", body)
+	// fmt.Println("Body str", string(body))
 	session_id, err := strconv.Atoi(string(body))
 	shared.IfErrPrintErr(err)
 
 	fmt.Println("Login was a success! Session ID = ", session_id)
+	ogs.session_id = session_id
+
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Saving Account Information")
 	step += 1
