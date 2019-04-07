@@ -334,10 +334,19 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	ogs.client_game_state = IN_WORLD
 
 	// Create a blue torus and add it to the scene
-	geom := geometry.NewTorus(1, .4, 12, 32, math32.Pi*2)
+	geom := geometry.NewTorus(1, 0.4, 12, 32, math32.Pi*2)
 	mat := material.NewPhong(math32.NewColor("DarkBlue"))
 	torusMesh := graphic.NewMesh(geom, mat)
 	ogs.scene.Add(torusMesh)
+
+	// Add a point light to the scene
+	pointLight := light.NewPoint(&math32.Color{1, 1, 1}, 5.0)
+	pointLight.SetPosition(1, 0, 2)
+	ogs.scene.Add(pointLight)
+
+	// Add an axis helper to the scene
+	axis := graphic.NewAxisHelper(0.5)
+	ogs.scene.Add(axis)
 }
 
 // Quit saves the user data and quits the game
