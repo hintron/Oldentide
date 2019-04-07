@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"log"
 	"math/rand"
+	"regexp"
 )
 
 // Simple function to check the error status of an operation.
@@ -52,4 +53,12 @@ func GenerateRandomAlnums(n int) string {
 		key[i] = alnums[rand.Intn(len(alnums))]
 	}
 	return string(key)
+}
+
+var regex_name = regexp.MustCompile("^[a-z,A-Z]{3,20}$")
+
+// Util used to generate a string of lowe and upper case letters and numbers.
+// (3-20 letters, alphabetic)
+func ValidateName(name string) bool {
+	return regex_name.MatchString(name)
 }

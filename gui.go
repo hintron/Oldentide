@@ -10,6 +10,7 @@ import (
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/window"
+	"Oldentide/shared"
 )
 
 // SetupGui creates all user interface elements
@@ -454,7 +455,6 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.cc_physical_next_button = gui.NewButton("Next")
 	ogs.cc_physical_next_button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		fmt.Println("cc physical next button was pressed.")
-		// TODO Add in client side check to make sure the names are allowed. (3-20 letters, alphabetic)
 		ogs.new_character_firstname = ogs.cc_physical_first_name.Text()
 		ogs.new_character_lastname = ogs.cc_physical_last_name.Text()
 		fmt.Println(ogs.new_character_firstname,
@@ -463,6 +463,12 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 			ogs.new_character_race,
 			ogs.new_character_hair,
 			ogs.new_character_skin)
+		// Check that physical stats are valid
+		msg := ValidateCharacterPhysical(ogs)
+		if msg != "ok" {
+			UserMsg(msg)
+			return;
+		}
 		ogs.root.Remove(ogs.cc_physical_menu)
 		ogs.cc_physical_menu.SetEnabled(false)
 		ogs.root.Add(ogs.cc_points_menu)
@@ -533,6 +539,25 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.root.Dispatch(gui.OnResize, nil)
 
 	log.Debug("Done creating GUI.")
+}
+
+// Create a popup dialog for a user message
+// TODO: Implement this
+func UserMsg(msg string) {
+	fmt.Println(msg)
+}
+
+// Don't let user click NEXT unless stats are valid
+func ValidateCharacterPhysical(ogs *OldentideClientGamestate) string {
+	if !shared.ValidateName(ogs.new_character_firstname) {
+		return "First name must be 3-20 alphabetic characters"
+	}
+
+	if !shared.ValidateName(ogs.new_character_lastname) {
+		return "Last name must be 3-20 alphabetic characters"
+	}
+
+	return "ok"
 }
 
 func CreateAudioControl(initial_gain float32) *gui.Slider {
