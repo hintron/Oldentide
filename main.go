@@ -75,6 +75,7 @@ type OldentideClientGamestate struct {
 
 	// Gui components
 	root                        *gui.Root
+	user_dialog                 *gui.Label
 	login_menu                  *gui.Panel
 	login_username              *gui.Edit
 	login_password_edit         *gui.Edit
@@ -143,6 +144,27 @@ func checkErr(err error) {
 	}
 }
 
+func (ogs *OldentideClientGamestate) UserMsg(msg string) {
+	fmt.Println(msg)
+	ogs.user_dialog.SetText(msg)
+
+	// Center message horizontally
+	ogs.user_dialog.SetPositionX((ogs.root.Width() - ogs.user_dialog.Width()) / 2)
+
+	ogs.user_dialog.SetEnabled(true)
+	ogs.root.Add(ogs.user_dialog)
+
+	// TODO: Multiple messages will interfere with each other, so have new
+	// msg cancel old message timeout
+	go func() {
+		time.Sleep(10 * time.Second)
+		if ogs.user_dialog.Enabled() {
+			ogs.user_dialog.SetEnabled(false)
+			ogs.root.Remove(ogs.user_dialog)
+		}
+	}()
+}
+
 func (ogs *OldentideClientGamestate) UpdateLoginStatus(pct float32, login_step string) {
 	ogs.login_process_slider.SetValue(pct)
 	ogs.login_process_slider.SetText(fmt.Sprintf("%3.0f", ogs.login_process_slider.Value()*100))
@@ -155,7 +177,7 @@ func (ogs *OldentideClientGamestate) Login() {
 	}
 
 	if !shared.ValidateUsername(ogs.login_username.Text()) {
-		UserMsg("Username must be 3-30 alphanumeric characters")
+		ogs.UserMsg("Username must be 3-30 alphanumeric characters")
 		return
 	}
 
