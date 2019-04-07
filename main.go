@@ -474,6 +474,11 @@ func (ogs *OldentideClientGamestate) Update(timeDelta float64) {
 	} else if ogs.backward_pressed {
 		ogs.player_character.SetPositionX(ogs.player_character.Position().X - float32(timeDelta * ogs.movement_speed))
 	}
+	if ogs.left_pressed {
+		ogs.player_character.SetPositionY(ogs.player_character.Position().Y + float32(timeDelta * ogs.movement_speed))
+	} else if ogs.right_pressed {
+		ogs.player_character.SetPositionY(ogs.player_character.Position().Y - float32(timeDelta * ogs.movement_speed))
+	}
 	return
 }
 
