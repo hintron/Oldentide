@@ -26,7 +26,7 @@ import (
 	"github.com/g3n/engine/text"
 	"github.com/g3n/engine/util/logger"
 	"github.com/g3n/engine/window"
-	_ "io/ioutil"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -162,7 +162,7 @@ func (ogs *OldentideClientGamestate) UserMsg(msg string) {
 	// TODO: Multiple messages will interfere with each other, so have new
 	// msg cancel old message timeout
 	go func() {
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 		if ogs.user_dialog.Enabled() {
 			ogs.user_dialog.SetEnabled(false)
 			ogs.root.Remove(ogs.user_dialog)
@@ -181,7 +181,9 @@ func (ogs *OldentideClientGamestate) Login() {
 		return
 	}
 
-	if !shared.ValidateUsername(ogs.login_username.Text()) {
+	username := ogs.login_username.Text()
+
+	if !shared.ValidateUsername(username) {
 		ogs.UserMsg("Username must be 3-30 alphanumeric characters")
 		return
 	}
@@ -196,7 +198,7 @@ func (ogs *OldentideClientGamestate) Login() {
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Extracting Credentials")
 	step += 1
-	fmt.Println("Username: ", ogs.login_username.Text())
+	fmt.Println("Username: ", username)
 	fmt.Println("Password: ", ogs.login_password)
 	fmt.Println("Server Address: ", ogs.login_server_address.Text())
 	fmt.Println("Server Web Port: ", ogs.login_server_web_port.Text())
@@ -205,12 +207,26 @@ func (ogs *OldentideClientGamestate) Login() {
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Checking Login Status")
 	step += 1
 	login_server_page := "http://" + ogs.login_server_address.Text() + ":" + ogs.login_server_web_port.Text() + "/login"
-	resp, err := http.PostForm(login_server_page, url.Values{"username": {ogs.login_username.Text()}, "password": {ogs.login_password}})
+	resp, err := http.PostForm(login_server_page, url.Values{"username": {username}, "password": {ogs.login_password}})
 	if err != nil {
 		ogs.root.Add(ogs.login_menu)
 		ogs.login_menu.SetEnabled(true)
 	}
+	defer resp.Body.Close()
 	fmt.Println(resp)
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		ogs.UserMsg("Remote login  for user `"+username+"` failed: "+string(body))
+
+		ogs.root.Remove(ogs.login_process)
+		ogs.login_process.SetEnabled(false)
+		ogs.root.Add(ogs.login_menu)
+		ogs.login_menu.SetEnabled(true)
+		return
+	}
+
+	fmt.Println("Login was a success!")
 
 	ogs.UpdateLoginStatus(float32(step)/float32(steps), "Saving Account Information")
 	step += 1

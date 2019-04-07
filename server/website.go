@@ -152,5 +152,36 @@ func verifyPage(w http.ResponseWriter, r *http.Request) {
 
 // Web handler that handles logging in a player and returning them a sessionID.
 func loginPage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Need to handle login here...")
+	if r.Method != "POST" {
+		http.Error(w, "Can only login via the Oldentide Client", http.StatusBadRequest)
+		return
+	}
+
+	r.ParseForm()
+	username := r.Form["username"][0]
+	password := r.Form["password"][0]
+	fmt.Println("username=", username)
+	fmt.Println("password=", password)
+	if !accountExists(username) {
+		fmt.Println("username dne")
+		http.Error(w, "Username does not exist", http.StatusBadRequest)
+		return;
+	}
+
+	// Get the salt of the user (the salt is public)
+	salt := getSaltFromAccount(username)
+	// Create a hash from the password and salt
+	hash := getHashFromAccount(username)
+	// Check the hash against what's in the DB
+	supplied_hash := shared.SaltAndHash(password, salt)
+
+	if supplied_hash == hash {
+		// TODO: Set the account as currently logged in?
+		// Success!
+		fmt.Fprintf(w, "Successfully logged in as "+username+".")
+	} else {
+		// Failure
+		http.Error(w, "Incorrect password", http.StatusUnauthorized)
+	}
+
 }

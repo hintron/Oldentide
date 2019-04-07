@@ -48,6 +48,32 @@ func getAccountnameFromVerifyKey(k string) string {
 	return accountname
 }
 
+func getSaltFromAccount(account string) string {
+	rows, err := db.Query("SELECT salt FROM accounts WHERE accountname=?", account)
+	shared.IfErrPrintErr(err)
+	var salt string = ""
+	if rows != nil {
+		for rows.Next() {
+			rows.Scan(&salt)
+		}
+	}
+	rows.Close()
+	return salt
+}
+
+func getHashFromAccount(account string) string {
+	rows, err := db.Query("SELECT hash FROM accounts WHERE accountname=?", account)
+	shared.IfErrPrintErr(err)
+	var hash string = ""
+	if rows != nil {
+		for rows.Next() {
+			rows.Scan(&hash)
+		}
+	}
+	rows.Close()
+	return hash
+}
+
 func activateAccount(a string) bool {
 	update, err := db.Prepare("UPDATE accounts SET valid=? WHERE accountname=?")
 	_, err = update.Exec("1", a)
