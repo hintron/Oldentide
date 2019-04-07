@@ -20,7 +20,8 @@ import (
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/light"
 	_ "github.com/g3n/engine/loader/obj"
-	_ "github.com/g3n/engine/material"
+	"github.com/g3n/engine/material"
+	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/renderer"
 	"github.com/g3n/engine/text"
@@ -331,6 +332,12 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	ogs.client_game_state = LOADING
 	ogs.orbit_control.Enabled = true
 	ogs.client_game_state = IN_WORLD
+
+	// Create a blue torus and add it to the scene
+	geom := geometry.NewTorus(1, .4, 12, 32, math32.Pi*2)
+	mat := material.NewPhong(math32.NewColor("DarkBlue"))
+	torusMesh := graphic.NewMesh(geom, mat)
+	ogs.scene.Add(torusMesh)
 }
 
 // Quit saves the user data and quits the game
