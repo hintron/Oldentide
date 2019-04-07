@@ -50,6 +50,16 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 		ogs.login_menu.SetPositionY((ogs.root.Height() - ogs.login_menu.Height()) / 2)
 	})
 
+	// Audio Control - Slider
+	audio_control := CreateAudioControl(ogs.loginMusicPlayer.Gain())
+	audio_control.Subscribe(gui.OnMouseUp, func (name string, ev interface{}) {
+		ogs.loginMusicPlayer.SetGain(audio_control.Value())
+	})
+	audio_control.Subscribe(gui.OnScroll, func (name string, ev interface{}) {
+		ogs.loginMusicPlayer.SetGain(audio_control.Value())
+	})
+	ogs.root.Add(audio_control)
+
 	login_left := gui.NewPanel(300, 300)
 	login_left.SetLayout(v_layout)
 
@@ -518,4 +528,13 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 	ogs.root.Dispatch(gui.OnResize, nil)
 
 	log.Debug("Done creating GUI.")
+}
+
+func CreateAudioControl(initial_gain float32) *gui.Slider {
+	el := gui.NewVSlider(0, 100)
+	// The width will auto-expand to fit text
+	el.SetText("Volume")
+	// Set the audio control to an initial volume
+	el.SetValue(initial_gain)
+	return el
 }

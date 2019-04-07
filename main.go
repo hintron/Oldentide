@@ -298,7 +298,7 @@ func (ogs *OldentideClientGamestate) LoadAudio() {
 	// Load each music file you want to use into memory here. (Be a hog, they are small files!)
 	ogs.loginMusicPlayer = createPlayer(ogs.assets_dir + "/Music/Komiku__End_of_the_trip.ogg")
 	ogs.loginMusicPlayer.SetGain(0.05)
-	ogs.loginMusicPlayer.SetLooping(false)
+	ogs.loginMusicPlayer.SetLooping(true)
 }
 
 // Update updates the current level if any
@@ -507,9 +507,6 @@ func main() {
 	ambLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.4)
 	ogs.scene.Add(ambLight)
 
-	ogs.SetupGui(width, height)
-	ogs.RenderFrame()
-
 	// Try to open audio libraries
 	err = ogs.LoadAudioLibs()
 	if err != nil {
@@ -519,6 +516,9 @@ func main() {
 		// Queue the music!
 		ogs.loginMusicPlayer.Play()
 	}
+
+	ogs.SetupGui(width, height)
+	ogs.RenderFrame()
 
 	ogs.LoadSkyBox("Blue_Clouds", "jpg")
 	//ogs.LoadSkyBox("Sunny_High_Plains", "jpg")
