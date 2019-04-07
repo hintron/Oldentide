@@ -451,11 +451,20 @@ func (ogs *OldentideClientGamestate) ToggleFullScreen() {
 	ogs.win.SetFullScreen(!ogs.win.FullScreen())
 }
 
-// onKey handles keyboard events for the game
-func (ogs *OldentideClientGamestate) onKey(evname string, ev interface{}) {
+// handle keyboard events for the game
+var ctrl_left_pressed bool = false
+var ctrl_right_pressed bool = false
+func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 	if ogs.client_game_state == IN_WORLD {
 		kev := ev.(*window.KeyEvent)
+		fmt.Println("Key Pressed:", kev.Keycode)
 		switch kev.Keycode {
+		case window.KeyRightControl:
+			ctrl_right_pressed = true
+			fmt.Println("Right Control Key Pressed.")
+		case window.KeyLeftControl:
+			ctrl_left_pressed = true
+			fmt.Println("Left Control Key Pressed.")
 		case window.KeyEscape:
 			fmt.Println("Escape Key Pressed.")
 		case window.KeyP:
@@ -470,6 +479,25 @@ func (ogs *OldentideClientGamestate) onKey(evname string, ev interface{}) {
 			fmt.Println("M Key Pressed.") // Bring up the map.
 		case window.KeyB:
 			fmt.Println("B Key Pressed.") // Bring up the spellbook (spells and manuevers).
+		case window.KeyQ:
+			if ctrl_right_pressed || ctrl_left_pressed {
+				ogs.Quit()
+			}
+		}
+	}
+}
+
+func (ogs *OldentideClientGamestate) onKeyUp(evname string, ev interface{}) {
+	if ogs.client_game_state == IN_WORLD {
+		kev := ev.(*window.KeyEvent)
+		fmt.Println("Key Released:", kev.Keycode)
+		switch kev.Keycode {
+		case window.KeyRightControl:
+			ctrl_right_pressed = false
+			fmt.Println("Right Control Key Released.")
+		case window.KeyLeftControl:
+			ctrl_left_pressed = false
+			fmt.Println("Left Control Key Released.")
 		}
 	}
 }
@@ -609,7 +637,8 @@ func main() {
 	})
 
 	// Subscribe window to events
-	ogs.win.Subscribe(window.OnKeyDown, ogs.onKey)
+	ogs.win.Subscribe(window.OnKeyDown, ogs.onKeyDown)
+	ogs.win.Subscribe(window.OnKeyUp, ogs.onKeyUp)
 	ogs.win.Subscribe(window.OnMouseUp, ogs.onMouse)
 	ogs.win.Subscribe(window.OnMouseDown, ogs.onMouse)
 
