@@ -138,6 +138,14 @@ type OldentideClientGamestate struct {
 	new_character_profession   string
 	new_character_elective_one string
 	new_character_elective_two string
+
+	// Character Movement
+	ctrl_left_pressed          bool
+	ctrl_right_pressed         bool
+	forward_pressed            bool
+	backward_pressed           bool
+	left_pressed               bool
+	right_pressed              bool
 }
 
 func checkErr(err error) {
@@ -333,6 +341,14 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	ogs.orbit_control.Enabled = true
 	ogs.client_game_state = IN_WORLD
 
+	// Initialize character movement state
+	ogs.ctrl_left_pressed = false
+	ogs.ctrl_right_pressed = false
+	ogs.forward_pressed = false
+	ogs.backward_pressed = false
+	ogs.left_pressed = false
+	ogs.right_pressed = false
+
 	// Create a blue torus and add it to the scene
 	geom := geometry.NewTorus(1, 0.4, 12, 32, math32.Pi*2)
 	mat := material.NewPhong(math32.NewColor("DarkBlue"))
@@ -452,42 +468,35 @@ func (ogs *OldentideClientGamestate) ToggleFullScreen() {
 }
 
 // handle keyboard events for the game
-var ctrl_left_pressed bool = false
-var ctrl_right_pressed bool = false
-var forward_pressed bool = false
-var backward_pressed bool = false
-var left_pressed bool = false
-var right_pressed bool = false
 func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 	if ogs.client_game_state == IN_WORLD {
 		kev := ev.(*window.KeyEvent)
-		fmt.Println("Key Pressed:", kev.Keycode)
 		switch kev.Keycode {
 		case window.KeyRightControl:
-			ctrl_right_pressed = true
+			ogs.ctrl_right_pressed = true
 			fmt.Println("Right Control Key Pressed.")
 		case window.KeyLeftControl:
-			ctrl_left_pressed = true
+			ogs.ctrl_left_pressed = true
 			fmt.Println("Left Control Key Pressed.")
 		case window.KeyW:
 			fallthrough
 		case window.KeyUp:
-			forward_pressed = true
+			ogs.forward_pressed = true
 			fmt.Println("Moving forward!")
 		case window.KeyS:
 			fallthrough
 		case window.KeyDown:
-			forward_pressed = true
+			ogs.forward_pressed = true
 			fmt.Println("Moving backward!")
 		case window.KeyA:
 			fallthrough
 		case window.KeyLeft:
-			left_pressed = true
+			ogs.left_pressed = true
 			fmt.Println("Moving left!")
 		case window.KeyD:
 			fallthrough
 		case window.KeyRight:
-			right_pressed = true
+			ogs.right_pressed = true
 			fmt.Println("Moving right!")
 		case window.KeyEscape:
 			fmt.Println("Escape Key Pressed.")
@@ -504,9 +513,11 @@ func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 		case window.KeyB:
 			fmt.Println("B Key Pressed.") // Bring up the spellbook (spells and manuevers).
 		case window.KeyQ:
-			if ctrl_right_pressed || ctrl_left_pressed {
+			if ogs.ctrl_right_pressed || ogs.ctrl_left_pressed {
 				ogs.Quit()
 			}
+		default:
+			fmt.Println("Key Released:", kev.Keycode)
 		}
 	}
 }
@@ -514,34 +525,35 @@ func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 func (ogs *OldentideClientGamestate) onKeyUp(evname string, ev interface{}) {
 	if ogs.client_game_state == IN_WORLD {
 		kev := ev.(*window.KeyEvent)
-		fmt.Println("Key Released:", kev.Keycode)
 		switch kev.Keycode {
 		case window.KeyRightControl:
-			ctrl_right_pressed = false
+			ogs.ctrl_right_pressed = false
 			fmt.Println("Right Control Key Released.")
 		case window.KeyLeftControl:
-			ctrl_left_pressed = false
+			ogs.ctrl_left_pressed = false
 			fmt.Println("Left Control Key Released.")
 		case window.KeyW:
 			fallthrough
 		case window.KeyUp:
-			forward_pressed = false
+			ogs.forward_pressed = false
 			fmt.Println("Stopped moving forward")
 		case window.KeyS:
 			fallthrough
 		case window.KeyDown:
-			forward_pressed = false
+			ogs.forward_pressed = false
 			fmt.Println("Stopped moving backward")
 		case window.KeyA:
 			fallthrough
 		case window.KeyLeft:
-			left_pressed = false
+			ogs.left_pressed = false
 			fmt.Println("Stopped moving left")
 		case window.KeyD:
 			fallthrough
 		case window.KeyRight:
-			right_pressed = false
+			ogs.right_pressed = false
 			fmt.Println("Stopped moving right")
+		default:
+			fmt.Println("Key Released:", kev.Keycode)
 		}
 	}
 }
