@@ -139,7 +139,9 @@ type OldentideClientGamestate struct {
 	new_character_elective_one string
 	new_character_elective_two string
 
-	// Character Movement
+	// Playable Character
+	player_character           *graphic.Mesh
+	movement_speed             float64 // in units per second
 	ctrl_left_pressed          bool
 	ctrl_right_pressed         bool
 	forward_pressed            bool
@@ -348,12 +350,21 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	ogs.backward_pressed = false
 	ogs.left_pressed = false
 	ogs.right_pressed = false
+	ogs.movement_speed = 5.0
 
 	// Create a blue torus and add it to the scene
 	geom := geometry.NewTorus(1, 0.4, 12, 32, math32.Pi*2)
 	mat := material.NewPhong(math32.NewColor("DarkBlue"))
 	torusMesh := graphic.NewMesh(geom, mat)
 	ogs.scene.Add(torusMesh)
+
+	// Create a red circle to represent the player's character
+	player_geom := geometry.NewSphere(10, 10, 10, 10, 10, 10, 10)
+	player_mat := material.NewPhong(math32.NewColor("Red"))
+	player := graphic.NewMesh(player_geom, player_mat)
+	player.SetPosition(10, 10, 10)
+	ogs.scene.Add(player)
+	ogs.player_character = player
 
 	// Add a point light to the scene
 	pointLight := light.NewPoint(&math32.Color{1, 1, 1}, 5.0)
@@ -458,6 +469,11 @@ func (ogs *OldentideClientGamestate) LoadAudio() {
 
 // Update updates the current level if any
 func (ogs *OldentideClientGamestate) Update(timeDelta float64) {
+	if ogs.forward_pressed {
+		ogs.player_character.SetPositionX(ogs.player_character.Position().X + float32(timeDelta * ogs.movement_speed))
+	} else if ogs.backward_pressed {
+		ogs.player_character.SetPositionX(ogs.player_character.Position().X - float32(timeDelta * ogs.movement_speed))
+	}
 	return
 }
 
@@ -486,7 +502,7 @@ func (ogs *OldentideClientGamestate) onKeyDown(evname string, ev interface{}) {
 		case window.KeyS:
 			fallthrough
 		case window.KeyDown:
-			ogs.forward_pressed = true
+			ogs.backward_pressed = true
 			fmt.Println("Moving backward!")
 		case window.KeyA:
 			fallthrough
@@ -540,7 +556,7 @@ func (ogs *OldentideClientGamestate) onKeyUp(evname string, ev interface{}) {
 		case window.KeyS:
 			fallthrough
 		case window.KeyDown:
-			ogs.forward_pressed = false
+			ogs.backward_pressed = false
 			fmt.Println("Stopped moving backward")
 		case window.KeyA:
 			fallthrough
