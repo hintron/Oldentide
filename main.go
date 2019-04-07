@@ -347,6 +347,12 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	// Add an axis helper to the scene
 	axis := graphic.NewAxisHelper(0.5)
 	ogs.scene.Add(axis)
+
+	// Add a floor: centered in the XY plane with Z=0
+	floor := geometry.NewPlane(50, 50, 10, 10)
+	floor_mat := material.NewPhong(math32.NewColor("Green"))
+	floor_mesh := graphic.NewMesh(floor, floor_mat)
+	ogs.scene.Add(floor_mesh)
 }
 
 // Quit saves the user data and quits the game
@@ -617,7 +623,7 @@ func main() {
 	// The camera aspect ratio should be updated if the window is resized.
 	aspect := float32(width) / float32(height)
 	ogs.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
-	ogs.camera.SetPosition(0, 4, 5)
+	ogs.camera.SetPosition(0, 0, 50)
 	ogs.camera.LookAt(&math32.Vector3{0, 5, 0})
 
 	// Create orbit control and set limits
