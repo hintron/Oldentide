@@ -512,7 +512,12 @@ func (ogs *OldentideClientGamestate) SetupGui(width, height int) {
 		fmt.Println("cc points finish button was pressed.")
 		// TODO Double check everything on the client side, then ask the server to try to create this character.
 		// TODO if it doesn't work, throw an error.
-		ogs.CreateCharacter()
+		ogs.CreateCharacter(
+			ogs.new_character_firstname,
+			ogs.new_character_lastname,
+			ogs.new_character_sex,
+			ogs.new_character_race,
+			ogs.new_character_skin)
 		ogs.root.Remove(ogs.cc_points_menu)
 		ogs.cc_points_menu.SetEnabled(false)
 		ogs.root.Add(ogs.cs_menu)

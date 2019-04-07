@@ -35,6 +35,9 @@ import (
 	_ "strconv"
 	"strings"
 	"time"
+	"Oldentide/shared"
+	"net"
+	"github.com/vmihailenco/msgpack"
 )
 
 var log *logger.Logger
@@ -205,8 +208,40 @@ func (ogs *OldentideClientGamestate) Login() {
 	}
 }
 
-func (ogs *OldentideClientGamestate) CreateCharacter() {
-	fmt.Println("Creating Character")
+func (ogs *OldentideClientGamestate) SendPacket(packet interface{}) {
+	// Set up server connection.
+	// Create udp socket description struct.
+	addr := ogs.login_server_address.Text()
+	port := ogs.login_server_game_port.Text()
+	addrport := addr+":"+port
+	fmt.Println("Sending packet to", addrport)
+
+	server_connection, err := net.Dial("udp", addrport)
+	defer server_connection.Close()
+	shared.CheckErr(err)
+
+	pac, err := msgpack.Marshal(packet)
+	shared.CheckErr(err)
+
+	server_connection.Write(pac)
+}
+
+func (ogs *OldentideClientGamestate) CreateCharacter(
+	fname string,
+	lname string,
+	sex string,
+	race string,
+	skin string) {
+	fmt.Println("Creating Character named", fname, lname)
+
+	player := shared.Make_player(
+		fname,
+		lname,
+		sex,
+		race,
+		skin)
+	packet := shared.Create_player_packet{Opcode: shared.CREATEPLAYER, Pc: player}
+	ogs.SendPacket(&packet)
 }
 
 func (ogs *OldentideClientGamestate) EnterWorld() {
