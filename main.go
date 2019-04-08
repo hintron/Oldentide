@@ -340,7 +340,8 @@ func (ogs *OldentideClientGamestate) GetCharacters(account string) []shared.Pc {
 func (ogs *OldentideClientGamestate) EnterWorld() {
 	fmt.Println("Entering World")
 	ogs.client_game_state = LOADING
-	ogs.orbit_control.Enabled = true
+	// TODO: It might take some work to integrate this with current camera system
+	// ogs.orbit_control.Enabled = true
 	ogs.client_game_state = IN_WORLD
 
 	// Initialize character movement state
@@ -359,12 +360,13 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	ogs.scene.Add(torusMesh)
 
 	// Create a red circle to represent the player's character
-	player_geom := geometry.NewSphere(10, 10, 10, 10, 10, 10, 10)
+	player_geom := geometry.NewSphere(10, 10, 10, 0, 10, 0, 10)
 	player_mat := material.NewPhong(math32.NewColor("Red"))
 	player := graphic.NewMesh(player_geom, player_mat)
 	player.SetPosition(10, 10, 10)
 	ogs.scene.Add(player)
 	ogs.player_character = player
+	ogs.camera.SetPosition(10, 10, 50)
 
 	// Add a point light to the scene
 	pointLight := light.NewPoint(&math32.Color{1, 1, 1}, 5.0)
@@ -469,17 +471,30 @@ func (ogs *OldentideClientGamestate) LoadAudio() {
 
 // Update updates the current level if any
 func (ogs *OldentideClientGamestate) Update(timeDelta float64) {
+	if ogs.client_game_state != IN_WORLD {
+		return
+	}
+
+	// Calculate movement points based on speed * time since last render
+	movement_points := float32(timeDelta * ogs.movement_speed)
+
+	// Move player and camera forward and backward
 	if ogs.forward_pressed {
-		ogs.player_character.SetPositionX(ogs.player_character.Position().X + float32(timeDelta * ogs.movement_speed))
+		ogs.player_character.TranslateOnAxis(&math32.Vector3{0,1,0}, -movement_points)
+		ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, -movement_points)
 	} else if ogs.backward_pressed {
-		ogs.player_character.SetPositionX(ogs.player_character.Position().X - float32(timeDelta * ogs.movement_speed))
+		ogs.player_character.TranslateOnAxis(&math32.Vector3{0,1,0}, movement_points)
+		ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, movement_points)
 	}
+
+	// Rotate player and camera
 	if ogs.left_pressed {
-		ogs.player_character.SetPositionY(ogs.player_character.Position().Y + float32(timeDelta * ogs.movement_speed))
+		ogs.player_character.RotateZ(-movement_points*math32.Pi/12)
+		ogs.camera.RotateZ(-movement_points*math32.Pi/12)
 	} else if ogs.right_pressed {
-		ogs.player_character.SetPositionY(ogs.player_character.Position().Y - float32(timeDelta * ogs.movement_speed))
+		ogs.player_character.RotateZ(movement_points*math32.Pi/12)
+		ogs.camera.RotateZ(movement_points*math32.Pi/12)
 	}
-	return
 }
 
 // ToggleFullScreen toggles whether is game is fullscreen or windowed
@@ -730,15 +745,17 @@ func main() {
 	aspect := float32(width) / float32(height)
 	ogs.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
 	ogs.camera.SetPosition(0, 0, 50)
-	ogs.camera.LookAt(&math32.Vector3{0, 5, 0})
+	ogs.camera.LookAt(&math32.Vector3{0, 0, 0})
 
 	// Create orbit control and set limits
 	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
 	ogs.orbit_control.Enabled = false
 	ogs.orbit_control.EnablePan = false
-	ogs.orbit_control.MaxPolarAngle = 2 * math32.Pi / 3
-	ogs.orbit_control.MinDistance = 5
-	ogs.orbit_control.MaxDistance = 15
+	// Cause the floor to be seen at all times
+	ogs.orbit_control.MaxPolarAngle = math32.Pi - math32.Pi/10
+	ogs.orbit_control.MinPolarAngle = math32.Pi/10
+	ogs.orbit_control.MinDistance = 10
+	ogs.orbit_control.MaxDistance = 200
 
 	// Create main scene and child levelScene
 	ogs.scene = core.NewNode()
