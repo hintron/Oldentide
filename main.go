@@ -141,6 +141,8 @@ type OldentideClientGamestate struct {
 
 	// Playable Character
 	player_character           *graphic.Mesh
+	camera_mode                int
+	camera_home_vec            *math32.Vector3
 	movement_speed             float64 // in units per second
 	ctrl_left_pressed          bool
 	ctrl_right_pressed         bool
@@ -149,6 +151,13 @@ type OldentideClientGamestate struct {
 	left_pressed               bool
 	right_pressed              bool
 }
+
+// Camera Modes
+const (
+	ABSOLUTE_FOLLOWING          = iota
+	RELATIVE_FOLLOWING
+)
+
 
 func checkErr(err error) {
 	if err != nil {
@@ -341,7 +350,7 @@ func (ogs *OldentideClientGamestate) EnterWorld() {
 	fmt.Println("Entering World")
 	ogs.client_game_state = LOADING
 	// TODO: It might take some work to integrate this with current camera system
-	// ogs.orbit_control.Enabled = true
+	ogs.orbit_control.Enabled = true
 	ogs.client_game_state = IN_WORLD
 
 	// Initialize character movement state
@@ -477,24 +486,79 @@ func (ogs *OldentideClientGamestate) Update(timeDelta float64) {
 
 	// Calculate movement points based on speed * time since last render
 	movement_points := float32(timeDelta * ogs.movement_speed)
+	player_pos_old := ogs.player_character.Position()
+	camera_pos_old := ogs.camera.Position()
 
-	// Move player and camera forward and backward
+	// TODO: Change direction of Listener attached to camera when direction changes? Or else sound will be off
+
+	// Move player forward and backward
 	if ogs.forward_pressed {
 		ogs.player_character.TranslateOnAxis(&math32.Vector3{0,1,0}, -movement_points)
-		ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, -movement_points)
 	} else if ogs.backward_pressed {
 		ogs.player_character.TranslateOnAxis(&math32.Vector3{0,1,0}, movement_points)
-		ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, movement_points)
 	}
+	player_pos_new := ogs.player_character.Position()
+
+	// Point the camera to the new position of the player (update the target)
+	ogs.camera.LookAt(&player_pos_new)
+
+	// Figure out the player's delta position change
+	player_pos_delta := player_pos_new.SubVectors(&player_pos_new, &player_pos_old)
+
+
+
+
+
+	// ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, -movement_points)
+	// ogs.orbit_control.Pan(0, -movement_points*5)
+	// ogs.camera.SetPosition(0, 0, 0)
+	// Now that we're looking at the player, 
+	// ogs.camera.TranslateOnAxis(&math32.Vector3{0,1,0}, movement_points)
+	// ogs.orbit_control.Pan(0, movement_points*5)
+	// ogs.camera.SetPosition(0, 0, 0)
+	// Now that we're looking at the player, 
+
+
 
 	// Rotate player and camera
 	if ogs.left_pressed {
 		ogs.player_character.RotateZ(-movement_points*math32.Pi/12)
-		ogs.camera.RotateZ(-movement_points*math32.Pi/12)
+		// ogs.camera.RotateZ(-movement_points*math32.Pi/12)
+		// ogs.orbit_control.RotateLeft(math32.Pi/10)
+		// ogs.orbit_control.RotateUp(math32.Pi/10)
 	} else if ogs.right_pressed {
 		ogs.player_character.RotateZ(movement_points*math32.Pi/12)
-		ogs.camera.RotateZ(movement_points*math32.Pi/12)
+		// ogs.camera.RotateZ(movement_points*math32.Pi/12)
+		// ogs.orbit_control.RotateLeft(-math32.Pi/10)
+		// ogs.orbit_control.RotateUp(-math32.Pi/10)
 	}
+
+	// TODO: If the player rotated, and camera mode is RELATIVE_FOLLOWING, then
+	// we need to whip the camera around, rotating about the player, so we are
+	// always behind the player exactly
+	if ogs.camera_mode == RELATIVE_FOLLOWING && (ogs.left_pressed || ogs.right_pressed) {
+		// TODO: Make this happen whenever the player moves ("snap" back to home position)
+		// Move the camera to "home" position behind the player after a player rotate
+		ogs.camera.SetPositionVec(ogs.camera_home_vec)
+	} else {
+		// Move the camera as much as the player, so it maintains distance
+		camera_pos_new := camera_pos_old.AddVectors(&camera_pos_old, player_pos_delta)
+		ogs.camera.SetPositionVec(camera_pos_new)
+	}
+
+
+
+	fmt.Println("Camera now at pos", ogs.camera.Position())
+	fmt.Println("Camera now at dir", ogs.camera.Direction())
+	fmt.Println("Camera pointing at target", ogs.camera.Target())
+	fmt.Println("Player now at pos", player_pos_new)
+	fmt.Println("Player now at dir", ogs.player_character.Direction())
+	var player_world_dir math32.Vector3
+	ogs.player_character.WorldDirection(&player_world_dir)
+	fmt.Println("Player now at world dir", player_world_dir)
+	var player_world_pos math32.Vector3
+	ogs.player_character.WorldPosition(&player_world_dir)
+	fmt.Println("Player now at world pos", player_world_pos)
 }
 
 // ToggleFullScreen toggles whether is game is fullscreen or windowed
@@ -746,11 +810,12 @@ func main() {
 	ogs.camera = camera.NewPerspective(65, aspect, 0.01, 1000)
 	ogs.camera.SetPosition(0, 0, 50)
 	ogs.camera.LookAt(&math32.Vector3{0, 0, 0})
+	ogs.camera_mode = ABSOLUTE_FOLLOWING
 
 	// Create orbit control and set limits
 	ogs.orbit_control = control.NewOrbitControl(ogs.camera, ogs.win)
 	ogs.orbit_control.Enabled = false
-	ogs.orbit_control.EnablePan = false
+	ogs.orbit_control.EnablePan = true
 	// Cause the floor to be seen at all times
 	ogs.orbit_control.MaxPolarAngle = math32.Pi - math32.Pi/10
 	ogs.orbit_control.MinPolarAngle = math32.Pi/10
